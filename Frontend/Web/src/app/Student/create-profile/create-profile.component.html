@@ -1,0 +1,252 @@
+<p>create-profile works!</p>
+<div class="create-profile">
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <button *ngIf="currentStep > 0" class="back-btn" (click)="previousStep()">
+        <span>←</span>
+      </button>
+      <div *ngIf="currentStep === 0" class="back-placeholder"></div>
+      
+      <h1 class="title">Create Your Profile</h1>
+      
+      <button class="skip-btn" (click)="skipProfileCreation()">Skip</button>
+    </div>
+  </header>
+
+  <!-- Progress Indicator -->
+  <div class="progress-section">
+    <div class="progress-bars">
+      @for (step of steps; track $index) {
+        <div class="progress-bar-wrapper">
+          <div class="progress-bar" [class.completed]="$index < currentStep" [class.current]="$index === currentStep"></div>
+          @if ($index < steps.length - 1) {
+            <div class="progress-gap"></div>
+          }
+        </div>
+      }
+    </div>
+    <h2 class="step-title">{{ steps[currentStep].title }}</h2>
+    <p class="step-subtitle">{{ steps[currentStep].subtitle }}</p>
+  </div>
+
+  <!-- Content -->
+  <main class="content">
+    <!-- Step 0: Basic Information -->
+    @if (currentStep === 0) {
+      <div class="step-card">
+        <div class="card-header">
+          <div class="header-icon">
+            <span>👤</span>
+          </div>
+          <h3 class="card-title">Let's start with the basics</h3>
+        </div>
+        
+        <div class="form-group">
+          <label class="input-label">FULL NAME</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🏷️</span>
+            <input 
+              type="text" 
+              class="input-field with-icon" 
+              [(ngModel)]="profileData.name"
+              placeholder="e.g. Alexandre Dubois">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="input-label">UNIVERSITY / SCHOOL</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🎓</span>
+            <input 
+              type="text" 
+              class="input-field with-icon" 
+              [(ngModel)]="profileData.university"
+              placeholder="e.g. Tech University of Munich">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="input-label">SPECIALIZATION / MAJOR</label>
+          <div class="input-wrapper">
+            <span class="input-icon">💼</span>
+            <input 
+              type="text" 
+              class="input-field with-icon" 
+              [(ngModel)]="profileData.specialization"
+              placeholder="e.g. Software Engineering">
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Step 1: About You -->
+    @if (currentStep === 1) {
+      <div class="step-card">
+        <div class="card-header">
+          <div class="header-icon">
+            <span>📝</span>
+          </div>
+          <h3 class="card-title">Tell your story</h3>
+        </div>
+        
+        <div class="form-group">
+          <label class="input-label">LOCATION</label>
+          <div class="input-wrapper">
+            <span class="input-icon">📍</span>
+            <input 
+              type="text" 
+              class="input-field with-icon" 
+              [(ngModel)]="profileData.location"
+              placeholder="e.g. Munich, Germany">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="input-label">PROFESSIONAL SUMMARY</label>
+          <div class="input-wrapper">
+            <span class="input-icon top-aligned">📄</span>
+            <textarea 
+              class="input-field textarea with-icon" 
+              rows="8"
+              [(ngModel)]="profileData.bio"
+              placeholder="Share your passion, goals, and what you're looking for in a PFE opportunity...
+
+Example: Passionate software engineering student specializing in cloud-native applications and AI integration. Looking for a 6-month PFE opportunity to tackle complex distributed systems challenges."></textarea>
+          </div>
+        </div>
+
+        <div class="tip-box blue">
+          <span class="tip-icon">💡</span>
+          <p class="tip-text">Tip: Highlight your key interests and what makes you unique!</p>
+        </div>
+      </div>
+    }
+
+    <!-- Step 2: Skills & Expertise -->
+    @if (currentStep === 2) {
+      <div class="step-card">
+        <div class="card-header">
+          <div class="header-icon">
+            <span>🧠</span>
+          </div>
+          <h3 class="card-title">Showcase your expertise</h3>
+        </div>
+        
+        <div class="skills-section">
+          <label class="skill-label">CORE PROGRAMMING SKILLS</label>
+          
+          @if (coreSkills.length > 0) {
+            <div class="skill-chips">
+              @for (skill of coreSkills; track skill) {
+                <span class="skill-chip primary">
+                  {{ skill }}
+                  <button class="remove-btn" (click)="removeCoreSkill(skill)">×</button>
+                </span>
+              }
+            </div>
+          }
+          
+          <div class="add-skill">
+            <input 
+              type="text" 
+              class="input-field" 
+              [(ngModel)]="newCoreSkill"
+              (keyup.enter)="addCoreSkill()"
+              placeholder="e.g. Python, JavaScript, Java">
+            <button class="add-icon" (click)="addCoreSkill()">➕</button>
+          </div>
+        </div>
+
+        <div class="skills-section">
+          <label class="skill-label">TOOLS & TECHNOLOGIES</label>
+          
+          @if (technologies.length > 0) {
+            <div class="skill-chips">
+              @for (tech of technologies; track tech) {
+                <span class="skill-chip secondary">
+                  {{ tech }}
+                  <button class="remove-btn" (click)="removeTechnology(tech)">×</button>
+                </span>
+              }
+            </div>
+          }
+          
+          <div class="add-skill">
+            <input 
+              type="text" 
+              class="input-field" 
+              [(ngModel)]="newTechnology"
+              (keyup.enter)="addTechnology()"
+              placeholder="e.g. Docker, AWS, React">
+            <button class="add-icon" (click)="addTechnology()">➕</button>
+          </div>
+        </div>
+
+        <div class="tip-box amber">
+          <span class="tip-icon">⭐</span>
+          <p class="tip-text">Add at least 3 core skills to increase your visibility to companies</p>
+        </div>
+      </div>
+    }
+
+    <!-- Step 3: Finishing Touches -->
+    @if (currentStep === 3) {
+      <div class="finishing-section">
+        <!-- Profile Photo -->
+        <div class="step-card">
+          <div class="card-header">
+            <div class="header-icon">
+              <span>📷</span>
+            </div>
+            <h3 class="card-title">Add a profile photo</h3>
+          </div>
+          
+          <div class="photo-upload">
+            <button class="photo-circle" (click)="selectProfileImage()">
+              @if (profileImagePath) {
+                <span class="photo-selected">👤</span>
+              } @else {
+                <div class="photo-placeholder">
+                  <span class="camera-icon">📸</span>
+                  <span class="photo-text">Add Photo</span>
+                </div>
+              }
+            </button>
+            <p class="photo-hint">Optional: Add a professional photo to stand out</p>
+          </div>
+        </div>
+
+        <!-- Resume Upload -->
+        <div class="step-card resume-card">
+          <div class="resume-icon">
+            <span>{{ resumePath ? '📄' : '📤' }}</span>
+          </div>
+          <h3 class="resume-title">{{ resumePath ? 'Resume Uploaded' : 'Upload Your Resume' }}</h3>
+          <p class="resume-hint">{{ resumePath ? 'Your resume is ready!' : 'PDF format recommended • Max 5MB' }}</p>
+          <button class="upload-btn" (click)="selectResume()">
+            <span class="upload-icon">{{ resumePath ? '✓' : '📎' }}</span>
+            <span>{{ resumePath ? 'Replace File' : 'Choose File' }}</span>
+          </button>
+        </div>
+      </div>
+    }
+  </main>
+
+  <!-- Navigation Buttons -->
+  <footer class="navigation-footer">
+    <div class="nav-buttons">
+      @if (currentStep > 0) {
+        <button class="nav-btn back" (click)="previousStep()">Back</button>
+      }
+      <button 
+        class="nav-btn continue" 
+        [class.full-width]="currentStep === 0"
+        [disabled]="!canProceed()"
+        (click)="nextStep()">
+        <span>{{ currentStep === 3 ? 'Complete Profile' : 'Continue' }}</span>
+        <span class="nav-icon">{{ currentStep === 3 ? '✓' : '→' }}</span>
+      </button>
+    </div>
+  </footer>
+</div>

@@ -1,0 +1,196 @@
+<div class="edit-profile">
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="header-left">
+        <button class="back-btn" (click)="goBack()">
+          <span>←</span>
+        </button>
+        <h1 class="title">Profile & Settings</h1>
+      </div>
+      <button class="save-btn" (click)="saveProfile()">Save</button>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="content">
+    <!-- Profile Photo -->
+    <section class="profile-photo">
+      <div class="avatar-container">
+        <div class="avatar-wrapper">
+          <img [src]="profileData.imageUrl" alt="Profile" class="avatar">
+        </div>
+        <button class="camera-btn" (click)="changeProfilePhoto()">
+          <span>📷</span>
+        </button>
+      </div>
+      <h2 class="name">{{ profileData.name }}</h2>
+      <p class="subtitle">{{ profileData.subtitle }}</p>
+    </section>
+
+    <!-- Profile Visibility -->
+    <section class="visibility-card">
+      <div class="visibility-header">
+        <div class="visibility-title">
+          <span class="icon">📊</span>
+          <span class="label">Profile Visibility</span>
+        </div>
+        <span class="percentage">{{ profileVisibility }}%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="profileVisibility"></div>
+      </div>
+      <div class="suggestion-box">
+        <div class="suggestion-icon">💡</div>
+        <div class="suggestion-content">
+          <h3 class="suggestion-title">Skill Gap Identified</h3>
+          <p class="suggestion-text">
+            Add <strong>React</strong> and <strong>AWS</strong> to increase PFE matches by 45%.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Basic Details -->
+    <section class="form-section">
+      <h3 class="section-label">BASIC DETAILS</h3>
+      <div class="card">
+        <div class="form-group">
+          <label class="input-label">FULL NAME</label>
+          <input 
+            type="text" 
+            class="input-field" 
+            [(ngModel)]="profileData.name"
+            placeholder="e.g. John Doe">
+        </div>
+        <div class="form-group">
+          <label class="input-label">UNIVERSITY / SCHOOL</label>
+          <input 
+            type="text" 
+            class="input-field" 
+            [(ngModel)]="profileData.university"
+            placeholder="Enter your institution">
+        </div>
+        <div class="form-group">
+          <label class="input-label">SPECIALIZATION / FIELD</label>
+          <input 
+            type="text" 
+            class="input-field" 
+            [(ngModel)]="profileData.specialization"
+            placeholder="e.g. Data Science">
+        </div>
+        <div class="form-group">
+          <label class="input-label">BIO & OBJECTIVES</label>
+          <textarea 
+            class="input-field textarea" 
+            rows="5"
+            [(ngModel)]="profileData.bio"
+            placeholder="Tell companies about your goals..."></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- Skills & Technologies -->
+    <section class="form-section">
+      <h3 class="section-label">SKILLS & TECHNOLOGIES</h3>
+      <div class="card">
+        <!-- Core Skills -->
+        <div class="skills-group">
+          <label class="skill-label">CORE SKILLS</label>
+          <div class="skill-chips">
+            @for (skill of coreSkills; track skill) {
+              <span class="skill-chip primary">
+                {{ skill }}
+                <button class="remove-btn" (click)="removeCoreSkill(skill)">×</button>
+              </span>
+            }
+          </div>
+          <div class="add-skill">
+            <input 
+              type="text" 
+              class="input-field" 
+              [(ngModel)]="newCoreSkill"
+              (keyup.enter)="addCoreSkill()"
+              placeholder="Add a skill...">
+            <button class="add-icon" (click)="addCoreSkill()">➕</button>
+          </div>
+        </div>
+
+        <!-- Favorite Technologies -->
+        <div class="skills-group">
+          <label class="skill-label">FAVORITE TECHNOLOGIES</label>
+          <div class="skill-chips">
+            @for (tech of technologies; track tech) {
+              <span class="skill-chip secondary">
+                {{ tech }}
+                <button class="remove-btn" (click)="removeTechnology(tech)">×</button>
+              </span>
+            }
+          </div>
+          <div class="add-skill">
+            <input 
+              type="text" 
+              class="input-field" 
+              [(ngModel)]="newTechnology"
+              (keyup.enter)="addTechnology()"
+              placeholder="e.g. Terraform, Figma">
+            <button class="add-icon" (click)="addTechnology()">➕</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Resume & Portfolio -->
+    <section class="form-section">
+      <h3 class="section-label">RESUME & PORTFOLIO</h3>
+      <div class="card resume-card">
+        <div class="resume-icon">📄</div>
+        <h3 class="resume-filename">{{ resume.filename }}</h3>
+        <p class="resume-meta">Uploaded on {{ resume.uploadDate }} • {{ resume.size }}</p>
+        <div class="resume-actions">
+          <button class="replace-btn" (click)="replaceResume()">Replace</button>
+          <button class="delete-icon-btn" (click)="deleteResume()">
+            <span>🗑️</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Settings -->
+    <section class="form-section">
+      <h3 class="section-label">SETTINGS</h3>
+      <div class="card settings-card">
+        <div class="setting-row">
+          <div class="setting-info">
+            <span class="setting-icon">🔔</span>
+            <span class="setting-text">Match Notifications</span>
+          </div>
+          <button 
+            class="toggle-switch" 
+            [class.active]="settings.matchNotifications"
+            (click)="settings.matchNotifications = !settings.matchNotifications">
+            <span class="toggle-thumb"></span>
+          </button>
+        </div>
+        <div class="divider"></div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <span class="setting-icon">👁️</span>
+            <span class="setting-text">Profile Publicly Visible</span>
+          </div>
+          <button 
+            class="toggle-switch" 
+            [class.active]="settings.profileVisible"
+            (click)="settings.profileVisible = !settings.profileVisible">
+            <span class="toggle-thumb"></span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sign Out -->
+    <section class="form-section">
+      <button class="sign-out-btn" (click)="signOut()">Sign Out</button>
+    </section>
+  </main>
+</div>

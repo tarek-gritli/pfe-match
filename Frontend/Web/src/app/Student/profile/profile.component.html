@@ -1,0 +1,104 @@
+<div class="student-profile">
+  <!-- Header Navigation -->
+  <header class="header">
+    <div class="header-content">
+      <h1 class="logo">Nexus PFE</h1>
+      <button class="edit-btn" (click)="navigateToEditProfile()">
+        <span class="icon">✏️</span>
+        <span>Edit Profile</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Scrollable Content -->
+  <main class="content">
+    <!-- Profile Header -->
+    <section class="card profile-header">
+      <div class="avatar-container">
+        <div class="avatar-wrapper">
+          <img [src]="profileData.imageUrl" alt="Profile" class="avatar">
+        </div>
+        <span class="status-indicator"></span>
+      </div>
+      <h2 class="name">{{ profileData.name }}</h2>
+      <p class="title">{{ profileData.title }}</p>
+      <div class="info-row">
+        <span class="icon">🏛️</span>
+        <span class="text">{{ profileData.university }}</span>
+      </div>
+      <div class="info-row">
+        <span class="icon">📍</span>
+        <span class="text">{{ profileData.location }}</span>
+      </div>
+    </section>
+
+    <!-- Profile Integrity -->
+    <section class="card integrity-card">
+      <div class="integrity-header">
+        <div class="integrity-title">
+          <span class="verified-icon">✓</span>
+          <span class="label">Profile Integrity</span>
+        </div>
+        <span class="percentage">{{ profileIntegrity }}%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="profileIntegrity"></div>
+      </div>
+      <div class="integrity-info">
+        <span class="info-icon">ℹ️</span>
+        <span class="info-text">Add your Github portfolio to reach 100% and rank higher.</span>
+      </div>
+    </section>
+
+    <!-- Professional Summary -->
+    <section class="card summary-card">
+      <div class="section-header">
+        <span class="section-icon">👤</span>
+        <h3 class="section-title">Professional Summary</h3>
+      </div>
+      <p class="summary-text">{{ profileData.summary }}</p>
+    </section>
+
+    <!-- Core Expertise -->
+    <section class="card expertise-card">
+      <div class="section-header">
+        <span class="section-icon">🧠</span>
+        <h3 class="section-title">Core Expertise</h3>
+      </div>
+      <div class="skills-container">
+        @for (skill of skills; track skill.name) {
+          <span class="skill-tag primary">
+            {{ skill.name }}
+          </span>
+        }
+      </div>
+    </section>
+
+    <!-- Tools & Technologies -->
+    <section class="card tools-card">
+      <div class="section-header">
+        <span class="section-icon">💻</span>
+        <h3 class="section-title">Tools & Technologies</h3>
+      </div>
+      <div class="tools-container">
+        @for (tool of tools; track tool.name) {
+          <span class="tool-tag">
+            {{ tool.name }}
+          </span>
+        }
+      </div>
+    </section>
+
+    <!-- Resume Card -->
+    <section class="card resume-card">
+      <div class="resume-icon">📄</div>
+      <div class="resume-info">
+        <p class="resume-filename">{{ profileData.resume.filename }}</p>
+        <p class="resume-meta">Updated {{ profileData.resume.lastUpdated }} • {{ profileData.resume.size }}</p>
+      </div>
+      <button class="download-btn" (click)="downloadResume()">
+        <span>⬇️</span>
+      </button>
+    </section>
+  </main>
+</div>
