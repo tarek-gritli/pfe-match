@@ -31,7 +31,7 @@ class StudentProfileScreen extends StatelessWidget {
                     _buildToolsTechnologies(),
                     const SizedBox(height: 20),
                     _buildResumeCard(),
-                    const SizedBox(height: 100), // Space for bottom nav
+                    const SizedBox(height: 20), // Space for bottom nav
                   ],
                 ),
               ),
@@ -39,7 +39,6 @@ class StudentProfileScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNavBar(),
     );
   }
 
@@ -514,53 +513,6 @@ class StudentProfileScreen extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildBottomNavBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.9),
-        border: const Border(
-          top: BorderSide(color: Color(0xFFE5E7EB), width: 0.5),
-        ),
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildNavItem(Icons.explore, 'Discover', false),
-              _buildNavItem(Icons.auto_awesome_motion, 'Matches', false),
-              _buildNavItem(Icons.account_circle, 'Profile', true),
-              _buildNavItem(Icons.chat_bubble, 'Messages', false),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, bool isActive) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          color: isActive ? const Color(0xFF1B8D98) : Colors.grey[400],
-          size: 24,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 10,
-            fontWeight: FontWeight.bold,
-            color: isActive ? const Color(0xFF1B8D98) : Colors.grey[400],
-          ),
-        ),
-      ],
     );
   }
 }
