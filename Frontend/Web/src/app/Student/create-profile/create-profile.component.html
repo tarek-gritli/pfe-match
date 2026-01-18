@@ -1,19 +1,4 @@
-<p>create-profile works!</p>
 <div class="create-profile">
-  <!-- Header -->
-  <header class="header">
-    <div class="header-content">
-      <button *ngIf="currentStep > 0" class="back-btn" (click)="previousStep()">
-        <span>←</span>
-      </button>
-      <div *ngIf="currentStep === 0" class="back-placeholder"></div>
-      
-      <h1 class="title">Create Your Profile</h1>
-      
-      <button class="skip-btn" (click)="skipProfileCreation()">Skip</button>
-    </div>
-  </header>
-
   <!-- Progress Indicator -->
   <div class="progress-section">
     <div class="progress-bars">
@@ -34,14 +19,7 @@
   <main class="content">
     <!-- Step 0: Basic Information -->
     @if (currentStep === 0) {
-      <div class="step-card">
-        <div class="card-header">
-          <div class="header-icon">
-            <span>👤</span>
-          </div>
-          <h3 class="card-title">Let's start with the basics</h3>
-        </div>
-        
+      <app-card-container title="Let's start with the basics" icon="👤">        
         <div class="form-group">
           <label class="input-label">FULL NAME</label>
           <div class="input-wrapper">
@@ -77,19 +55,12 @@
               placeholder="e.g. Software Engineering">
           </div>
         </div>
-      </div>
+      </app-card-container>
     }
 
     <!-- Step 1: About You -->
     @if (currentStep === 1) {
-      <div class="step-card">
-        <div class="card-header">
-          <div class="header-icon">
-            <span>📝</span>
-          </div>
-          <h3 class="card-title">Tell your story</h3>
-        </div>
-        
+      <app-card-container title="Let's start with the basics" icon="👤">        
         <div class="form-group">
           <label class="input-label">LOCATION</label>
           <div class="input-wrapper">
@@ -120,19 +91,12 @@ Example: Passionate software engineering student specializing in cloud-native ap
           <span class="tip-icon">💡</span>
           <p class="tip-text">Tip: Highlight your key interests and what makes you unique!</p>
         </div>
-      </div>
+      </app-card-container>
     }
 
     <!-- Step 2: Skills & Expertise -->
     @if (currentStep === 2) {
-      <div class="step-card">
-        <div class="card-header">
-          <div class="header-icon">
-            <span>🧠</span>
-          </div>
-          <h3 class="card-title">Showcase your expertise</h3>
-        </div>
-        
+      <app-card-container title="Showcase your expertise" icon="🧠">        
         <div class="skills-section">
           <label class="skill-label">CORE PROGRAMMING SKILLS</label>
           
@@ -187,21 +151,14 @@ Example: Passionate software engineering student specializing in cloud-native ap
           <span class="tip-icon">⭐</span>
           <p class="tip-text">Add at least 3 core skills to increase your visibility to companies</p>
         </div>
-      </div>
+      </app-card-container>
     }
 
     <!-- Step 3: Finishing Touches -->
     @if (currentStep === 3) {
       <div class="finishing-section">
         <!-- Profile Photo -->
-        <div class="step-card">
-          <div class="card-header">
-            <div class="header-icon">
-              <span>📷</span>
-            </div>
-            <h3 class="card-title">Add a profile photo</h3>
-          </div>
-          
+        <app-card-container title="Add a profile photo" icon="📷">         
           <div class="photo-upload">
             <button class="photo-circle" (click)="selectProfileImage()">
               @if (profileImagePath) {
@@ -215,7 +172,7 @@ Example: Passionate software engineering student specializing in cloud-native ap
             </button>
             <p class="photo-hint">Optional: Add a professional photo to stand out</p>
           </div>
-        </div>
+        </app-card-container>
 
         <!-- Resume Upload -->
         <div class="step-card resume-card">
@@ -231,22 +188,21 @@ Example: Passionate software engineering student specializing in cloud-native ap
         </div>
       </div>
     }
-  </main>
 
-  <!-- Navigation Buttons -->
-  <footer class="navigation-footer">
-    <div class="nav-buttons">
-      @if (currentStep > 0) {
-        <button class="nav-btn back" (click)="previousStep()">Back</button>
-      }
-      <button 
-        class="nav-btn continue" 
-        [class.full-width]="currentStep === 0"
-        [disabled]="!canProceed()"
-        (click)="nextStep()">
-        <span>{{ currentStep === 3 ? 'Complete Profile' : 'Continue' }}</span>
-        <span class="nav-icon">{{ currentStep === 3 ? '✓' : '→' }}</span>
-      </button>
-    </div>
-  </footer>
+    @if (currentStep === 0 || currentStep === 1 || currentStep === 2 || currentStep === 3) {
+  <div class="nav-buttons-inline">
+    @if (currentStep > 0) {
+      <button class="nav-btn back" (click)="previousStep()">Back</button>
+    }
+    <button 
+      class="nav-btn continue" 
+      [class.full-width]="currentStep === 0"
+      [disabled]="!canProceed()"
+      (click)="nextStep()">
+      <span>{{ currentStep === 3 ? 'Complete Profile' : 'Continue' }}</span>
+      <span class="nav-icon">{{ currentStep === 3 ? '✓' : '→' }}</span>
+    </button>
+  </div>
+}
+  </main>
 </div>

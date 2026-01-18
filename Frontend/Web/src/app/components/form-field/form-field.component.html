@@ -1,0 +1,33 @@
+<div class="form-field">
+  @if (label) {
+    <label class="field-label">{{ label }}</label>
+  }
+  
+  <div class="input-wrapper">
+    @if (icon) {
+      <span class="field-icon" [class.top-aligned]="type === 'textarea'">{{ icon }}</span>
+    }
+    
+    @if (type === 'text') {
+      <input 
+        type="text"
+        class="field-input"
+        [class.with-icon]="!!icon"
+        [placeholder]="placeholder"
+        [disabled]="disabled"
+        [value]="value"
+        (input)="onInputChange($any($event.target).value)"
+        (blur)="onBlur()">
+    } @else {
+      <textarea
+        class="field-input textarea"
+        [class.with-icon]="!!icon"
+        [placeholder]="placeholder"
+        [disabled]="disabled"
+        [rows]="rows"
+        [value]="value"
+        (input)="onInputChange($any($event.target).value)"
+        (blur)="onBlur()"></textarea>
+    }
+  </div>
+</div>

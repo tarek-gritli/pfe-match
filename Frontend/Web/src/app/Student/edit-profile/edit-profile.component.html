@@ -15,6 +15,8 @@
   <!-- Content -->
   <main class="content">
     <!-- Profile Photo -->
+    <section class="identity-band">
+    <div class="identity-left">
     <section class="profile-photo">
       <div class="avatar-container">
         <div class="avatar-wrapper">
@@ -24,12 +26,16 @@
           <span>📷</span>
         </button>
       </div>
+      <div class="identity-text">
       <h2 class="name">{{ profileData.name }}</h2>
       <p class="subtitle">{{ profileData.subtitle }}</p>
+      </div>
     </section>
+    </div>
 
     <!-- Profile Visibility -->
-    <section class="visibility-card">
+    <div class="identity-right">
+    <app-card-container [gradient]="true">
       <div class="visibility-header">
         <div class="visibility-title">
           <span class="icon">📊</span>
@@ -49,36 +55,30 @@
           </p>
         </div>
       </div>
+    </app-card-container>
+    </div>
     </section>
 
     <!-- Basic Details -->
-    <section class="form-section">
+     <section class="editor-column">
+    <app-card-container>
       <h3 class="section-label">BASIC DETAILS</h3>
       <div class="card">
-        <div class="form-group">
-          <label class="input-label">FULL NAME</label>
-          <input 
-            type="text" 
-            class="input-field" 
-            [(ngModel)]="profileData.name"
-            placeholder="e.g. John Doe">
-        </div>
-        <div class="form-group">
-          <label class="input-label">UNIVERSITY / SCHOOL</label>
-          <input 
-            type="text" 
-            class="input-field" 
-            [(ngModel)]="profileData.university"
-            placeholder="Enter your institution">
-        </div>
-        <div class="form-group">
-          <label class="input-label">SPECIALIZATION / FIELD</label>
-          <input 
-            type="text" 
-            class="input-field" 
-            [(ngModel)]="profileData.specialization"
-            placeholder="e.g. Data Science">
-        </div>
+        <app-form-field
+          label="FULL NAME"
+          placeholder="John Doe"
+          [(ngModel)]="profileData.name">
+        </app-form-field>
+        <app-form-field
+          label="UNIVERSITY / SCHOOL"
+          placeholder="Enter your institution"
+          [(ngModel)]="profileData.university">
+        </app-form-field>
+        <app-form-field
+          label="SPECIALIZATION / FIELD"
+          placeholder="e.g. Data Science"
+          [(ngModel)]="profileData.specialization">
+        </app-form-field>
         <div class="form-group">
           <label class="input-label">BIO & OBJECTIVES</label>
           <textarea 
@@ -88,10 +88,10 @@
             placeholder="Tell companies about your goals..."></textarea>
         </div>
       </div>
-    </section>
+    </app-card-container>
 
     <!-- Skills & Technologies -->
-    <section class="form-section">
+    <app-card-container>
       <h3 class="section-label">SKILLS & TECHNOLOGIES</h3>
       <div class="card">
         <!-- Core Skills -->
@@ -138,10 +138,10 @@
           </div>
         </div>
       </div>
+    </app-card-container>
     </section>
-
     <!-- Resume & Portfolio -->
-    <section class="form-section">
+    <app-card-container [border]="true" class="resume-card">
       <h3 class="section-label">RESUME & PORTFOLIO</h3>
       <div class="card resume-card">
         <div class="resume-icon">📄</div>
@@ -154,39 +154,8 @@
           </button>
         </div>
       </div>
-    </section>
-
-    <!-- Settings -->
-    <section class="form-section">
-      <h3 class="section-label">SETTINGS</h3>
-      <div class="card settings-card">
-        <div class="setting-row">
-          <div class="setting-info">
-            <span class="setting-icon">🔔</span>
-            <span class="setting-text">Match Notifications</span>
-          </div>
-          <button 
-            class="toggle-switch" 
-            [class.active]="settings.matchNotifications"
-            (click)="settings.matchNotifications = !settings.matchNotifications">
-            <span class="toggle-thumb"></span>
-          </button>
-        </div>
-        <div class="divider"></div>
-        <div class="setting-row">
-          <div class="setting-info">
-            <span class="setting-icon">👁️</span>
-            <span class="setting-text">Profile Publicly Visible</span>
-          </div>
-          <button 
-            class="toggle-switch" 
-            [class.active]="settings.profileVisible"
-            (click)="settings.profileVisible = !settings.profileVisible">
-            <span class="toggle-thumb"></span>
-          </button>
-        </div>
-      </div>
-    </section>
+    </app-card-container>
+    
 
     <!-- Sign Out -->
     <section class="form-section">

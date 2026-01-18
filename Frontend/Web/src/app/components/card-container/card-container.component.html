@@ -1,0 +1,22 @@
+<div 
+  class="card-container" 
+  [class.no-padding]="noPadding"
+  [class.with-border]="border"
+  [class.with-gradient]="gradient"
+  [style.border-color]="borderColor">
+  
+  @if (title || icon) {
+    <div class="card-header">
+      @if (icon) {
+        <span class="card-icon">{{ icon }}</span>
+      }
+      @if (title) {
+        <h3 class="card-title">{{ title }}</h3>
+      }
+    </div>
+  }
+  
+  <div class="card-content" [class.with-header]="title || icon">
+    <ng-content></ng-content>
+  </div>
+</div>

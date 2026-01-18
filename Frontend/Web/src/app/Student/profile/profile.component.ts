@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { CardContainerComponent } from '../../components/card-container/card-container.component';
 
 interface Skill {
   name: string;
@@ -12,7 +13,9 @@ interface Tool {
 @Component({
   selector: 'app-student-profile',
   templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.css']
+  styleUrls: ['./profile.component.css'],
+  standalone: true,
+  imports: [CardContainerComponent]
 })
 export class ProfileComponent {
   profileIntegrity = 85;

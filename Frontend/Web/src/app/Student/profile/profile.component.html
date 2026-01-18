@@ -13,7 +13,8 @@
   <!-- Scrollable Content -->
   <main class="content">
     <!-- Profile Header -->
-    <section class="card profile-header">
+    <div class="top-section">
+    <app-card-container class="profile-header"> 
       <div class="avatar-container">
         <div class="avatar-wrapper">
           <img [src]="profileData.imageUrl" alt="Profile" class="avatar">
@@ -30,10 +31,15 @@
         <span class="icon">📍</span>
         <span class="text">{{ profileData.location }}</span>
       </div>
-    </section>
+    </app-card-container>
 
-    <!-- Profile Integrity -->
-    <section class="card integrity-card">
+    <div class="summary-integrity-group">
+    <!-- Professional Summary -->
+    <app-card-container title="Professional Summary" icon="📝">
+      <p class="summary-text">{{ profileData.summary }}</p>
+    </app-card-container>
+    <!-- Profile Integrity   will be changed later to card container-->
+    <app-card-container class="integrity-card">
       <div class="integrity-header">
         <div class="integrity-title">
           <span class="verified-icon">✓</span>
@@ -48,57 +54,43 @@
         <span class="info-icon">ℹ️</span>
         <span class="info-text">Add your Github portfolio to reach 100% and rank higher.</span>
       </div>
-    </section>
+    </app-card-container>
+    </div>
+    </div>
 
-    <!-- Professional Summary -->
-    <section class="card summary-card">
-      <div class="section-header">
-        <span class="section-icon">👤</span>
-        <h3 class="section-title">Professional Summary</h3>
-      </div>
-      <p class="summary-text">{{ profileData.summary }}</p>
-    </section>
-
+    <div class="skills-section">
     <!-- Core Expertise -->
-    <section class="card expertise-card">
-      <div class="section-header">
-        <span class="section-icon">🧠</span>
-        <h3 class="section-title">Core Expertise</h3>
-      </div>
-      <div class="skills-container">
-        @for (skill of skills; track skill.name) {
-          <span class="skill-tag primary">
-            {{ skill.name }}
-          </span>
-        }
-      </div>
-    </section>
-
-    <!-- Tools & Technologies -->
-    <section class="card tools-card">
-      <div class="section-header">
-        <span class="section-icon">💻</span>
-        <h3 class="section-title">Tools & Technologies</h3>
-      </div>
-      <div class="tools-container">
-        @for (tool of tools; track tool.name) {
-          <span class="tool-tag">
-            {{ tool.name }}
-          </span>
-        }
-      </div>
-    </section>
+      <app-card-container title="Core Expertise" icon="🧠" class="expertise-card">
+        <div class="skills-container">
+          @for (skill of skills; track skill.name) {
+            <span class="skill-tag primary">
+              {{ skill.name }}
+            </span>
+          }
+        </div>
+      </app-card-container>
+      <!-- Tools & Technologies -->
+      <app-card-container title="Tools & Technologies" icon="💻" class="tools-card">
+        <div class="tools-container">
+          @for (tool of tools; track tool.name) {
+            <span class="tool-tag">
+              {{ tool.name }}
+            </span>
+          }
+        </div>
+      </app-card-container>
+    </div>
 
     <!-- Resume Card -->
     <section class="card resume-card">
-      <div class="resume-icon">📄</div>
-      <div class="resume-info">
-        <p class="resume-filename">{{ profileData.resume.filename }}</p>
-        <p class="resume-meta">Updated {{ profileData.resume.lastUpdated }} • {{ profileData.resume.size }}</p>
-      </div>
-      <button class="download-btn" (click)="downloadResume()">
-        <span>⬇️</span>
-      </button>
-    </section>
+  <div class="resume-icon">📄</div>
+  <div class="resume-info">
+    <p class="resume-filename">{{ profileData.resume.filename }}</p>
+    <p class="resume-meta">Updated {{ profileData.resume.lastUpdated }} • {{ profileData.resume.size }}</p>
+  </div>
+  <button class="download-btn" (click)="downloadResume()">
+    <span>⬇️</span>
+  </button>
+</section>
   </main>
 </div>

@@ -2,11 +2,13 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { CardContainerComponent } from '../../components/card-container/card-container.component';
+import { FormFieldComponent } from '../../components/form-field/form-field.component';
 
 @Component({
   selector: 'app-create-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, CardContainerComponent, FormFieldComponent],
   templateUrl: './create-profile.component.html',
   styleUrls: ['./create-profile.component.css']
 })

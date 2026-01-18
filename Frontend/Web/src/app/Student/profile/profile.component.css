@@ -191,23 +191,6 @@
   flex-shrink: 0;
 }
 
-/* Section headers */
-.section-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.section-header .section-icon {
-  font-size: 20px;
-}
-
-.section-header .section-title {
-  font-size: 18px;
-  font-weight: bold;
-  margin: 0;
-}
 
 /* Professional Summary */
 .summary-card .summary-text {
@@ -308,5 +291,86 @@
   .content {
     max-width: 600px;
     margin: 0 auto;
+  }
+}
+
+@media (min-width: 768px) {
+  .content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: block;
+    grid-template-columns: 380px 1fr;
+    gap: 24px;
+    align-items: stretch;
+  }
+
+  app-card-container {
+  display: block;
+  height: 100%;
+}
+.top-section {
+    display: grid;
+    grid-template-columns: 380px minmax(0, 1fr);
+    gap: 24px;
+    align-items: stretch;
+  }
+
+  .profile-header,
+  .summary-integrity-group {
+    height: 100%;
+    min-width: 100%;
+  }
+
+  /* Top section - Profile Header and Summary/Integrity */
+  .profile-header {
+    align-self: stretch;
+    justify-content: flex-start;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .summary-integrity-group {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: auto;
+    align-items: stretch;
+    justify-content: flex;
+  }
+  
+  /* Middle section - Skills side by side */
+  .skills-section {
+    grid-column: 1 / -1; /* Span both columns */
+    grid-row: 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  /* Bottom section - Resume card */
+  .resume-card {
+    grid-column: 1 / -1; /* Span both columns */
+    grid-row: 3;
+    max-width: 600px;
+    margin: 20px auto 0;
+    justify-self: center;
+    width: 100%;
+  }
+
+  /* Adjust profile header for side-by-side layout */
+  .profile-header .avatar-container {
+    width: 160px;
+    height: 160px;
+  }
+
+  .profile-header .name {
+    font-size: 28px;
+  }
+
+  /* Make summary card fill the space nicely */
+  .summary-card .summary-text {
+    font-size: 15px;
+    line-height: 1.7;
   }
 }
