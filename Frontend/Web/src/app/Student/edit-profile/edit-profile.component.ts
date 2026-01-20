@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { CardContainerComponent } from '../../components/card-container/card-container.component';
-import { FormFieldComponent } from '../../components/form-field/form-field.component';
+import { StudentProfile } from '../../models/student-profile.model';
 
 @Component({
   selector: 'app-student-edit-profile',
@@ -12,80 +13,123 @@ import { FormFieldComponent } from '../../components/form-field/form-field.compo
   templateUrl: './edit-profile.component.html',
   styleUrls: ['./edit-profile.component.css']
 })
-export class EditProfileComponent {
-  profileVisibility = 72;
+export class EditProfileComponent implements OnInit {
+  profileIntegrity: number = 0;
   
   profileData = {
-    name: 'Alexandre Dubois',
-    university: 'Tech University of Munich',
-    specialization: 'Software Engineering',
-    bio: 'Passionate software engineering student specializing in cloud-native applications and AI integration. Looking for a 6-month PFE opportunity starting February 2024.',
-    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC9D10QIt--py9-2R8pwT23fv-vWtFNzrVh-kZJFJsHE_npBGu18o9oBWQvctbFyVw9lsR3tbetRjXrkd-ScYW1dh06x3up4q8Tu5SmP3lDHz6hbLFdyIBKIQaH10jvtA_TGZIEzFUSqLXr5HIuFBX0afO07jkASUTUtH9ewSg-e1MzrXzzaeU-CHQJA1yCJF_r0VA40SuqAVnophnJSndNjMFrnb5S2u5okgemJV5vH9_oVkMawZtOWHt47VBOEaxmp1LEdabs-94',
-    subtitle: 'Senior Student • Tech University'
+    name: '',
+    title: '',
+    university: '',
+    location: '',
+    summary: '',
+    imageUrl: ''
   };
 
-  coreSkills: string[] = ['Python', 'TypeScript', 'Node.js'];
-  technologies: string[] = ['Docker', 'Kubernetes'];
+  skills: Array<{name: string}> = [];
+  tools: Array<{name: string}> = [];
   
-  newCoreSkill = '';
-  newTechnology = '';
+  newSkill = '';
+  newTool = '';
 
-  settings = {
-    matchNotifications: true,
-    profileVisible: true
-  };
+  resume: StudentProfile['resume'] | null = null;
 
-  resume = {
-    filename: 'Resume_Alexandre_2023.pdf',
-    uploadDate: 'Oct 24, 2023',
-    size: '1.2 MB'
-  };
+  isLoading = true;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private http: HttpClient) {}
+
+  ngOnInit(): void {
+    // Fetch student profile from backend
+    this.http.get<StudentProfile>('http://localhost:8000/students/me')
+      .subscribe({
+        next: (data) => {
+          this.profileIntegrity = data.profileIntegrity;
+          this.profileData = {
+            name: data.profile.name,
+            title: data.profile.title,
+            university: data.profile.university,
+            location: data.profile.location,
+            summary: data.profile.summary,
+            imageUrl: data.profile.imageUrl
+          };
+          this.skills = [...data.skills];
+          this.tools = [...data.tools];
+          this.resume = data.resume;
+          this.isLoading = false;
+          console.log('Student profile loaded for editing');
+        },
+        error: (err) => {
+          console.error('Failed to load student profile', err);
+          this.isLoading = false;
+        }
+      });
+  }
 
   goBack(): void {
     this.router.navigate(['/profile']);
   }
 
   saveProfile(): void {
-    console.log('Profile saved', this.profileData);
+    const updates = {
+      profileIntegrity: this.profileIntegrity,
+      profile: {
+        name: this.profileData.name,
+        title: this.profileData.title,
+        university: this.profileData.university,
+        location: this.profileData.location,
+        summary: this.profileData.summary,
+        imageUrl: this.profileData.imageUrl
+      },
+      skills: this.skills,
+      tools: this.tools,
+      resume: this.resume
+    };
+
+    this.http.post('http://localhost:8000/students/me', updates)
+      .subscribe({
+        next: (response) => {
+          console.log('Profile saved successfully', response);
+          // Optionally navigate back to profile page
+          this.router.navigate(['/profile']);
+        },
+        error: (err) => {
+          console.error('Failed to save profile', err);
+        }
+      });
   }
 
   changeProfilePhoto(): void {
+    // TODO: Implement file upload
     console.log('Change profile photo');
   }
 
-  addCoreSkill(): void {
-    if (this.newCoreSkill.trim()) {
-      this.coreSkills.push(this.newCoreSkill.trim());
-      this.newCoreSkill = '';
+  addSkill(): void {
+    if (this.newSkill.trim()) {
+      this.skills.push({ name: this.newSkill.trim() });
+      this.newSkill = '';
     }
   }
 
-  removeCoreSkill(skill: string): void {
-    this.coreSkills = this.coreSkills.filter(s => s !== skill);
+  removeSkill(skill: {name: string}): void {
+    this.skills = this.skills.filter(s => s.name !== skill.name);
   }
 
-  addTechnology(): void {
-    if (this.newTechnology.trim()) {
-      this.technologies.push(this.newTechnology.trim());
-      this.newTechnology = '';
+  addTool(): void {
+    if (this.newTool.trim()) {
+      this.tools.push({ name: this.newTool.trim() });
+      this.newTool = '';
     }
   }
 
-  removeTechnology(tech: string): void {
-    this.technologies = this.technologies.filter(t => t !== tech);
+  removeTool(tool: {name: string}): void {
+    this.tools = this.tools.filter(t => t.name !== tool.name);
   }
 
   replaceResume(): void {
+    // TODO: Implement file upload
     console.log('Replace resume');
   }
 
   deleteResume(): void {
-    console.log('Delete resume');
-  }
-
-  signOut(): void {
-    console.log('Sign out');
+    this.resume = null;
   }
 }

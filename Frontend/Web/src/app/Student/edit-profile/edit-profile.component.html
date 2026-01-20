@@ -13,6 +13,7 @@
   </header>
 
   <!-- Content -->
+  @if (!isLoading) {
   <main class="content">
     <!-- Profile Photo -->
     <section class="identity-band">
@@ -28,7 +29,7 @@
       </div>
       <div class="identity-text">
       <h2 class="name">{{ profileData.name }}</h2>
-      <p class="subtitle">{{ profileData.subtitle }}</p>
+      <p class="subtitle">{{ profileData.title }}</p>
       </div>
     </section>
     </div>
@@ -41,10 +42,10 @@
           <span class="icon">📊</span>
           <span class="label">Profile Visibility</span>
         </div>
-        <span class="percentage">{{ profileVisibility }}%</span>
+        <span class="percentage">{{ profileIntegrity }}%</span>
       </div>
       <div class="progress-bar">
-        <div class="progress-fill" [style.width.%]="profileVisibility"></div>
+        <div class="progress-fill" [style.width.%]="profileIntegrity"></div>
       </div>
       <div class="suggestion-box">
         <div class="suggestion-icon">💡</div>
@@ -77,14 +78,14 @@
         <app-form-field
           label="SPECIALIZATION / FIELD"
           placeholder="e.g. Data Science"
-          [(ngModel)]="profileData.specialization">
+          [(ngModel)]="profileData.title">  <!-- will add specialization later-->
         </app-form-field>
         <div class="form-group">
           <label class="input-label">BIO & OBJECTIVES</label>
           <textarea 
             class="input-field textarea" 
             rows="5"
-            [(ngModel)]="profileData.bio"
+            [(ngModel)]="profileData.summary"
             placeholder="Tell companies about your goals..."></textarea>
         </div>
       </div>
@@ -98,10 +99,10 @@
         <div class="skills-group">
           <label class="skill-label">CORE SKILLS</label>
           <div class="skill-chips">
-            @for (skill of coreSkills; track skill) {
+            @for (skill of skills; track skill.name) {
               <span class="skill-chip primary">
-                {{ skill }}
-                <button class="remove-btn" (click)="removeCoreSkill(skill)">×</button>
+                {{ skill.name }}
+                <button class="remove-btn" (click)="removeSkill(skill)">×</button>
               </span>
             }
           </div>
@@ -109,10 +110,10 @@
             <input 
               type="text" 
               class="input-field" 
-              [(ngModel)]="newCoreSkill"
-              (keyup.enter)="addCoreSkill()"
+              [(ngModel)]="newSkill"
+              (keyup.enter)="addSkill()"
               placeholder="Add a skill...">
-            <button class="add-icon" (click)="addCoreSkill()">➕</button>
+            <button class="add-icon" (click)="addSkill()">➕</button>
           </div>
         </div>
 
@@ -120,10 +121,10 @@
         <div class="skills-group">
           <label class="skill-label">FAVORITE TECHNOLOGIES</label>
           <div class="skill-chips">
-            @for (tech of technologies; track tech) {
+            @for (tool of tools; track tool.name) {
               <span class="skill-chip secondary">
-                {{ tech }}
-                <button class="remove-btn" (click)="removeTechnology(tech)">×</button>
+                {{ tool.name }}
+                <button class="remove-btn" (click)="removeTool(tool)">×</button>
               </span>
             }
           </div>
@@ -131,22 +132,23 @@
             <input 
               type="text" 
               class="input-field" 
-              [(ngModel)]="newTechnology"
-              (keyup.enter)="addTechnology()"
+              [(ngModel)]="newTool"
+              (keyup.enter)="addTool()"
               placeholder="e.g. Terraform, Figma">
-            <button class="add-icon" (click)="addTechnology()">➕</button>
+            <button class="add-icon" (click)="addTool()">➕</button>
           </div>
         </div>
       </div>
     </app-card-container>
     </section>
     <!-- Resume & Portfolio -->
+    @if (resume) {
     <app-card-container [border]="true" class="resume-card">
       <h3 class="section-label">RESUME & PORTFOLIO</h3>
       <div class="card resume-card">
         <div class="resume-icon">📄</div>
         <h3 class="resume-filename">{{ resume.filename }}</h3>
-        <p class="resume-meta">Uploaded on {{ resume.uploadDate }} • {{ resume.size }}</p>
+        <p class="resume-meta">Uploaded on {{ resume.lastUpdated }} • {{ resume.size }}</p>
         <div class="resume-actions">
           <button class="replace-btn" (click)="replaceResume()">Replace</button>
           <button class="delete-icon-btn" (click)="deleteResume()">
@@ -155,11 +157,7 @@
         </div>
       </div>
     </app-card-container>
-    
-
-    <!-- Sign Out -->
-    <section class="form-section">
-      <button class="sign-out-btn" (click)="signOut()">Sign Out</button>
-    </section>
+    }
   </main>
+}
 </div>

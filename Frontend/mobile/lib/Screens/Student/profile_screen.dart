@@ -1,43 +1,108 @@
 import 'package:flutter/material.dart';
 import 'edit_profile_screen.dart';
+import '../../models/student.dart';
+import '../../services/student_service.dart';
 
-class StudentProfileScreen extends StatelessWidget {
+class StudentProfileScreen extends StatefulWidget {
   const StudentProfileScreen({Key? key}) : super(key: key);
+
+  @override
+  State<StudentProfileScreen> createState() => _StudentProfileScreenState();
+}
+
+class _StudentProfileScreenState extends State<StudentProfileScreen> {
+  final StudentService _studentService = StudentService();
+  Student? _student;
+  bool _isLoading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final student = await _studentService.getMyProfile();
+      setState(() {
+        _student = student;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _navigateToEdit() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => StudentEditProfileScreen(student: _student!),
+      ),
+    );
+
+    // If the edit screen returned true, reload the profile
+    if (result == true) {
+      _loadProfile();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9FAFA),
       body: SafeArea(
-        child: Column(
-          children: [
-            // Header Navigation
-            _buildHeader(context),
-            
-            // Scrollable Content
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    _buildProfileHeader(),
-                    const SizedBox(height: 20),
-                    _buildProfileIntegrity(),
-                    const SizedBox(height: 20),
-                    _buildProfessionalSummary(),
-                    const SizedBox(height: 20),
-                    _buildCoreExpertise(),
-                    const SizedBox(height: 20),
-                    _buildToolsTechnologies(),
-                    const SizedBox(height: 20),
-                    _buildResumeCard(),
-                    const SizedBox(height: 20), // Space for bottom nav
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : _error != null
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('Error: $_error'),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: _loadProfile,
+                          child: const Text('Retry'),
+                        ),
+                      ],
+                    ),
+                  )
+                : Column(
+                    children: [
+                      _buildHeader(context),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            children: [
+                              _buildProfileHeader(),
+                              const SizedBox(height: 20),
+                              _buildProfileIntegrity(),
+                              const SizedBox(height: 20),
+                              _buildProfessionalSummary(),
+                              const SizedBox(height: 20),
+                              _buildCoreExpertise(),
+                              const SizedBox(height: 20),
+                              _buildToolsTechnologies(),
+                              const SizedBox(height: 20),
+                              _buildResumeCard(),
+                              const SizedBox(height: 20),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
       ),
     );
   }
@@ -64,14 +129,7 @@ class StudentProfileScreen extends StatelessWidget {
             ),
           ),
           ElevatedButton.icon(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => StudentEditProfileScreen(),
-                )
-              );
-            },
+            onPressed: _navigateToEdit,
             icon: const Icon(Icons.edit, size: 18),
             label: const Text('Edit Profile'),
             style: ElevatedButton.styleFrom(
@@ -121,9 +179,7 @@ class StudentProfileScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(4),
                   child: CircleAvatar(
                     radius: 60,
-                    backgroundImage: NetworkImage(
-                      'https://lh3.googleusercontent.com/aida-public/AB6AXuC9D10QIt--py9-2R8pwT23fv-vWtFNzrVh-kZJFJsHE_npBGu18o9oBWQvctbFyVw9lsR3tbetRjXrkd-ScYW1dh06x3up4q8Tu5SmP3lDHz6hbLFdyIBKIQaH10jvtA_TGZIEzFUSqLXr5HIuFBX0afO07jkASUTUtH9ewSg-e1MzrXzzaeU-CHQJA1yCJF_r0VA40SuqAVnophnJSndNjMFrnb5S2u5okgemJV5vH9_oVkMawZtOWHt47VBOEaxmp1LEdabs-94',
-                    ),
+                    backgroundImage: NetworkImage(_student!.profile.imageUrl),
                   ),
                 ),
               ),
@@ -143,9 +199,9 @@ class StudentProfileScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Alexandre Dubois',
-            style: TextStyle(
+          Text(
+            _student!.profile.name,
+            style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
               letterSpacing: -0.5,
@@ -153,11 +209,11 @@ class StudentProfileScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'SOFTWARE ENGINEERING SENIOR',
-            style: TextStyle(
+            _student!.profile.title,
+            style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: const Color(0xFF1B8D98),
+              color: Color(0xFF1B8D98),
               letterSpacing: 1.2,
             ),
           ),
@@ -168,7 +224,7 @@ class StudentProfileScreen extends StatelessWidget {
               Icon(Icons.account_balance, size: 16, color: Colors.grey[600]),
               const SizedBox(width: 8),
               Text(
-                'Tech University of Munich',
+                _student!.profile.university,
                 style: TextStyle(fontSize: 14, color: Colors.grey[600]),
               ),
             ],
@@ -180,7 +236,7 @@ class StudentProfileScreen extends StatelessWidget {
               Icon(Icons.location_on, size: 16, color: Colors.grey[600]),
               const SizedBox(width: 8),
               Text(
-                'Munich, Germany',
+                _student!.profile.location,
                 style: TextStyle(fontSize: 14, color: Colors.grey[600]),
               ),
             ],
@@ -210,14 +266,14 @@ class StudentProfileScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
-                children: [
-                  const Icon(
+                children: const [
+                  Icon(
                     Icons.verified,
                     color: Color(0xFF1B8D98),
                     size: 20,
                   ),
-                  const SizedBox(width: 8),
-                  const Text(
+                  SizedBox(width: 8),
+                  Text(
                     'Profile Integrity',
                     style: TextStyle(
                       fontSize: 14,
@@ -226,9 +282,9 @@ class StudentProfileScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              const Text(
-                '85%',
-                style: TextStyle(
+              Text(
+                '${_student!.profileIntegrity}%',
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF1B8D98),
@@ -240,7 +296,7 @@ class StudentProfileScreen extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: LinearProgressIndicator(
-              value: 0.85,
+              value: _student!.profileIntegrity / 100,
               minHeight: 10,
               backgroundColor: Colors.grey[200],
               valueColor: const AlwaysStoppedAnimation<Color>(
@@ -298,7 +354,7 @@ class StudentProfileScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            'Passionate software engineering student specializing in cloud-native applications and AI integration. I focus on building scalable backend architectures using Node.js and Python. Looking for a 6-month PFE opportunity starting February 2024 to tackle complex distributed systems challenges.',
+            _student!.profile.summary,
             style: TextStyle(
               fontSize: 14,
               height: 1.6,
@@ -311,14 +367,7 @@ class StudentProfileScreen extends StatelessWidget {
   }
 
   Widget _buildCoreExpertise() {
-    final skills = [
-      'TypeScript',
-      'Python',
-      'React & Next.js',
-      'PostgreSQL',
-      'Docker',
-      'Kubernetes',
-    ];
+    final skills = _student!.skills.map((s) => s.name).toList();
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -383,13 +432,7 @@ class StudentProfileScreen extends StatelessWidget {
   }
 
   Widget _buildToolsTechnologies() {
-    final tools = [
-      'AWS (EC2, S3)',
-      'Git / GitHub',
-      'Jira / Agile',
-      'GraphQL',
-      'Terraform',
-    ];
+    final tools = _student!.tools.map((t) => t.name).toList();
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -451,6 +494,8 @@ class StudentProfileScreen extends StatelessWidget {
   }
 
   Widget _buildResumeCard() {
+    final resume = _student!.resume;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -469,50 +514,78 @@ class StudentProfileScreen extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: Colors.red[50],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              Icons.picture_as_pdf,
-              color: Colors.red,
-              size: 30,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: resume == null
+          ? Row(
               children: [
-                const Text(
-                  'Resume_Alexandre_D.pdf',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.picture_as_pdf,
+                    color: Colors.grey[400],
+                    size: 30,
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  'Updated Oct 24, 2023 • 1.2 MB',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    'No resume uploaded',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
                   ),
                 ),
               ],
+            )
+          : Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: Colors.red[50],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.picture_as_pdf,
+                    color: Colors.red,
+                    size: 30,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        resume.filename,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Updated ${resume.lastUpdated} • ${resume.size}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {},
+                  icon: Icon(Icons.download, color: Colors.grey[400]),
+                ),
+              ],
             ),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.download, color: Colors.grey[400]),
-          ),
-        ],
-      ),
     );
   }
 }

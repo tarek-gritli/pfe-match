@@ -1,33 +1,100 @@
 import 'package:flutter/material.dart';
+import '../../models/student.dart';
+import '../../services/student_service.dart';
 
 class StudentEditProfileScreen extends StatefulWidget {
-  const StudentEditProfileScreen({Key? key}) : super(key: key);
+  final Student student;
+
+  const StudentEditProfileScreen({Key? key, required this.student}) : super(key: key);
 
   @override
   State<StudentEditProfileScreen> createState() => _StudentEditProfileScreenState();
 }
 
 class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
-  final TextEditingController _nameController = TextEditingController(text: 'Alexandre Dubois');
-  final TextEditingController _universityController = TextEditingController(text: 'Tech University of Munich');
-  final TextEditingController _specializationController = TextEditingController(text: 'Software Engineering');
-  final TextEditingController _bioController = TextEditingController(
-    text: 'Passionate software engineering student specializing in cloud-native applications and AI integration. Looking for a 6-month PFE opportunity starting February 2024.',
-  );
+  final StudentService _studentService = StudentService();
+  late TextEditingController _nameController;
+  late TextEditingController _universityController;
+  late TextEditingController _titleController;
+  late TextEditingController _locationController;
+  late TextEditingController _summaryController;
   
-  final List<String> _coreSkills = ['Python', 'TypeScript', 'Node.js'];
-  final List<String> _technologies = ['Docker', 'Kubernetes'];
+  late List<String> _skills;
+  late List<String> _tools;
   
+  bool _isSaving = false;
   bool _matchNotifications = true;
   bool _profileVisible = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.student.profile.name);
+    _universityController = TextEditingController(text: widget.student.profile.university);
+    _titleController = TextEditingController(text: widget.student.profile.title);
+    _locationController = TextEditingController(text: widget.student.profile.location);
+    _summaryController = TextEditingController(text: widget.student.profile.summary);
+    
+    _skills = widget.student.skills.map((s) => s.name).toList();
+    _tools = widget.student.tools.map((t) => t.name).toList();
+  }
 
   @override
   void dispose() {
     _nameController.dispose();
     _universityController.dispose();
-    _specializationController.dispose();
-    _bioController.dispose();
+    _titleController.dispose();
+    _locationController.dispose();
+    _summaryController.dispose();
     super.dispose();
+  }
+
+  Future<void> _saveProfile() async {
+    setState(() {
+      _isSaving = true;
+    });
+
+    try {
+      final updates = {
+        'profile': {
+          'name': _nameController.text,
+          'title': _titleController.text,
+          'university': _universityController.text,
+          'location': _locationController.text,
+          'imageUrl': widget.student.profile.imageUrl,
+          'summary': _summaryController.text,
+        },
+        'skills': _skills.map((s) => {'name': s}).toList(),
+        'tools': _tools.map((t) => {'name': t}).toList(),
+      };
+
+      await _studentService.updateMyProfile(updates);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Profile updated successfully!'),
+            backgroundColor: Color(0xFF1B8D98),
+          ),
+        );
+        Navigator.pop(context, true); // Return true to indicate success
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error updating profile: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+        });
+      }
+    }
   }
 
   @override
@@ -108,17 +175,23 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
               ),
             ],
           ),
-          TextButton(
-            onPressed: () {},
-            child: const Text(
-              'Save',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF1B8D98),
-              ),
-            ),
-          ),
+          _isSaving
+              ? const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : TextButton(
+                  onPressed: _saveProfile,
+                  child: const Text(
+                    'Save',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1B8D98),
+                    ),
+                  ),
+                ),
         ],
       ),
     );
@@ -145,9 +218,7 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
               ),
               child: CircleAvatar(
                 radius: 44,
-                backgroundImage: NetworkImage(
-                  'https://lh3.googleusercontent.com/aida-public/AB6AXuC9D10QIt--py9-2R8pwT23fv-vWtFNzrVh-kZJFJsHE_npBGu18o9oBWQvctbFyVw9lsR3tbetRjXrkd-ScYW1dh06x3up4q8Tu5SmP3lDHz6hbLFdyIBKIQaH10jvtA_TGZIEzFUSqLXr5HIuFBX0afO07jkASUTUtH9ewSg-e1MzrXzzaeU-CHQJA1yCJF_r0VA40SuqAVnophnJSndNjMFrnb5S2u5okgemJV5vH9_oVkMawZtOWHt47VBOEaxmp1LEdabs-94',
-                ),
+                backgroundImage: NetworkImage(widget.student.profile.imageUrl),
               ),
             ),
             Positioned(
@@ -181,16 +252,16 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
           ],
         ),
         const SizedBox(height: 16),
-        const Text(
-          'Alexandre Dubois',
-          style: TextStyle(
+        Text(
+          _nameController.text,
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
         const SizedBox(height: 4),
         Text(
-          'Senior Student • Tech University',
+          '${_titleController.text} • ${_universityController.text}',
           style: TextStyle(
             fontSize: 14,
             color: Colors.grey[600],
@@ -239,9 +310,9 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
                   ),
                 ],
               ),
-              const Text(
-                '72%',
-                style: TextStyle(
+              Text(
+                '${widget.student.profileIntegrity}%',
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
                   color: Color(0xFF1B8D98),
@@ -253,7 +324,7 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: LinearProgressIndicator(
-              value: 0.72,
+              value: widget.student.profileIntegrity / 100,
               minHeight: 8,
               backgroundColor: Colors.grey[200],
               valueColor: const AlwaysStoppedAnimation<Color>(
@@ -376,11 +447,13 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
             children: [
               _buildTextField('FULL NAME', _nameController, 'e.g. John Doe'),
               const SizedBox(height: 16),
+              _buildTextField('TITLE / POSITION', _titleController, 'e.g. SOFTWARE ENGINEERING SENIOR'),
+              const SizedBox(height: 16),
               _buildTextField('UNIVERSITY / SCHOOL', _universityController, 'Enter your institution'),
               const SizedBox(height: 16),
-              _buildTextField('SPECIALIZATION / FIELD', _specializationController, 'e.g. Data Science'),
+              _buildTextField('LOCATION', _locationController, 'e.g. Munich, Germany'),
               const SizedBox(height: 16),
-              _buildTextField('BIO & OBJECTIVES', _bioController, 'Tell companies about your goals...', maxLines: 5),
+              _buildTextField('PROFESSIONAL SUMMARY', _summaryController, 'Tell companies about your goals...', maxLines: 5),
             ],
           ),
         ),
@@ -463,9 +536,9 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSkillChips('CORE SKILLS', _coreSkills, true),
+              _buildSkillChips('CORE SKILLS', _skills, true),
               const SizedBox(height: 16),
-              _buildSkillChips('FAVORITE TECHNOLOGIES', _technologies, false),
+              _buildSkillChips('TOOLS & TECHNOLOGIES', _tools, false),
             ],
           ),
         ),
@@ -473,7 +546,7 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
     );
   }
 
-  Widget _buildSkillChips(String label, List<String> skills, bool isPrimary) {
+  Widget _buildSkillChips(String label, List<String> items, bool isPrimary) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -492,7 +565,7 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children: skills.map((skill) {
+          children: items.map((item) {
             return Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
@@ -505,7 +578,7 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    skill,
+                    item,
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
@@ -518,7 +591,7 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
                   GestureDetector(
                     onTap: () {
                       setState(() {
-                        skills.remove(skill);
+                        items.remove(item);
                       });
                     },
                     child: Icon(
@@ -550,9 +623,9 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
           ),
           style: const TextStyle(fontSize: 14),
           onSubmitted: (value) {
-            if (value.isNotEmpty) {
+            if (value.isNotEmpty && !items.contains(value)) {
               setState(() {
-                skills.add(value);
+                items.add(value);
               });
             }
           },
@@ -562,6 +635,8 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
   }
 
   Widget _buildResumeSection() {
+    final resume = widget.student.resume;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -595,79 +670,127 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
               ),
             ],
           ),
-          child: Column(
-            children: [
-              Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  color: Colors.red[50],
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: const Icon(
-                  Icons.description,
-                  color: Colors.red,
-                  size: 36,
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Resume_Alexandre_2023.pdf',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Uploaded on Oct 24, 2023 • 1.2 MB',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[600],
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1B8D98),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 0,
-                        shadowColor: const Color(0xFF1B8D98).withOpacity(0.2),
+          child: resume == null
+              ? Column(
+                  children: [
+                    Container(
+                      width: 64,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(16),
                       ),
-                      child: const Text(
-                        'Replace',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
+                      child: Icon(
+                        Icons.description,
+                        color: Colors.grey[400],
+                        size: 36,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'No resume uploaded',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF1B8D98),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text(
+                          'Upload Resume',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(12),
+                  ],
+                )
+              : Column(
+                  children: [
+                    Container(
+                      width: 64,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        color: Colors.red[50],
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Icon(
+                        Icons.description,
+                        color: Colors.red,
+                        size: 36,
+                      ),
                     ),
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.delete, color: Colors.grey[600]),
+                    const SizedBox(height: 16),
+                    Text(
+                      resume.filename,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Uploaded on ${resume.lastUpdated} • ${resume.size}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF1B8D98),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: const Text(
+                              'Replace',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: IconButton(
+                            onPressed: () {},
+                            icon: Icon(Icons.delete, color: Colors.grey[600]),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
         ),
       ],
     );
