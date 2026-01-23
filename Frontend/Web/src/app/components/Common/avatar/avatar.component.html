@@ -1,0 +1,15 @@
+<div [class]="avatarClasses">
+  <img 
+    *ngIf="src && !imageError"
+    [src]="src" 
+    [alt]="alt"
+    class="avatar-image"
+    (load)="onImageLoad()"
+    (error)="onImageError()"
+    [class.avatar-image-hidden]="!imageLoaded"
+  />
+  
+  <div *ngIf="showFallback" class="avatar-fallback">
+    <ng-content>{{ fallback }}</ng-content>
+  </div>
+</div>
