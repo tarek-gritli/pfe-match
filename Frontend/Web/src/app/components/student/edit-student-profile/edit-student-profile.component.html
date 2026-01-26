@@ -1,0 +1,271 @@
+<div class="edit-profile-container">
+  <main class="edit-profile-main">
+    <div class="edit-profile-content">
+      <!-- Header -->
+      <div class="header">
+        <div class="header-left">
+          <app-button variant="ghost" size="icon" (buttonClick)="navigateBack()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m12 19-7-7 7-7"/>
+              <path d="M19 12H5"/>
+            </svg>
+          </app-button>
+          <h1>Edit Profile</h1>
+        </div>
+        <app-button variant="default" (buttonClick)="handleSave()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>
+            <path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/>
+            <path d="M7 3v4a1 1 0 0 0 1 1h7"/>
+          </svg>
+          Save Changes
+        </app-button>
+      </div>
+
+      <!-- Basic Information -->
+      <app-card>
+        <app-card-header>
+          <app-card-title>Basic Information</app-card-title>
+        </app-card-header>
+        <app-card-content>
+          <div class="form-content">
+            <div class="form-grid">
+              <div class="form-field">
+                <app-label htmlFor="fullName">Full Name</app-label>
+                <app-input
+                  type="text"
+                  [(ngModel)]="formData.fullName"
+                ></app-input>
+              </div>
+              <div class="form-field">
+                <app-label htmlFor="email">Email</app-label>
+                <app-input
+                  type="email"
+                  [(ngModel)]="formData.email"
+                ></app-input>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-field">
+                <app-label htmlFor="university">University</app-label>
+                <app-input
+                  type="text"
+                  [(ngModel)]="formData.university"
+                ></app-input>
+              </div>
+              <div class="form-field">
+                <app-label htmlFor="fieldOfStudy">Field of Study</app-label>
+                <app-input
+                  type="text"
+                  [(ngModel)]="formData.fieldOfStudy"
+                ></app-input>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <app-label htmlFor="title">Desired Job Title</app-label>
+              <app-input
+                type="text"
+                placeholder="e.g., Machine Learning Engineer"
+                [(ngModel)]="formData.title"
+              ></app-input>
+            </div>
+
+            <div class="form-field">
+              <app-label htmlFor="bio">Bio</app-label>
+              <app-textarea
+                placeholder="Tell us about yourself..."
+                [(ngModel)]="formData.bio"
+                [rows]="4"
+              ></app-textarea>
+            </div>
+          </div>
+        </app-card-content>
+      </app-card>
+
+      <!-- Skills -->
+      <app-card>
+        <app-card-header>
+          <app-card-title>Skills</app-card-title>
+        </app-card-header>
+        <app-card-content>
+          <div class="skills-content">
+            <div class="skills-list">
+              <app-badge
+                *ngFor="let skill of skills"
+                variant="default"
+                class="skill-badge"
+              >
+                {{ skill }}
+                <button type="button" class="skill-remove" (click)="removeSkill(skill)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 6 6 18"/>
+                    <path d="m6 6 12 12"/>
+                  </svg>
+                </button>
+              </app-badge>
+            </div>
+
+            <div class="add-skill-container">
+              <app-input
+                type="text"
+                placeholder="Add a skill..."
+                [(ngModel)]="newSkill"
+                (keypress)="onSkillKeyPress($event)"
+                class="add-skill-input"
+              ></app-input>
+              <app-button variant="outline" size="icon" (buttonClick)="addSkill()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14"/>
+                  <path d="M12 5v14"/>
+                </svg>
+              </app-button>
+            </div>
+          </div>
+        </app-card-content>
+      </app-card>
+
+      <!-- Technologies -->
+      <app-card>
+        <app-card-header>
+          <app-card-title>Tools & Technologies</app-card-title>
+        </app-card-header>
+        <app-card-content>
+          <div class="skills-content">
+            <div class="skills-list">
+              <app-badge
+                *ngFor="let tech of technologies"
+                variant="secondary"
+                class="skill-badge"
+              >
+                {{ tech }}
+                <button type="button" class="skill-remove" (click)="removeTechnology(tech)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 6 6 18"/>
+                    <path d="m6 6 12 12"/>
+                  </svg>
+                </button>
+              </app-badge>
+            </div>
+
+            <div class="add-skill-container">
+              <app-input
+                type="text"
+                placeholder="Add a technology..."
+                [(ngModel)]="newTech"
+                (keypress)="onTechKeyPress($event)"
+                class="add-skill-input"
+              ></app-input>
+              <app-button variant="outline" size="icon" (buttonClick)="addTechnology()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14"/>
+                  <path d="M12 5v14"/>
+                </svg>
+              </app-button>
+            </div>
+          </div>
+        </app-card-content>
+      </app-card>
+
+      <!-- Links -->
+      <app-card>
+        <app-card-header>
+          <app-card-title>Links</app-card-title>
+        </app-card-header>
+        <app-card-content>
+          <div class="form-content">
+            <div class="form-field">
+              <app-label htmlFor="linkedinUrl">LinkedIn URL</app-label>
+              <app-input
+                type="text"
+                placeholder="https://linkedin.com/in/yourprofile"
+                [(ngModel)]="formData.linkedinUrl"
+              ></app-input>
+            </div>
+
+            <div class="form-field">
+              <app-label htmlFor="githubUrl">GitHub URL</app-label>
+              <app-input
+                type="text"
+                placeholder="https://github.com/yourusername"
+                [(ngModel)]="formData.githubUrl"
+              ></app-input>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-field">
+                <app-label htmlFor="customLinkLabel">Custom Link Label</app-label>
+                <app-input
+                  type="text"
+                  placeholder="e.g., Portfolio"
+                  [(ngModel)]="formData.customLinkLabel"
+                ></app-input>
+              </div>
+              <div class="form-field">
+                <app-label htmlFor="customLinkUrl">Custom Link URL</app-label>
+                <app-input
+                  type="text"
+                  placeholder="https://yoursite.com"
+                  [(ngModel)]="formData.customLinkUrl"
+                ></app-input>
+              </div>
+            </div>
+          </div>
+        </app-card-content>
+      </app-card>
+
+      <!-- Resume -->
+      <app-card>
+        <app-card-header>
+          <app-card-title>Resume</app-card-title>
+        </app-card-header>
+        <app-card-content>
+          <div class="resume-content">
+            <div *ngIf="currentStudent.resumeName; else noResume" class="resume-existing">
+              <div class="resume-info">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="resume-icon">
+                  <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
+                  <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+                </svg>
+                <div class="resume-details">
+                  <p class="resume-name">{{ currentStudent.resumeName }}</p>
+                  <p class="resume-date">Uploaded {{ currentStudent.resumeUploadDate }}</p>
+                </div>
+              </div>
+              <app-button variant="outline" (buttonClick)="handleResumeUpload()">
+                Replace
+              </app-button>
+            </div>
+
+            <ng-template #noResume>
+              <app-button variant="outline" class="upload-resume-btn" (buttonClick)="handleResumeUpload()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" x2="12" y1="3" y2="15"/>
+                </svg>
+                Upload Resume
+              </app-button>
+            </ng-template>
+          </div>
+        </app-card-content>
+      </app-card>
+
+      <!-- Bottom Actions -->
+      <div class="bottom-actions">
+        <app-button variant="outline" (buttonClick)="handleCancel()">
+          Cancel
+        </app-button>
+        <app-button variant="default" (buttonClick)="handleSave()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>
+            <path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/>
+            <path d="M7 3v4a1 1 0 0 0 1 1h7"/>
+          </svg>
+          Save Changes
+        </app-button>
+      </div>
+    </div>
+  </main>
+</div>
