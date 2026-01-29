@@ -1,5 +1,5 @@
 .input {
-  display: flex;
+  display: block; /* Changed from flex */
   height: 2.5rem;
   width: 100%;
   border-radius: 0.375rem;
@@ -10,6 +10,7 @@
   line-height: 1.25rem;
   outline: none;
   transition: all 0.2s;
+  box-sizing: border-box; /* Add this to ensure padding is included in width */
 }
 
 @media (min-width: 768px) {
