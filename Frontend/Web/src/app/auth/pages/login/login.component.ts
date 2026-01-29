@@ -1,66 +1,62 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { ButtonComponent } from '../../../components/Common/button/button.component';
+import { InputComponent } from '../../../components/Common/input/input.component';
+import { LabelComponent } from '../../../components/Common/label/label.component';
+import { CheckboxComponent } from '../../../components/Common/checkbox/checkbox.component';
+import { CardComponent } from '../../../components/Common/card/card.component';
+import { CardHeaderComponent } from '../../../components/Common/card/card.component';
+import { CardTitleComponent } from '../../../components/Common/card/card.component';
+import { CardDescriptionComponent } from '../../../components/Common/card/card.component';
+import { CardContentComponent } from '../../../components/Common/card/card.component';
+import { CardFooterComponent } from '../../../components/Common/card/card.component';
+import { SeparatorComponent } from '../../../components/Common/separator/separator.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [
+    FormsModule,
+    ButtonComponent,
+    InputComponent,
+    LabelComponent,
+    CheckboxComponent,
+    CardComponent,
+    CardHeaderComponent,
+    CardTitleComponent,
+    CardDescriptionComponent,
+    CardContentComponent,
+    CardFooterComponent,
+    SeparatorComponent
+  ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  loginForm: FormGroup;
   showPassword = false;
-  isLoading = false;
-  isGoogleLoading = false;
-  errorMessage = '';
+  email = '';
+  password = '';
+  rememberMe = false;
 
-  constructor(private fb: FormBuilder, private router: Router) {
-    this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
-      rememberMe: [false]
-    });
+  constructor(private router: Router) {}
+
+  get isFormValid(): boolean {
+    return this.email.trim() !== '' && this.password.trim() !== '';
   }
 
-  async submit() {
-    if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched();
-      return;
-    }
-
-    this.isLoading = true;
-    this.errorMessage = '';
-
-    try {
-      // Simulate API call
-      await new Promise(res => setTimeout(res, 1500));
-
-      // On success, navigate to dashboard
-      this.router.navigate(['/dashboard']);
-    } catch (error) {
-      this.errorMessage = 'Invalid email or password. Please try again.';
-    } finally {
-      this.isLoading = false;
-    }
+  handleSubmit(event: Event): void {
+    event.preventDefault();
+    // For now, just navigate to home
+    this.router.navigate(['/']);
   }
 
-  async signInWithGoogle() {
-    this.isGoogleLoading = true;
-    this.errorMessage = '';
+  handleGoogleSignIn(): void {
+    // Placeholder for Google sign-in
+    this.router.navigate(['/']);
+  }
 
-    try {
-      // Simulate Google OAuth API call
-      await new Promise(res => setTimeout(res, 1500));
-
-      // On success, navigate to dashboard
-      this.router.navigate(['/dashboard']);
-    } catch (error) {
-      this.errorMessage = 'Google sign-in failed. Please try again.';
-    } finally {
-      this.isGoogleLoading = false;
-    }
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 }
