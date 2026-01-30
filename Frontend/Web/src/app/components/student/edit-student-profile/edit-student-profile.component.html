@@ -217,40 +217,40 @@
 
       <!-- Resume -->
       <app-card>
-        <app-card-header>
-          <app-card-title>Resume</app-card-title>
-        </app-card-header>
-        <app-card-content>
-          <div class="resume-content">
-            <div *ngIf="currentStudent.resumeName; else noResume" class="resume-existing">
-              <div class="resume-info">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="resume-icon">
-                  <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
-                  <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
-                </svg>
-                <div class="resume-details">
-                  <p class="resume-name">{{ currentStudent.resumeName }}</p>
-                  <p class="resume-date">Uploaded {{ currentStudent.resumeUploadDate }}</p>
-                </div>
-              </div>
-              <app-button variant="outline" (buttonClick)="handleResumeUpload()">
-                Replace
-              </app-button>
+  <app-card-header>
+    <app-card-title>Resume</app-card-title>
+  </app-card-header>
+  <app-card-content>
+    <div class="resume-content">
+      @if (currentStudent.resumeName) {
+        <div class="resume-existing">
+          <div class="resume-info">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="resume-icon">
+              <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
+              <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+            </svg>
+            <div class="resume-details">
+              <p class="resume-name">{{ currentStudent.resumeName }}</p>
+              <p class="resume-date">Uploaded {{ currentStudent.resumeUploadDate }}</p>
             </div>
-
-            <ng-template #noResume>
-              <app-button variant="outline" class="upload-resume-btn" (buttonClick)="handleResumeUpload()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                  <polyline points="17 8 12 3 7 8"/>
-                  <line x1="12" x2="12" y1="3" y2="15"/>
-                </svg>
-                Upload Resume
-              </app-button>
-            </ng-template>
           </div>
-        </app-card-content>
-      </app-card>
+          <app-button variant="outline" (buttonClick)="handleResumeUpload()">
+            Replace
+          </app-button>
+        </div>
+      } @else {
+        <app-button variant="outline" class="upload-resume-btn" (buttonClick)="handleResumeUpload()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" x2="12" y1="3" y2="15"/>
+          </svg>
+          Upload Resume
+        </app-button>
+      }
+    </div>
+  </app-card-content>
+</app-card>
 
       <!-- Bottom Actions -->
       <div class="bottom-actions">

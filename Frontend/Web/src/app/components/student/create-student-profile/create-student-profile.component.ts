@@ -83,14 +83,13 @@ export class CreateStudentProfileComponent {
 
   steps: Step[] = [
     { id: 1, title: 'Basic Information', icon: 'user' },
-    { id: 2, title: 'Skills & Tools', icon: 'briefcase' },
-    { id: 3, title: 'Resume & Links', icon: 'file-text' }
+    { id: 2, title: 'Resume', icon: 'file-text' }
   ];
 
   constructor(private router: Router) {}
 
   get progressValue(): number {
-    return (this.currentStep / 3) * 100;
+    return (this.currentStep / 2) * 100;
   }
 
   get suggestedSkills(): string[] {
@@ -132,7 +131,8 @@ export class CreateStudentProfileComponent {
     }
 
     if (step === 2) {
-      if (this.formData.skills.length === 0) {
+      // Only validate skills if resume is uploaded
+      if (this.formData.resumeName && this.formData.skills.length === 0) {
         newErrors['skills'] = 'At least one skill is required';
       }
     }
@@ -143,7 +143,7 @@ export class CreateStudentProfileComponent {
 
   handleNext(): void {
     if (this.validateStep(this.currentStep)) {
-      this.currentStep = Math.min(this.currentStep + 1, 3);
+      this.currentStep = Math.min(this.currentStep + 1, 2);
     }
   }
 
@@ -212,7 +212,7 @@ export class CreateStudentProfileComponent {
   }
 
   handleCreateProfile(): void {
-    if (!this.validateStep(3)) return;
+    if (!this.validateStep(2)) return;
 
     // TODO: Replace with actual service call
     console.log('Creating profile:', this.formData);
