@@ -1,92 +1,125 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ButtonComponent } from '../../../components/Common/button/button.component';
+import { InputComponent } from '../../../components/Common/input/input.component';
+import { LabelComponent } from '../../../components/Common/label/label.component';
+import { CardComponent } from '../../../components/Common/card/card.component';
+import { CardHeaderComponent } from '../../../components/Common/card/card.component';
+import { CardTitleComponent } from '../../../components/Common/card/card.component';
+import { CardDescriptionComponent } from '../../../components/Common/card/card.component';
+import { CardContentComponent } from '../../../components/Common/card/card.component';
+import { CardFooterComponent } from '../../../components/Common/card/card.component';
+import { SeparatorComponent } from '../../../components/Common/separator/separator.component';
+
+type AccountType = 'student' | 'enterprise' | null;
 
 @Component({
-  selector: 'app-register',
+  selector: 'app-signup',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ButtonComponent,
+    InputComponent,
+    LabelComponent,
+    CardComponent,
+    CardHeaderComponent,
+    CardTitleComponent,
+    CardDescriptionComponent,
+    CardContentComponent,
+    CardFooterComponent,
+    SeparatorComponent
+  ],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent {
-
-  activeTab: 'student' | 'enterprise' = 'student';
+  accountType: AccountType = null;
   showPassword = false;
   showConfirmPassword = false;
-  isLoading = false;
-  isGoogleLoading = false;
 
-  studentForm: FormGroup;
-  enterpriseForm: FormGroup;
+  // Student fields
+  studentName = '';
+  studentEmail = '';
+  university = '';
+  studentPassword = '';
+  studentConfirmPassword = '';
 
-  passwordRequirements = [
-    { label: 'At least 8 characters', check: (p: string) => p.length >= 8 },
-    { label: 'Contains uppercase letter', check: (p: string) => /[A-Z]/.test(p) },
-    { label: 'Contains lowercase letter', check: (p: string) => /[a-z]/.test(p) },
-    { label: 'Contains a number', check: (p: string) => /[0-9]/.test(p) },
-  ];
+  // Enterprise fields
+  companyName = '';
+  businessEmail = '';
+  industry = '';
+  enterprisePassword = '';
+  enterpriseConfirmPassword = '';
 
-  constructor(private fb: FormBuilder, private router: Router) {
-    this.studentForm = this.fb.group({
-      fullName: ['', [Validators.required, Validators.maxLength(100)]],
-      email: ['', [Validators.required, Validators.email]],
-      university: ['', Validators.required],
-      password: ['', Validators.required],
-      confirmPassword: ['', Validators.required],
-    });
+  constructor(private router: Router) {}
 
-    this.enterpriseForm = this.fb.group({
-      companyName: ['', [Validators.required, Validators.maxLength(100)]],
-      email: ['', [Validators.required, Validators.email]],
-      industry: ['', Validators.required],
-      password: ['', Validators.required],
-      confirmPassword: ['', Validators.required],
-    });
+  // Validation helpers
+  isValidEmail(email: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
-  get currentPassword(): string {
-    const form = this.activeTab === 'student' ? this.studentForm : this.enterpriseForm;
-    return form.get('password')?.value || '';
+  get studentPasswordsMatch(): boolean {
+    return this.studentPassword === this.studentConfirmPassword && this.studentPassword.length > 0;
   }
 
-  switchTab(tab: 'student' | 'enterprise') {
-    this.activeTab = tab;
+  get enterprisePasswordsMatch(): boolean {
+    return this.enterprisePassword === this.enterpriseConfirmPassword && this.enterprisePassword.length > 0;
   }
 
-  passwordsMatch(form: FormGroup): boolean {
-    return form.value.password === form.value.confirmPassword;
+  get isStudentFormValid(): boolean {
+    return (
+      this.studentName.trim() !== '' &&
+      this.isValidEmail(this.studentEmail) &&
+      this.university.trim() !== '' &&
+      this.studentPassword.length >= 6 &&
+      this.studentPasswordsMatch
+    );
   }
 
-  async submit() {
-    const form = this.activeTab === 'student' ? this.studentForm : this.enterpriseForm;
-
-    if (form.invalid || !this.passwordsMatch(form)) {
-      form.markAllAsTouched();
-      return;
-    }
-
-    this.isLoading = true;
-    await new Promise(res => setTimeout(res, 1500));
-    this.isLoading = false;
-
-    this.router.navigate(['/dashboard']);
+  get isEnterpriseFormValid(): boolean {
+    return (
+      this.companyName.trim() !== '' &&
+      this.isValidEmail(this.businessEmail) &&
+      this.industry.trim() !== '' &&
+      this.enterprisePassword.length >= 6 &&
+      this.enterprisePasswordsMatch
+    );
   }
 
-  async signUpWithGoogle() {
-    this.isGoogleLoading = true;
+  setAccountType(type: AccountType): void {
+    this.accountType = type;
+  }
 
-    try {
-      // Simulate Google OAuth API call
-      await new Promise(res => setTimeout(res, 1500));
+  handleStudentSubmit(event: Event): void {
+    event.preventDefault();
+    this.router.navigate(['/create-profile']);
+  }
 
-      // On success, navigate to dashboard
-      this.router.navigate(['/dashboard']);
-    } catch (error) {
-      console.error('Google sign-up failed:', error);
-    } finally {
-      this.isGoogleLoading = false;
-    }
+  handleEnterpriseSubmit(event: Event): void {
+    event.preventDefault();
+    this.router.navigate(['/']);
+  }
+
+  handleGoogleSignUp(): void {
+    this.router.navigate(['/create-profile']);
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
+  }
+
+  getEmailInputClass(email: string): string {
+    return email && !this.isValidEmail(email) ? 'input-error' : '';
+  }
+
+  getPasswordInputClass(confirmPassword: string, passwordsMatch: boolean): string {
+    return confirmPassword && !passwordsMatch ? 'input-error' : '';
   }
 }
