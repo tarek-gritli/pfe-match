@@ -1,0 +1,123 @@
+<div class="overview-container">
+  <!-- Header Section -->
+  <header class="company-header">
+    <div class="company-info">
+      <div class="company-logo">
+        <img [src]="companyLogo" [alt]="companyName" />
+      </div>
+      <div class="company-details">
+        <h1 class="company-name">{{ companyName }}</h1>
+        <p class="company-description">{{ companyDescription }}</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Statistics Cards -->
+  <section class="stats-grid">
+    <div class="stat-card stat-card--primary">
+      <p class="stat-label">Active PFEs</p>
+      <p class="stat-value">{{ activePFEs }}</p>
+    </div>
+
+    <div class="stat-card">
+      <p class="stat-label">Total Applicants</p>
+      <p class="stat-value stat-value--dark">{{ totalApplicants }}</p>
+    </div>
+
+    <div class="stat-card">
+      <p class="stat-label">Top Applicants</p>
+      <p class="stat-value stat-value--success">{{ topApplicants }}</p>
+    </div>
+
+    <div class="stat-card">
+      <p class="stat-label">Avg. Match Rate</p>
+      <p class="stat-value stat-value--warning">{{ avgMatchRate }}%</p>
+    </div>
+  </section>
+
+  <!-- PFE Listings Section -->
+  <section class="listings-section">
+    <div class="section-header">
+      <h2 class="section-title">Your PFE Listings</h2>
+      <button class="btn-post-new" (click)="postNewPFE()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Post New
+      </button>
+    </div>
+
+    <div class="listings-container">
+      <article
+        *ngFor="let listing of pfeListings"
+        class="listing-card"
+        (click)="navigateToListing(listing.id)">
+        <div class="listing-header">
+          <div class="listing-title-section">
+            <h3 class="listing-title">{{ listing.title }}</h3>
+            <span class="status-badge status-badge--{{ listing.status }}">
+              {{ listing.status }}
+            </span>
+          </div>
+          <div class="listing-meta">
+            <span class="meta-item">{{ listing.category }}</span>
+            <span class="meta-separator">•</span>
+            <span class="meta-item">{{ listing.duration }}</span>
+          </div>
+        </div>
+
+        <div class="listing-body">
+          <div class="skills-tags">
+            <span *ngFor="let skill of listing.skills" class="skill-tag">
+              {{ skill }}
+            </span>
+          </div>
+          <div class="listing-actions">
+            <div class="applicant-info">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11 14V12.6667C11 11.9594 10.719 11.2811 10.219 10.781C9.71896 10.281 9.04066 10 8.33333 10H4.66667C3.95942 10 3.28115 10.281 2.78105 10.781C2.28095 11.2811 2 11.9594 2 12.6667V14M13.3333 5.33333V9.33333M15.3333 7.33333H11.3333M8.66667 4.66667C8.66667 6.13943 7.47276 7.33333 6 7.33333C4.52724 7.33333 3.33333 6.13943 3.33333 4.66667C3.33333 3.19391 4.52724 2 6 2C7.47276 2 8.66667 3.19391 8.66667 4.66667Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span class="applicant-count">{{ listing.applicantCount }}</span>
+            </div>
+            <button class="btn-arrow">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- Recent Applicants Section -->
+  <section class="applicants-section">
+    <h2 class="section-title">Recent Applicants</h2>
+
+    <div class="applicants-container">
+      <article
+        *ngFor="let applicant of recentApplicants"
+        class="applicant-card"
+        (click)="navigateToApplicant(applicant.id)">
+        <div class="applicant-info-section">
+          <div class="applicant-avatar" [style.background-color]="applicant.avatarColor">
+            {{ applicant.initials }}
+          </div>
+          <div class="applicant-details">
+            <h3 class="applicant-name">{{ applicant.name }}</h3>
+            <p class="applicant-applied-to">Applied to {{ applicant.appliedTo }}</p>
+          </div>
+        </div>
+
+        <div class="applicant-match">
+          <div class="match-badge">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M14.6666 7.38668V8.00001C14.6658 9.43763 14.2003 10.8365 13.3395 11.988C12.4787 13.1394 11.2688 13.9817 9.89016 14.3893C8.51154 14.7969 7.03809 14.748 5.68957 14.2498C4.34104 13.7516 3.18969 12.8308 2.40723 11.6247C1.62476 10.4186 1.25311 8.99235 1.34771 7.55762C1.44231 6.12289 1.99806 4.75762 2.93211 3.66479C3.86615 2.57195 5.1285 1.81033 6.53077 1.4935C7.93304 1.17668 9.40016 1.32163 10.7133 1.90668M14.6666 2.66668L7.99998 9.34001L5.99998 7.34001" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="match-percentage">{{ applicant.matchRate }}%</span>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+</div>

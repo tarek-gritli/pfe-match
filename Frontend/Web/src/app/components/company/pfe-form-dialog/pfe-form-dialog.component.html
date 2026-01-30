@@ -1,0 +1,167 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h2 class="dialog-title">{{ isEditMode ? 'Edit PFE' : 'Create New PFE' }}</h2>
+    <button class="btn-close" (click)="onCancel()" type="button">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <form [formGroup]="pfeForm" (ngSubmit)="onSubmit()" class="dialog-form">
+    <div class="form-content">
+      <!-- Title Field -->
+      <div class="form-group">
+        <label for="title" class="form-label">
+          Title <span class="required">*</span>
+        </label>
+        <input
+          id="title"
+          type="text"
+          formControlName="title"
+          class="form-input"
+          placeholder="e.g., AI-Powered Image Recognition System"
+          maxlength="100"
+        />
+        <div class="char-counter">
+          {{ titleControl?.value?.length || 0 }} / 100
+        </div>
+        <div class="error-message" *ngIf="titleControl?.invalid && titleControl?.touched">
+          <span *ngIf="titleControl?.errors?.['required']">Title is required</span>
+          <span *ngIf="titleControl?.errors?.['maxlength']">Title must not exceed 100 characters</span>
+        </div>
+      </div>
+
+      <!-- Category and Duration Row -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="category" class="form-label">
+            Category <span class="required">*</span>
+          </label>
+          <select
+            id="category"
+            formControlName="category"
+            class="form-select"
+          >
+            <option value="" disabled>Select a category</option>
+            <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+          </select>
+          <div class="error-message" *ngIf="categoryControl?.invalid && categoryControl?.touched">
+            <span *ngIf="categoryControl?.errors?.['required']">Category is required</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="duration" class="form-label">
+            Duration <span class="required">*</span>
+          </label>
+          <select
+            id="duration"
+            formControlName="duration"
+            class="form-select"
+          >
+            <option value="" disabled>Select duration</option>
+            <option *ngFor="let dur of durations" [value]="dur">{{ dur }}</option>
+          </select>
+          <div class="error-message" *ngIf="durationControl?.invalid && durationControl?.touched">
+            <span *ngIf="durationControl?.errors?.['required']">Duration is required</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Department Field (Optional) -->
+      <div class="form-group">
+        <label for="department" class="form-label">
+          Department <span class="optional">(optional)</span>
+        </label>
+        <input
+          id="department"
+          type="text"
+          formControlName="department"
+          class="form-input"
+          placeholder="e.g., Research & Development"
+          maxlength="50"
+        />
+        <div class="char-counter">
+          {{ departmentControl?.value?.length || 0 }} / 50
+        </div>
+      </div>
+
+      <!-- Skills Section -->
+      <div class="form-group">
+        <label class="form-label">
+          Required Skills <span class="required">*</span>
+          <span class="skill-count">({{ selectedSkills.length }} selected, max 10)</span>
+        </label>
+
+        <div class="skills-selector">
+          <select
+            class="form-select"
+            (change)="addSkill($any($event.target).value); $any($event.target).value=''"
+            [disabled]="selectedSkills.length >= 10"
+          >
+            <option value="">Add a skill...</option>
+            <option
+              *ngFor="let skill of availableSkills"
+              [value]="skill"
+              [disabled]="selectedSkills.includes(skill)"
+            >
+              {{ skill }}
+            </option>
+          </select>
+        </div>
+
+        <div class="selected-skills" *ngIf="selectedSkills.length > 0">
+          <div class="skill-chip" *ngFor="let skill of selectedSkills">
+            <span>{{ skill }}</span>
+            <button type="button" class="skill-remove" (click)="removeSkill(skill)">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10.5 3.5L3.5 10.5M3.5 3.5L10.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="error-message" *ngIf="selectedSkills.length === 0 && pfeForm.touched">
+          <span>At least one skill is required</span>
+        </div>
+      </div>
+
+      <!-- Description Field -->
+      <div class="form-group">
+        <label for="description" class="form-label">
+          Description <span class="required">*</span>
+        </label>
+        <textarea
+          id="description"
+          formControlName="description"
+          class="form-textarea"
+          placeholder="Provide a detailed description of the PFE opportunity, responsibilities, and learning objectives..."
+          rows="6"
+          maxlength="1000"
+        ></textarea>
+        <div class="char-counter">
+          {{ descriptionControl?.value?.length || 0 }} / 1000
+        </div>
+        <div class="error-message" *ngIf="descriptionControl?.invalid && descriptionControl?.touched">
+          <span *ngIf="descriptionControl?.errors?.['required']">Description is required</span>
+          <span *ngIf="descriptionControl?.errors?.['maxlength']">Description must not exceed 1000 characters</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dialog Actions -->
+    <div class="dialog-actions">
+      <button type="button" class="btn btn-secondary" (click)="onCancel()">
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="pfeForm.invalid || selectedSkills.length === 0"
+      >
+        {{ isEditMode ? 'Update PFE' : 'Create PFE' }}
+      </button>
+    </div>
+  </form>
+</div>
