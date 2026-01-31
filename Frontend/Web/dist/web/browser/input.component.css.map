@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/components/Common/input/input.component.css"],
+  "sourcesContent": [".input {\n  display: flex;\n  height: 2.5rem;\n  width: 100%;\n  border-radius: 0.375rem;\n  border: 1px solid hsl(var(--input));\n  background-color: hsl(var(--background));\n  padding: 0.5rem 0.75rem;\n  font-size: 0.875rem;\n  line-height: 1.25rem;\n  outline: none;\n  transition: all 0.2s;\n}\n\n@media (min-width: 768px) {\n  .input {\n    font-size: 0.875rem;\n  }\n}\n\n.input::placeholder {\n  color: hsl(var(--muted-foreground));\n}\n\n.input:focus-visible {\n  outline: 2px solid hsl(var(--ring));\n  outline-offset: 2px;\n}\n\n.input:disabled {\n  cursor: not-allowed;\n  opacity: 0.5;\n}\n\n.input[type=\"file\"] {\n  border: 0;\n  background-color: transparent;\n  font-size: 0.875rem;\n  line-height: 1.25rem;\n  font-weight: 500;\n  color: hsl(var(--foreground));\n}"],
+  "mappings": ";AAAA,CAAC;AACC,WAAS;AACT,UAAQ;AACR,SAAO;AACP,iBAAe;AACf,UAAQ,IAAI,MAAM,IAAI,IAAI;AAC1B,oBAAkB,IAAI,IAAI;AAC1B,WAAS,OAAO;AAChB,aAAW;AACX,eAAa;AACb,WAAS;AACT,cAAY,IAAI;AAClB;AAEA,OAAO,CAAC,SAAS,EAAE;AACjB,GAfD;AAgBG,eAAW;AACb;AACF;AAEA,CApBC,KAoBK;AACJ,SAAO,IAAI,IAAI;AACjB;AAEA,CAxBC,KAwBK;AACJ,WAAS,IAAI,MAAM,IAAI,IAAI;AAC3B,kBAAgB;AAClB;AAEA,CA7BC,KA6BK;AACJ,UAAQ;AACR,WAAS;AACX;AAEA,CAlCC,KAkCK,CAAC;AACL,UAAQ;AACR,oBAAkB;AAClB,aAAW;AACX,eAAa;AACb,eAAa;AACb,SAAO,IAAI,IAAI;AACjB;",
+  "names": []
+}

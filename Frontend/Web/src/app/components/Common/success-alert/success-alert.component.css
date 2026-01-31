@@ -1,0 +1,21 @@
+.success-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.5rem;
+  background-color: #dcfce7;
+  border: 1px solid #86efac;
+  margin-bottom: 1rem;
+}
+
+.success-icon {
+  flex-shrink: 0;
+  color: #16a34a;
+}
+
+.success-message {
+  font-size: 0.875rem;
+  color: #166534;
+  font-weight: 500;
+}

@@ -6,10 +6,13 @@ import { RegisterComponent } from './auth/pages/register/register.component';
 import { LoginComponent } from './auth/pages/login/login.component';
 
 export const routes: Routes = [
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'profile', component: StudentProfileComponent },
   { path: 'create-profile', component: CreateStudentProfileComponent },
   { path: 'edit-profile', component: EditStudentProfileComponent },
   { path: 'register', component: RegisterComponent },
-  {path: 'login', component: LoginComponent }, 
-
+  { path: 'login', component: LoginComponent },
+  // Enterprise routes (placeholder for now)
+  { path: 'enterprise/create-profile', component: CreateStudentProfileComponent }, // TODO: Create EnterpriseProfileComponent
+  { path: 'enterprise/dashboard', component: StudentProfileComponent }, // TODO: Create EnterpriseDashboardComponent
 ];

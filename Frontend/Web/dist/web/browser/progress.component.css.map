@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/components/Common/progress/progress.component.css"],
+  "sourcesContent": ["/* Progress Root */\n.progress-root {\n  position: relative;\n  height: 1rem;\n  width: 100%;\n  overflow: hidden;\n  border-radius: 9999px;\n  background-color: hsl(var(--secondary));\n}\n\n/* Progress Indicator */\n.progress-indicator {\n  height: 100%;\n  width: 100%;\n  flex: 1 1 0%;\n  background-color: hsl(var(--primary));\n  transition: transform 0.3s ease;\n}"],
+  "mappings": ";AACA,CAAC;AACC,YAAU;AACV,UAAQ;AACR,SAAO;AACP,YAAU;AACV,iBAAe;AACf,oBAAkB,IAAI,IAAI;AAC5B;AAGA,CAAC;AACC,UAAQ;AACR,SAAO;AACP,QAAM,EAAE,EAAE;AACV,oBAAkB,IAAI,IAAI;AAC1B,cAAY,UAAU,KAAK;AAC7B;",
+  "names": []
+}

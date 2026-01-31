@@ -1,0 +1,25 @@
+<button
+  type="button"
+  class="google-button"
+  [disabled]="isLoading || disabled"
+  [attr.aria-busy]="isLoading"
+  (click)="onClick()"
+>
+  <!-- Google Icon (using official hosted logo) -->
+  <img
+    *ngIf="!isLoading"
+    src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+    alt=""
+    width="18"
+    height="18"
+    class="google-icon"
+    aria-hidden="true"
+  />
+  <!-- Loading spinner -->
+  <span
+    *ngIf="isLoading"
+    class="spinner spinner-dark"
+    aria-label="Loading"
+  ></span>
+  <span>{{ text }}</span>
+</button>

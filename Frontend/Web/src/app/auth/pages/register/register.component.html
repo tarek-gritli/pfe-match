@@ -1,441 +1,191 @@
-<!--
-  ╔═══════════════════════════════════════════════════════════════════════════╗
-  ║  ANGULAR CONCEPTS EXPLAINED IN THIS FILE:                                  ║
-  ║                                                                             ║
-  ║  1. @if / @else - New Control Flow Syntax (Angular 17+)                    ║
-  ║     → Replaces *ngIf. Cleaner, more readable conditional rendering         ║
-  ║                                                                             ║
-  ║  2. @for - New Loop Syntax (Angular 17+)                                   ║
-  ║     → Replaces *ngFor. Better performance with 'track' keyword             ║
-  ║                                                                             ║
-  ║  3. [formGroup] - Reactive Forms Directive                                 ║
-  ║     → Binds a FormGroup from your .ts file to the <form> element           ║
-  ║                                                                             ║
-  ║  4. formControlName - Connects input to FormControl                        ║
-  ║     → Links this input to a specific control in your FormGroup             ║
-  ║                                                                             ║
-  ║  5. (ngSubmit) - Form Event Binding                                        ║
-  ║     → Triggers your submit() method when form is submitted                 ║
-  ║                                                                             ║
-  ║  6. [class.xyz]="condition" - Class Binding                                ║
-  ║     → Adds CSS class 'xyz' only when condition is true                     ║
-  ║                                                                             ║
-  ║  7. [disabled] - Property Binding                                          ║
-  ║     → Square brackets bind a property to a TypeScript expression           ║
-  ║                                                                             ║
-  ║  8. (click) - Event Binding                                                ║
-  ║     → Parentheses listen for DOM events and call methods                   ║
-  ║                                                                             ║
-  ║  9. {{ expression }} - Interpolation                                       ║
-  ║     → Displays the value of a TypeScript expression in HTML                ║
-  ║                                                                             ║
-  ║  10. routerLink - Navigation Directive                                     ║
-  ║      → Angular's way to navigate between routes (like <a href> but SPA)    ║
-  ║                                                                             ║
-  ║  11. [ngClass] - Dynamic Class Binding                                     ║
-  ║      → Apply multiple classes based on conditions                          ║
-  ╚═══════════════════════════════════════════════════════════════════════════╝
--->
+<app-auth-card title="PFE Match" maxWidth="520px">
+  <div class="signup-inner-header">
+    <h2 class="signup-inner-title">Create Account</h2>
+    <p class="signup-inner-subtitle">Choose your account type to get started</p>
+  </div>
+  <app-success-alert [message]="successMessage"></app-success-alert>
+  <app-error-alert [message]="errorMessage"></app-error-alert>
 
-<div class="signup-container">
-  <div class="signup-card">
-    <!-- HEADER SECTION -->
-    <header class="signup-header">
-      <h1 class="signup-title">PFE Match</h1>
-    </header>
-    <!-- MAIN CARD -->
-    <div class="signup-inner-card">
-      <div class="signup-inner-header">
-        <h2 class="signup-inner-title">Create Account</h2>
-        <p class="signup-inner-subtitle">
-          Choose your account type to get started
-        </p>
-      </div>
+  <nav class="signup-tabs" role="tablist">
+    <button
+      type="button"
+      role="tab"
+      class="tab-button"
+      [class.tab-active]="activeTab === 'student'"
+      [attr.aria-selected]="activeTab === 'student'"
+      (click)="switchTab('student')"
+    >
+      🎒 Student
+    </button>
+    <button
+      type="button"
+      role="tab"
+      class="tab-button"
+      [class.tab-active]="activeTab === 'enterprise'"
+      [attr.aria-selected]="activeTab === 'enterprise'"
+      (click)="switchTab('enterprise')"
+    >
+      🏢 Enterprise
+    </button>
+  </nav>
 
-      <!--
-        ┌─────────────────────────────────────────────────────────────────────┐
-        │ TAB NAVIGATION                                                       │
-        │                                                                       │
-        │ Concept: [class.tab-active]="condition"                              │
-        │ → This is CLASS BINDING. It adds 'tab-active' class ONLY when        │
-        │   the condition is true. Much cleaner than ngClass for single class! │
-        │                                                                       │
-        │ Concept: (click)="switchTab('student')"                              │
-        │ → This is EVENT BINDING. When user clicks, it calls switchTab()      │
-        │   method in your .ts file with 'student' as argument.                │
-        └─────────────────────────────────────────────────────────────────────┘
-      -->
-      <nav class="signup-tabs" role="tablist">
-        <button
-          type="button"
-          role="tab"
-          class="tab-button"
-          [class.tab-active]="activeTab === 'student'"
-          [attr.aria-selected]="activeTab === 'student'"
-          (click)="switchTab('student')"
+  <div class="signup-form">
+    @if (activeTab === "student") {
+      <section [formGroup]="studentForm">
+        <app-form-field label="First Name" htmlFor="student-firstname">
+          <input
+            id="student-firstname"
+            class="form-input"
+            formControlName="firstName"
+            placeholder="Enter your first name"
+            autocomplete="given-name"
+          />
+        </app-form-field>
+        <app-form-field label="Last Name" htmlFor="student-lastname">
+          <input
+            id="student-lastname"
+            class="form-input"
+            formControlName="lastName"
+            placeholder="Enter your last name"
+            autocomplete="family-name"
+          />
+        </app-form-field>
+        <app-form-field label="Email Address" htmlFor="student-email">
+          <input
+            id="student-email"
+            class="form-input"
+            type="email"
+            formControlName="email"
+            placeholder="your.email@university.edu"
+            autocomplete="email"
+          />
+        </app-form-field>
+        <app-form-field label="Password" htmlFor="student-password">
+          <app-password-input
+            inputId="student-password"
+            formControlName="password"
+            placeholder="Create a strong password"
+            autocomplete="new-password"
+          ></app-password-input>
+        </app-form-field>
+
+        <app-form-field
+          label="Confirm Password"
+          htmlFor="student-confirm-password"
         >
-          🎒 Student
-        </button>
+          <app-password-input
+            inputId="student-confirm-password"
+            formControlName="confirmPassword"
+            placeholder="Confirm your password"
+            autocomplete="new-password"
+          ></app-password-input>
+        </app-form-field>
+      </section>
+    } @else {
+      <section [formGroup]="enterpriseForm">
+        <app-form-field label="Company Name" htmlFor="company-name">
+          <input
+            id="company-name"
+            class="form-input"
+            formControlName="companyName"
+            placeholder="Enter your company name"
+            autocomplete="organization"
+          />
+        </app-form-field>
 
-        <button
-          type="button"
-          role="tab"
-          class="tab-button"
-          [class.tab-active]="activeTab === 'enterprise'"
-          [attr.aria-selected]="activeTab === 'enterprise'"
-          (click)="switchTab('enterprise')"
+        <app-form-field label="Business Email" htmlFor="company-email">
+          <input
+            id="company-email"
+            class="form-input"
+            type="email"
+            formControlName="email"
+            placeholder="contact@company.com"
+            autocomplete="email"
+          />
+        </app-form-field>
+
+        <app-form-field label="Industry" htmlFor="company-industry">
+          <input
+            id="company-industry"
+            class="form-input"
+            formControlName="industry"
+            placeholder="e.g., Technology, Finance, Healthcare"
+          />
+        </app-form-field>
+        <app-form-field label="Password" htmlFor="enterprise-password">
+          <app-password-input
+            inputId="enterprise-password"
+            formControlName="password"
+            placeholder="Create a strong password"
+            autocomplete="new-password"
+          ></app-password-input>
+        </app-form-field>
+
+        <app-form-field
+          label="Confirm Password"
+          htmlFor="enterprise-confirm-password"
         >
-          🏢 Enterprise
-        </button>
-      </nav>
-
-      <!--
-        ┌─────────────────────────────────────────────────────────────────────┐
-        │ FORM with (ngSubmit)                                                 │
-        │                                                                       │
-        │ Concept: (ngSubmit)="submit()"                                       │
-        │ → Instead of native form submission (which reloads page),            │
-        │   Angular intercepts it and calls your submit() method.              │
-        │   This is the SPA (Single Page Application) way!                     │
-        └─────────────────────────────────────────────────────────────────────┘
-      -->
-      <form (ngSubmit)="submit()" class="signup-form">
-        <!--
-          ┌───────────────────────────────────────────────────────────────────┐
-          │ @if / @else - NEW ANGULAR 17+ CONTROL FLOW                         │
-          │                                                                     │
-          │ Old way: *ngIf="activeTab === 'student'"                           │
-          │ New way: @if (activeTab === 'student') { ... }                     │
-          │                                                                     │
-          │ Why better?                                                         │
-          │ ✓ More readable (looks like normal JavaScript)                     │
-          │ ✓ Better performance (built into Angular compiler)                 │
-          │ ✓ No need to import CommonModule for these directives              │
-          └───────────────────────────────────────────────────────────────────┘
-        -->
-
-        <!-- STUDENT FORM -->
-        @if (activeTab === "student") {
-          <!--
-            Concept: [formGroup]="studentForm"
-            → This BINDS the entire <section> to studentForm from your .ts file.
-            → All formControlName inputs inside will connect to this FormGroup.
-          -->
-          <section [formGroup]="studentForm">
-            <div class="form-group">
-              <label class="form-label" for="student-fullname">Full Name</label>
-              <!--
-                Concept: formControlName="fullName"
-                → Links this input to studentForm.get('fullName')
-                → Angular automatically tracks: value, touched, dirty, valid, errors
-              -->
-              <input
-                id="student-fullname"
-                class="form-input"
-                formControlName="fullName"
-                placeholder="Enter your full name"
-                autocomplete="name"
-              />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="student-email"
-                >Email Address</label
-              >
-              <input
-                id="student-email"
-                class="form-input"
-                type="email"
-                formControlName="email"
-                placeholder="your.email@university.edu"
-                autocomplete="email"
-              />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="student-university"
-                >University</label
-              >
-              <input
-                id="student-university"
-                class="form-input"
-                formControlName="university"
-                placeholder="Enter your university name"
-                autocomplete="organization"
-              />
-            </div>
-
-            <!-- Password field -->
-            <div class="form-group">
-              <label class="form-label" for="student-password">Password</label>
-              <div class="password-wrapper">
-                <input
-                  id="student-password"
-                  class="form-input"
-                  [type]="showPassword ? 'text' : 'password'"
-                  formControlName="password"
-                  placeholder="Create a strong password"
-                  autocomplete="new-password"
-                />
-                <button
-                  type="button"
-                  class="password-toggle"
-                  (click)="showPassword = !showPassword"
-                  [attr.aria-label]="
-                    showPassword ? 'Hide password' : 'Show password'
-                  "
-                >
-                  {{ showPassword ? "🙈" : "👁" }}
-                </button>
-              </div>
-            </div>
-
-            <!-- Confirm Password field -->
-            <div class="form-group">
-              <label class="form-label" for="student-confirm-password"
-                >Confirm Password</label
-              >
-              <div class="password-wrapper">
-                <input
-                  id="student-confirm-password"
-                  class="form-input"
-                  [type]="showConfirmPassword ? 'text' : 'password'"
-                  formControlName="confirmPassword"
-                  placeholder="Confirm your password"
-                  autocomplete="new-password"
-                />
-                <button
-                  type="button"
-                  class="password-toggle"
-                  (click)="showConfirmPassword = !showConfirmPassword"
-                  [attr.aria-label]="
-                    showConfirmPassword ? 'Hide password' : 'Show password'
-                  "
-                >
-                  {{ showConfirmPassword ? "🙈" : "👁" }}
-                </button>
-              </div>
-            </div>
-          </section>
-        }
-
-        <!-- ENTERPRISE FORM -->
-        @else {
-          <section [formGroup]="enterpriseForm">
-            <div class="form-group">
-              <label class="form-label" for="company-name">Company Name</label>
-              <input
-                id="company-name"
-                class="form-input"
-                formControlName="companyName"
-                placeholder="Enter your company name"
-                autocomplete="organization"
-              />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="company-email"
-                >Business Email</label
-              >
-              <input
-                id="company-email"
-                class="form-input"
-                type="email"
-                formControlName="email"
-                placeholder="contact@company.com"
-                autocomplete="email"
-              />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="company-industry">Industry</label>
-              <input
-                id="company-industry"
-                class="form-input"
-                formControlName="industry"
-                placeholder="e.g., Technology, Finance, Healthcare"
-              />
-            </div>
-
-            <!-- Password field -->
-            <div class="form-group">
-              <label class="form-label" for="enterprise-password"
-                >Password</label
-              >
-              <div class="password-wrapper">
-                <input
-                  id="enterprise-password"
-                  class="form-input"
-                  [type]="showPassword ? 'text' : 'password'"
-                  formControlName="password"
-                  placeholder="Create a strong password"
-                  autocomplete="new-password"
-                />
-                <button
-                  type="button"
-                  class="password-toggle"
-                  (click)="showPassword = !showPassword"
-                  [attr.aria-label]="
-                    showPassword ? 'Hide password' : 'Show password'
-                  "
-                >
-                  {{ showPassword ? "🙈" : "👁" }}
-                </button>
-              </div>
-            </div>
-
-            <!-- Confirm Password field -->
-            <div class="form-group">
-              <label class="form-label" for="enterprise-confirm-password"
-                >Confirm Password</label
-              >
-              <div class="password-wrapper">
-                <input
-                  id="enterprise-confirm-password"
-                  class="form-input"
-                  [type]="showConfirmPassword ? 'text' : 'password'"
-                  formControlName="confirmPassword"
-                  placeholder="Confirm your password"
-                  autocomplete="new-password"
-                />
-                <button
-                  type="button"
-                  class="password-toggle"
-                  (click)="showConfirmPassword = !showConfirmPassword"
-                  [attr.aria-label]="
-                    showConfirmPassword ? 'Hide password' : 'Show password'
-                  "
-                >
-                  {{ showConfirmPassword ? "🙈" : "👁" }}
-                </button>
-              </div>
-            </div>
-          </section>
-        }
-
-        <!--
-          ┌───────────────────────────────────────────────────────────────────┐
-          │ PASSWORD REQUIREMENTS with @for                                    │
-          │                                                                     │
-          │ Old way: *ngFor="let req of passwordRequirements"                  │
-          │ New way: @for (req of passwordRequirements; track req.label)       │
-          │                                                                     │
-          │ The 'track' keyword is REQUIRED and helps Angular:                 │
-          │ ✓ Know which item is which (like a unique ID)                      │
-          │ ✓ Only re-render items that actually changed                       │
-          │ ✓ Much better performance for lists!                               │
-          │                                                                     │
-          │ Concept: [ngClass]="{ 'class1': condition1, 'class2': condition2 }"│
-          │ → Adds multiple classes based on different conditions              │
-          └───────────────────────────────────────────────────────────────────┘
-        -->
-        <div
-          class="password-rules"
-          role="list"
-          aria-label="Password requirements"
-        >
-          <div class="password-rules-grid">
-            @for (req of passwordRequirements; track req.label) {
-              <div class="rule-item" role="listitem">
-                <span
-                  class="rule-icon"
-                  [ngClass]="{
-                    'rule-ok': req.check(currentPassword),
-                    'rule-not': !req.check(currentPassword),
-                  }"
-                  [attr.aria-hidden]="true"
-                >
-                  {{ req.check(currentPassword) ? "✓" : "○" }}
-                </span>
-                <span
-                  class="rule-text"
-                  [ngClass]="{
-                    'rule-ok-text': req.check(currentPassword),
-                    'rule-not-text': !req.check(currentPassword),
-                  }"
-                >
-                  {{ req.label }}
-                </span>
-              </div>
-            }
+          <app-password-input
+            inputId="enterprise-confirm-password"
+            formControlName="confirmPassword"
+            placeholder="Confirm your password"
+            autocomplete="new-password"
+          ></app-password-input>
+        </app-form-field>
+      </section>
+    }
+    <div class="password-rules" role="list" aria-label="Password requirements">
+      <div class="password-rules-grid">
+        @for (req of passwordRequirements; track req.label) {
+          <div class="rule-item" role="listitem">
+            <span
+              class="rule-icon"
+              [ngClass]="{
+                'rule-ok': req.check(currentPassword),
+                'rule-not': !req.check(currentPassword),
+              }"
+              [attr.aria-hidden]="true"
+            >
+              {{ req.check(currentPassword) ? "✓" : "○" }}
+            </span>
+            <span
+              class="rule-text"
+              [ngClass]="{
+                'rule-ok-text': req.check(currentPassword),
+                'rule-not-text': !req.check(currentPassword),
+              }"
+            >
+              {{ req.label }}
+            </span>
           </div>
-        </div>
-
-        <!--
-          ┌───────────────────────────────────────────────────────────────────┐
-          │ SUBMIT BUTTON with [disabled] binding                              │
-          │                                                                     │
-          │ Concept: [disabled]="isLoading"                                    │
-          │ → PROPERTY BINDING: the disabled property is bound to isLoading    │
-          │ → When isLoading=true in .ts, button becomes disabled              │
-          │ → When isLoading=false, button is enabled again                    │
-          │                                                                     │
-          │ Concept: @if (isLoading) { ... } @else { ... }                     │
-          │ → Conditionally show spinner OR text based on loading state        │
-          └───────────────────────────────────────────────────────────────────┘
-        -->
-        <button
-          type="submit"
-          class="signup-button"
-          [disabled]="isLoading"
-          [attr.aria-busy]="isLoading"
-        >
-          @if (isLoading) {
-            <span class="spinner" aria-label="Loading"></span>
-          } @else {
-            <span>Create Account</span>
-          }
-        </button>
-
-        <!-- DIVIDER -->
-        <div class="divider" role="separator">
-          <span class="divider-line" aria-hidden="true"></span>
-          <span class="divider-text">or</span>
-          <span class="divider-line" aria-hidden="true"></span>
-        </div>
-
-        <!-- GOOGLE SIGN UP BUTTON -->
-        <button
-          type="button"
-          class="google-button"
-          [disabled]="isGoogleLoading"
-          [attr.aria-busy]="isGoogleLoading"
-          (click)="signUpWithGoogle()"
-        >
-          @if (isGoogleLoading) {
-            <span class="spinner spinner-dark" aria-label="Loading"></span>
-          } @else {
-            <!-- Google's official hosted logo -->
-            <img
-              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-              alt=""
-              width="18"
-              height="18"
-              class="google-icon"
-              aria-hidden="true"
-            />
-          }
-          <span>Sign up with Google</span>
-        </button>
-        <!--
-          Concept: routerLink="/login"
-          → Angular's way to navigate between pages WITHOUT reloading
-          → Unlike <a href="/login">, this keeps your app state intact
-          → This is what makes Angular a Single Page Application (SPA)
-        -->
-        <p class="signup-footer">
-          Already have an account?
-          <a routerLink="/login" class="signup-link">Sign in</a>
-        </p>
-      </form>
+        }
+      </div>
     </div>
 
-    <!-- FOOTER TERMS -->
-    <p class="signup-terms">
-      By creating an account, you agree to our
-      <a routerLink="/terms" class="signup-link">Terms of Service</a>
-      and
-      <a routerLink="/privacy" class="signup-link">Privacy Policy</a>
+    <app-loading-button
+      type="button"
+      text="Create Account"
+      [isLoading]="isLoading"
+      variant="primary"
+      (buttonClick)="submit()"
+    ></app-loading-button>
+    <app-divider text="or"></app-divider>
+    <app-google-button
+      text="Sign up with Google"
+      [isLoading]="isGoogleLoading"
+      (googleClick)="signUpWithGoogle()"
+    ></app-google-button>
+
+    <p class="signup-footer">
+      Already have an account?
+      <a routerLink="/login" class="signup-link">Sign in</a>
     </p>
   </div>
-</div>
+
+  <p auth-footer class="signup-terms">
+    By creating an account, you agree to our
+    <a routerLink="/terms" class="signup-link">Terms of Service</a>
+    and
+    <a routerLink="/privacy" class="signup-link">Privacy Policy</a>
+  </p>
+</app-auth-card>

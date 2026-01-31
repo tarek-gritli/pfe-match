@@ -3,21 +3,55 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 
+// Import new Common components
+import { AuthCardComponent } from '../../../components/Common/auth-card/auth-card.component';
+import { FormFieldComponent } from '../../../components/Common/form-field/form-field.component';
+import { PasswordInputComponent } from '../../../components/Common/password-input/password-input.component';
+import { ErrorAlertComponent } from '../../../components/Common/error-alert/error-alert.component';
+import { SuccessAlertComponent } from '../../../components/Common/success-alert/success-alert.component';
+import { LoadingButtonComponent } from '../../../components/Common/loading-button/loading-button.component';
+import { DividerComponent } from '../../../components/Common/divider/divider.component';
+import { GoogleButtonComponent } from '../../../components/Common/google-button/google-button.component';
+
+// Import existing Common component
+import { InputComponent } from '../../../components/Common/input/input.component';
+
+// Import auth service
+import { AuthService } from '../../services/auth.service';
+import { LoginRequest } from '../../model/auth.model';
+
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule,
+    // New Common components
+    AuthCardComponent,
+    FormFieldComponent,
+    PasswordInputComponent,
+    ErrorAlertComponent,
+    SuccessAlertComponent,
+    LoadingButtonComponent,
+    DividerComponent,
+    GoogleButtonComponent,
+  ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
   loginForm: FormGroup;
-  showPassword = false;
   isLoading = false;
   isGoogleLoading = false;
   errorMessage = '';
+  successMessage = '';
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private authService: AuthService
+  ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
@@ -25,7 +59,26 @@ export class LoginComponent {
     });
   }
 
-  async submit() {
+  /**
+   * Check if email field has validation errors and has been touched
+   */
+  get emailHasError(): boolean {
+    const email = this.loginForm.get('email');
+    return !!(email?.touched && email?.invalid);
+  }
+
+  /**
+   * Check if password field has validation errors and has been touched
+   */
+  get passwordHasError(): boolean {
+    const password = this.loginForm.get('password');
+    return !!(password?.touched && password?.invalid);
+  }
+
+  /**
+   * Handle form submission
+   */
+  submit(): void {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       return;
@@ -33,29 +86,53 @@ export class LoginComponent {
 
     this.isLoading = true;
     this.errorMessage = '';
+    this.successMessage = '';
 
-    try {
-      // Simulate API call
-      await new Promise(res => setTimeout(res, 1500));
+    const loginData: LoginRequest = {
+      email: this.loginForm.value.email,
+      password: this.loginForm.value.password
+    };
 
-      // On success, navigate to dashboard
-      this.router.navigate(['/dashboard']);
-    } catch (error) {
-      this.errorMessage = 'Invalid email or password. Please try again.';
-    } finally {
-      this.isLoading = false;
-    }
+    this.authService.login(loginData).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        this.successMessage = 'Login successful! Redirecting...';
+
+        // Navigate based on profile completion status and user type after short delay
+        setTimeout(() => {
+          if (!response.profile_completed) {
+            if (response.user_type === 'student') {
+              this.router.navigate(['/create-profile']);
+            } else {
+              this.router.navigate(['/enterprise/create-profile']);
+            }
+          } else {
+            // Navigate to dashboard or profile
+            if (response.user_type === 'student') {
+              this.router.navigate(['/profile']);
+            } else {
+              this.router.navigate(['/enterprise/dashboard']);
+            }
+          }
+        }, 1000);
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.errorMessage = error.message || 'Invalid email or password. Please try again.';
+      }
+    });
   }
 
-  async signInWithGoogle() {
+  /**
+   * Handle Google OAuth sign-in
+   */
+  async signInWithGoogle(): Promise<void> {
     this.isGoogleLoading = true;
     this.errorMessage = '';
 
     try {
-      // Simulate Google OAuth API call
+      // TODO: Implement Google OAuth
       await new Promise(res => setTimeout(res, 1500));
-
-      // On success, navigate to dashboard
       this.router.navigate(['/dashboard']);
     } catch (error) {
       this.errorMessage = 'Google sign-in failed. Please try again.';

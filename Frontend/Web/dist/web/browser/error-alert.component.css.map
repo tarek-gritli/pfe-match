@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/components/Common/error-alert/error-alert.component.css"],
+  "sourcesContent": ["/* Error Alert Component Styles */\n.error-alert {\n  display: flex;\n  align-items: center;\n  gap: 0.5rem;\n  background: hsl(var(--destructive) / 0.1);\n  border: 1px solid hsl(var(--destructive) / 0.3);\n  border-radius: 0.5rem;\n  padding: 0.625rem 0.875rem;\n  margin-bottom: 0.75rem;\n  font-size: 0.8rem;\n  color: hsl(var(--destructive));\n}\n\n.error-icon {\n  flex-shrink: 0;\n  font-size: 0.875rem;\n}\n"],
+  "mappings": ";AACA,CAAC;AACC,WAAS;AACT,eAAa;AACb,OAAK;AACL,cAAY,IAAI,IAAI,eAAe,EAAE;AACrC,UAAQ,IAAI,MAAM,IAAI,IAAI,eAAe,EAAE;AAC3C,iBAAe;AACf,WAAS,SAAS;AAClB,iBAAe;AACf,aAAW;AACX,SAAO,IAAI,IAAI;AACjB;AAEA,CAAC;AACC,eAAa;AACb,aAAW;AACb;",
+  "names": []
+}

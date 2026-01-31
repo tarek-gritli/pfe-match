@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -9,6 +9,8 @@ import { LabelComponent } from '../../Common/label/label.component';
 import { CardComponent, CardContentComponent, CardDescriptionComponent, CardHeaderComponent, CardTitleComponent } from '../../Common/card/card.component';
 import { BadgeComponent } from '../../Common/badge/badge.component';
 import { ProgressComponent } from '../../Common/progress/progress.component';
+import { AuthService } from '../../../auth/services/auth.service';
+import { StudentProfileUpdate, ResumeExtractedData } from '../../../auth/model/auth.model';
 
 interface ProfileFormData {
   profileImage: string;
@@ -21,6 +23,7 @@ interface ProfileFormData {
   resumeName: string;
   linkedinUrl: string;
   githubUrl: string;
+  portfolioUrl: string;
   customLinkLabel: string;
   customLinkUrl: string;
 }
@@ -52,10 +55,16 @@ interface Step {
   templateUrl: './create-student-profile.component.html',
   styleUrls: ['./create-student-profile.component.css']
 })
-export class CreateStudentProfileComponent {
+export class CreateStudentProfileComponent implements OnInit {
   currentStep: number = 1;
   errors: Record<string, string> = {};
-  
+  isLoading = false;
+  isUploadingResume = false;
+  isUploadingImage = false;
+  resumeFile: File | null = null;
+  profileImageFile: File | null = null;
+  extractedData: ResumeExtractedData | null = null;
+
   formData: ProfileFormData = {
     profileImage: '',
     fullName: '',
@@ -67,6 +76,7 @@ export class CreateStudentProfileComponent {
     resumeName: '',
     linkedinUrl: '',
     githubUrl: '',
+    portfolioUrl: '',
     customLinkLabel: '',
     customLinkUrl: ''
   };
@@ -74,7 +84,7 @@ export class CreateStudentProfileComponent {
   newSkill: string = '';
   newTech: string = '';
 
-  // Mock data for suggestions
+  // Suggestions for skills and technologies
   allSkills: string[] = [
     'JavaScript', 'TypeScript', 'Python', 'Java', 'C++', 'React', 'Angular',
     'Vue.js', 'Node.js', 'Express', 'Django', 'Spring Boot', 'Machine Learning',
@@ -87,7 +97,35 @@ export class CreateStudentProfileComponent {
     { id: 3, title: 'Resume & Links', icon: 'file-text' }
   ];
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) { }
+
+  ngOnInit(): void {
+    // Load existing profile data if available
+    this.loadExistingProfile();
+  }
+
+  private loadExistingProfile(): void {
+    this.authService.getStudentProfile().subscribe({
+      next: (profile) => {
+        this.formData.fullName = `${profile.first_name} ${profile.last_name}`;
+        if (profile.university) this.formData.university = profile.university;
+        if (profile.short_bio) this.formData.bio = profile.short_bio;
+        if (profile.desired_job_role) this.formData.title = profile.desired_job_role;
+        if (profile.linkedin_url) this.formData.linkedinUrl = profile.linkedin_url;
+        if (profile.github_url) this.formData.githubUrl = profile.github_url;
+        if (profile.portfolio_url) this.formData.portfolioUrl = profile.portfolio_url;
+        if (profile.skills) this.formData.skills = profile.skills;
+        if (profile.technologies) this.formData.technologies = profile.technologies;
+        if (profile.profile_picture) this.formData.profileImage = profile.profile_picture;
+      },
+      error: (error) => {
+        console.log('Could not load existing profile:', error.message);
+      }
+    });
+  }
 
   get progressValue(): number {
     return (this.currentStep / 3) * 100;
@@ -95,8 +133,8 @@ export class CreateStudentProfileComponent {
 
   get suggestedSkills(): string[] {
     return this.allSkills
-      .filter(skill => 
-        !this.formData.skills.includes(skill) && 
+      .filter(skill =>
+        !this.formData.skills.includes(skill) &&
         skill.toLowerCase().includes(this.newSkill.toLowerCase())
       )
       .slice(0, 5);
@@ -104,8 +142,8 @@ export class CreateStudentProfileComponent {
 
   get suggestedTechs(): string[] {
     return this.allSkills
-      .filter(tech => 
-        !this.formData.technologies.includes(tech) && 
+      .filter(tech =>
+        !this.formData.technologies.includes(tech) &&
         tech.toLowerCase().includes(this.newTech.toLowerCase())
       )
       .slice(0, 5);
@@ -191,7 +229,38 @@ export class CreateStudentProfileComponent {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (file && file.type === 'application/pdf') {
+      this.resumeFile = file;
       this.formData.resumeName = file.name;
+      this.isUploadingResume = true;
+
+      // Upload resume and extract data
+      this.authService.uploadResume(file).subscribe({
+        next: (response) => {
+          this.isUploadingResume = false;
+
+          if (response.extracted_data) {
+            this.extractedData = response.extracted_data as ResumeExtractedData;
+
+            // Pre-fill extracted data if fields are empty
+            if (this.extractedData.github_url && !this.formData.githubUrl) {
+              this.formData.githubUrl = this.extractedData.github_url;
+            }
+            if (this.extractedData.linkedin_url && !this.formData.linkedinUrl) {
+              this.formData.linkedinUrl = this.extractedData.linkedin_url;
+            }
+            if (this.extractedData.skills?.length && this.formData.skills.length === 0) {
+              this.formData.skills = [...this.extractedData.skills];
+            }
+            if (this.extractedData.technologies?.length && this.formData.technologies.length === 0) {
+              this.formData.technologies = [...this.extractedData.technologies];
+            }
+          }
+        },
+        error: (error) => {
+          this.isUploadingResume = false;
+          this.errors['resume'] = error.message || 'Failed to upload resume';
+        }
+      });
     }
   }
 
@@ -199,26 +268,62 @@ export class CreateStudentProfileComponent {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (file && file.type.startsWith('image/')) {
+      this.profileImageFile = file;
+
+      // Show preview immediately
       const reader = new FileReader();
       reader.onloadend = () => {
         this.formData.profileImage = reader.result as string;
       };
       reader.readAsDataURL(file);
+
+      // Upload to server
+      this.isUploadingImage = true;
+      this.authService.uploadStudentProfilePicture(file).subscribe({
+        next: (response) => {
+          this.isUploadingImage = false;
+          this.formData.profileImage = response.profile_picture_url;
+        },
+        error: (error) => {
+          this.isUploadingImage = false;
+          this.errors['profileImage'] = error.message || 'Failed to upload image';
+        }
+      });
     }
   }
 
   clearResume(): void {
     this.formData.resumeName = '';
+    this.resumeFile = null;
+    this.extractedData = null;
   }
 
   handleCreateProfile(): void {
     if (!this.validateStep(3)) return;
 
-    // TODO: Replace with actual service call
-    console.log('Creating profile:', this.formData);
-    
-    // Navigate to profile page
-    this.router.navigate(['/profile']);
+    this.isLoading = true;
+
+    const profileData: StudentProfileUpdate = {
+      university: this.formData.university,
+      short_bio: this.formData.bio,
+      desired_job_role: this.formData.title,
+      linkedin_url: this.formData.linkedinUrl || undefined,
+      github_url: this.formData.githubUrl || undefined,
+      portfolio_url: this.formData.portfolioUrl || undefined,
+      skills: this.formData.skills,
+      technologies: this.formData.technologies
+    };
+
+    this.authService.updateStudentProfile(profileData).subscribe({
+      next: () => {
+        this.isLoading = false;
+        this.router.navigate(['/profile']);
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.errors['submit'] = error.message || 'Failed to create profile';
+      }
+    });
   }
 
   onSkillKeyDown(event: KeyboardEvent): void {
