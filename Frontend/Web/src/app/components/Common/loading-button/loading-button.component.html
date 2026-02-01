@@ -1,0 +1,12 @@
+<button
+  [type]="type"
+  [class]="buttonClasses"
+  [disabled]="isLoading || disabled"
+  [attr.aria-busy]="isLoading"
+  (click)="onClick()"
+>
+  <!-- Loading spinner -->
+  <span *ngIf="isLoading" class="spinner" aria-label="Loading"></span>
+  <!-- Button text (hidden during loading) -->
+  <span *ngIf="!isLoading">{{ text }}</span>
+</button>

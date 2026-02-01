@@ -1,0 +1,18 @@
+/* Error Alert Component Styles */
+.error-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: hsl(var(--destructive) / 0.1);
+  border: 1px solid hsl(var(--destructive) / 0.3);
+  border-radius: 0.5rem;
+  padding: 0.625rem 0.875rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.8rem;
+  color: hsl(var(--destructive));
+}
+
+.error-icon {
+  flex-shrink: 0;
+  font-size: 0.875rem;
+}

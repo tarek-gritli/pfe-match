@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/components/Common/form-field/form-field.component.css"],
+  "sourcesContent": ["/* Form Field Component Styles */\n.form-group {\n  display: flex;\n  flex-direction: column;\n  gap: 0.375rem;\n}\n\n.form-label {\n  font-weight: 600;\n  font-size: 1rem;\n  color: hsl(var(--foreground));\n  display: flex;\n  align-items: center;\n  gap: 0.375rem;\n  padding-top: 0.5rem;\n}\n\n.form-error {\n  font-size: 0.75rem;\n  color: hsl(var(--destructive));\n  margin-top: 0.25rem;\n}\n"],
+  "mappings": ";AACA,CAAC;AACC,WAAS;AACT,kBAAgB;AAChB,OAAK;AACP;AAEA,CAAC;AACC,eAAa;AACb,aAAW;AACX,SAAO,IAAI,IAAI;AACf,WAAS;AACT,eAAa;AACb,OAAK;AACL,eAAa;AACf;AAEA,CAAC;AACC,aAAW;AACX,SAAO,IAAI,IAAI;AACf,cAAY;AACd;",
+  "names": []
+}

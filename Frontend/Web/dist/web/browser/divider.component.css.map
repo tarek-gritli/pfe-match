@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/components/Common/divider/divider.component.css"],
+  "sourcesContent": ["/* Divider Component Styles */\n.divider {\n  display: flex;\n  align-items: center;\n  gap: 0.75rem;\n  margin: 1rem 0;\n}\n\n.divider-line {\n  flex: 1;\n  height: 1px;\n  background: linear-gradient(\n    90deg,\n    transparent,\n    hsl(var(--border)),\n    transparent\n  );\n}\n\n.divider-text {\n  font-size: 0.75rem;\n  color: hsl(var(--muted-foreground));\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  white-space: nowrap;\n}\n"],
+  "mappings": ";AACA,CAAC;AACC,WAAS;AACT,eAAa;AACb,OAAK;AACL,UAAQ,KAAK;AACf;AAEA,CAAC;AACC,QAAM;AACN,UAAQ;AACR;AAAA,IAAY;AAAA,MACV,KAAK;AAAA,MACL,WAAW;AAAA,MACX,IAAI,IAAI,UAAU;AAAA,MAClB;AAEJ;AAEA,CAAC;AACC,aAAW;AACX,SAAO,IAAI,IAAI;AACf,kBAAgB;AAChB,kBAAgB;AAChB,eAAa;AACf;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/components/Common/card/card.component.css"],
+  "sourcesContent": ["/* Card */\n.card {\n  border-radius: 0.5rem;\n  border: 1px solid hsl(var(--border));\n  background-color: hsl(var(--card));\n  color: hsl(var(--card-foreground));\n  box-shadow: var(--shadow-sm);\n}\n\n/* Card Header */\n.card-header {\n  display: flex;\n  flex-direction: column;\n  gap: 0.375rem;\n  padding: 1.5rem;\n}\n\n/* Card Title */\n.card-title {\n  font-size: 1.5rem;\n  line-height: 2rem;\n  font-weight: 600;\n  letter-spacing: -0.025em;\n  margin: 0;\n}\n\n/* Card Description */\n.card-description {\n  font-size: 0.875rem;\n  line-height: 1.25rem;\n  color: hsl(var(--muted-foreground));\n  margin: 0;\n}\n\n/* Card Content */\n.card-content {\n  padding: 1.5rem;\n  padding-top: 0;\n}\n\n/* Card Footer */\n.card-footer {\n  display: flex;\n  align-items: center;\n  padding: 1.5rem;\n  padding-top: 0;\n}"],
+  "mappings": ";AACA,CAAC;AACC,iBAAe;AACf,UAAQ,IAAI,MAAM,IAAI,IAAI;AAC1B,oBAAkB,IAAI,IAAI;AAC1B,SAAO,IAAI,IAAI;AACf,cAAY,IAAI;AAClB;AAGA,CAAC;AACC,WAAS;AACT,kBAAgB;AAChB,OAAK;AACL,WAAS;AACX;AAGA,CAAC;AACC,aAAW;AACX,eAAa;AACb,eAAa;AACb,kBAAgB;AAChB,UAAQ;AACV;AAGA,CAAC;AACC,aAAW;AACX,eAAa;AACb,SAAO,IAAI,IAAI;AACf,UAAQ;AACV;AAGA,CAAC;AACC,WAAS;AACT,eAAa;AACf;AAGA,CAAC;AACC,WAAS;AACT,eAAa;AACb,WAAS;AACT,eAAa;AACf;",
+  "names": []
+}
