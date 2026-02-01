@@ -50,6 +50,7 @@ export interface StudentProfileUpdate {
     short_bio?: string;
     profile_picture?: string;
     desired_job_role?: string;
+    resume?: string;
     linkedin_url?: string;
     github_url?: string;
     portfolio_url?: string;

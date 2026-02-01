@@ -88,7 +88,7 @@ export class AuthService {
      */
     registerStudent(data: StudentRegisterRequest): Observable<AuthResponse> {
         return this.api.postPublic<AuthResponse>(ENDPOINTS.AUTH.REGISTER_STUDENT, data).pipe(
-            tap(response => this.handleAuthResponse(response)),
+            tap((response: AuthResponse) => this.handleAuthResponse(response)),
             catchError(error => this.handleError(error))
         );
     }
@@ -98,7 +98,7 @@ export class AuthService {
      */
     registerEnterprise(data: EnterpriseRegisterRequest): Observable<AuthResponse> {
         return this.api.postPublic<AuthResponse>(ENDPOINTS.AUTH.REGISTER_ENTERPRISE, data).pipe(
-            tap(response => this.handleAuthResponse(response)),
+            tap((response: AuthResponse) => this.handleAuthResponse(response)),
             catchError(error => this.handleError(error))
         );
     }
@@ -108,7 +108,7 @@ export class AuthService {
      */
     login(data: LoginRequest): Observable<AuthResponse> {
         return this.api.postPublic<AuthResponse>(ENDPOINTS.AUTH.LOGIN, data).pipe(
-            tap(response => this.handleAuthResponse(response)),
+            tap((response: AuthResponse) => this.handleAuthResponse(response)),
             catchError(error => this.handleError(error))
         );
     }
