@@ -1,19 +1,9 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { ButtonComponent } from '../../../components/Common/button/button.component';
-import { InputComponent } from '../../../components/Common/input/input.component';
-import { LabelComponent } from '../../../components/Common/label/label.component';
-import { CheckboxComponent } from '../../../components/Common/checkbox/checkbox.component';
-import { CardComponent } from '../../../components/Common/card/card.component';
-import { CardHeaderComponent } from '../../../components/Common/card/card.component';
-import { CardTitleComponent } from '../../../components/Common/card/card.component';
-import { CardDescriptionComponent } from '../../../components/Common/card/card.component';
-import { CardContentComponent } from '../../../components/Common/card/card.component';
-import { CardFooterComponent } from '../../../components/Common/card/card.component';
-import { SeparatorComponent } from '../../../components/Common/separator/separator.component';
+import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 
-// Import new Common components
+// Import Common components
 import { AuthCardComponent } from '../../../components/Common/auth-card/auth-card.component';
 import { FormFieldComponent } from '../../../components/Common/form-field/form-field.component';
 import { PasswordInputComponent } from '../../../components/Common/password-input/password-input.component';
@@ -22,9 +12,6 @@ import { SuccessAlertComponent } from '../../../components/Common/success-alert/
 import { LoadingButtonComponent } from '../../../components/Common/loading-button/loading-button.component';
 import { DividerComponent } from '../../../components/Common/divider/divider.component';
 import { GoogleButtonComponent } from '../../../components/Common/google-button/google-button.component';
-
-// Import existing Common component
-import { InputComponent } from '../../../components/Common/input/input.component';
 
 // Import auth service
 import { AuthService } from '../../services/auth.service';

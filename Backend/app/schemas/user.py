@@ -87,6 +87,7 @@ class StudentProfileUpdate(BaseModel):
     short_bio: Optional[str] = Field(None, max_length=500)
     profile_picture: Optional[str] = Field(None, max_length=500)
     desired_job_role: Optional[str] = Field(None, max_length=100)
+    resume: Optional[str] = Field(None, max_length=500)
     linkedin_url: Optional[str] = None
     github_url: Optional[str] = None
     portfolio_url: Optional[str] = None

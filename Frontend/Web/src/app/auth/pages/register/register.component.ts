@@ -1,6 +1,4 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -35,7 +33,8 @@ import { StudentRegisterRequest, EnterpriseRegisterRequest } from '../../model/a
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent {
-  activeTab: 'student' | 'enterprise' = 'student';
+  activeTab: 'student' | 'enterprise' | null = null;
+  tabSelected = false;
   isLoading = false;
   successMessage = '';
   isGoogleLoading = false;
@@ -75,7 +74,13 @@ export class RegisterComponent {
   }
 
   get studentPasswordsMatch(): boolean {
-    return this.studentPassword === this.studentConfirmPassword && this.studentPassword.length > 0;
+    return this.studentForm.value.password === this.studentForm.value.confirmPassword && this.studentForm.value.password.length > 0;
+  }
+
+  get currentPassword(): string {
+    if (!this.activeTab) return '';
+    const form = this.activeTab === 'student' ? this.studentForm : this.enterpriseForm;
+    return form.value.password || '';
   }
 
   /**
@@ -83,6 +88,7 @@ export class RegisterComponent {
    */
   switchTab(tab: 'student' | 'enterprise'): void {
     this.activeTab = tab;
+    this.tabSelected = true;
     this.errorMessage = '';
   }
 
@@ -127,7 +133,7 @@ export class RegisterComponent {
     this.successMessage = '';
 
     if (this.activeTab === 'student') {
-      const studentData: StudentRegisterRequest = { 
+      const studentData: StudentRegisterRequest = {
         email: this.studentForm.value.email,
         password: this.studentForm.value.password,
         first_name: this.studentForm.value.firstName,

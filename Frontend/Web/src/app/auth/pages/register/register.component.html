@@ -6,181 +6,219 @@
   <app-success-alert [message]="successMessage"></app-success-alert>
   <app-error-alert [message]="errorMessage"></app-error-alert>
 
-  <nav class="signup-tabs" role="tablist">
-    <button
-      type="button"
-      role="tab"
-      class="tab-button"
-      [class.tab-active]="activeTab === 'student'"
-      [attr.aria-selected]="activeTab === 'student'"
-      (click)="switchTab('student')"
-    >
-      🎒 Student
-    </button>
-    <button
-      type="button"
-      role="tab"
-      class="tab-button"
-      [class.tab-active]="activeTab === 'enterprise'"
-      [attr.aria-selected]="activeTab === 'enterprise'"
-      (click)="switchTab('enterprise')"
-    >
-      🏢 Enterprise
-    </button>
-  </nav>
-
-  <div class="signup-form">
-    @if (activeTab === "student") {
-      <section [formGroup]="studentForm">
-        <app-form-field label="First Name" htmlFor="student-firstname">
-          <input
-            id="student-firstname"
-            class="form-input"
-            formControlName="firstName"
-            placeholder="Enter your first name"
-            autocomplete="given-name"
-          />
-        </app-form-field>
-        <app-form-field label="Last Name" htmlFor="student-lastname">
-          <input
-            id="student-lastname"
-            class="form-input"
-            formControlName="lastName"
-            placeholder="Enter your last name"
-            autocomplete="family-name"
-          />
-        </app-form-field>
-        <app-form-field label="Email Address" htmlFor="student-email">
-          <input
-            id="student-email"
-            class="form-input"
-            type="email"
-            formControlName="email"
-            placeholder="your.email@university.edu"
-            autocomplete="email"
-          />
-        </app-form-field>
-        <app-form-field label="Password" htmlFor="student-password">
-          <app-password-input
-            inputId="student-password"
-            formControlName="password"
-            placeholder="Create a strong password"
-            autocomplete="new-password"
-          ></app-password-input>
-        </app-form-field>
-
-        <app-form-field
-          label="Confirm Password"
-          htmlFor="student-confirm-password"
-        >
-          <app-password-input
-            inputId="student-confirm-password"
-            formControlName="confirmPassword"
-            placeholder="Confirm your password"
-            autocomplete="new-password"
-          ></app-password-input>
-        </app-form-field>
-      </section>
-    } @else {
-      <section [formGroup]="enterpriseForm">
-        <app-form-field label="Company Name" htmlFor="company-name">
-          <input
-            id="company-name"
-            class="form-input"
-            formControlName="companyName"
-            placeholder="Enter your company name"
-            autocomplete="organization"
-          />
-        </app-form-field>
-
-        <app-form-field label="Business Email" htmlFor="company-email">
-          <input
-            id="company-email"
-            class="form-input"
-            type="email"
-            formControlName="email"
-            placeholder="contact@company.com"
-            autocomplete="email"
-          />
-        </app-form-field>
-
-        <app-form-field label="Industry" htmlFor="company-industry">
-          <input
-            id="company-industry"
-            class="form-input"
-            formControlName="industry"
-            placeholder="e.g., Technology, Finance, Healthcare"
-          />
-        </app-form-field>
-        <app-form-field label="Password" htmlFor="enterprise-password">
-          <app-password-input
-            inputId="enterprise-password"
-            formControlName="password"
-            placeholder="Create a strong password"
-            autocomplete="new-password"
-          ></app-password-input>
-        </app-form-field>
-
-        <app-form-field
-          label="Confirm Password"
-          htmlFor="enterprise-confirm-password"
-        >
-          <app-password-input
-            inputId="enterprise-confirm-password"
-            formControlName="confirmPassword"
-            placeholder="Confirm your password"
-            autocomplete="new-password"
-          ></app-password-input>
-        </app-form-field>
-      </section>
-    }
-    <div class="password-rules" role="list" aria-label="Password requirements">
-      <div class="password-rules-grid">
-        @for (req of passwordRequirements; track req.label) {
-          <div class="rule-item" role="listitem">
-            <span
-              class="rule-icon"
-              [ngClass]="{
-                'rule-ok': req.check(currentPassword),
-                'rule-not': !req.check(currentPassword),
-              }"
-              [attr.aria-hidden]="true"
-            >
-              {{ req.check(currentPassword) ? "✓" : "○" }}
-            </span>
-            <span
-              class="rule-text"
-              [ngClass]="{
-                'rule-ok-text': req.check(currentPassword),
-                'rule-not-text': !req.check(currentPassword),
-              }"
-            >
-              {{ req.label }}
-            </span>
-          </div>
-        }
-      </div>
+  @if (!tabSelected) {
+    <!-- Account Type Selection Cards -->
+    <div class="account-type-selection">
+      <button
+        type="button"
+        class="account-type-card"
+        (click)="switchTab('student')"
+      >
+        <div class="account-type-icon">🎓</div>
+        <h3 class="account-type-title">Student</h3>
+        <p class="account-type-description">
+          Looking for PFE opportunities and internships
+        </p>
+      </button>
+      <button
+        type="button"
+        class="account-type-card"
+        (click)="switchTab('enterprise')"
+      >
+        <div class="account-type-icon">🏢</div>
+        <h3 class="account-type-title">Enterprise</h3>
+        <p class="account-type-description">
+          Hiring talented students for projects
+        </p>
+      </button>
     </div>
-
-    <app-loading-button
-      type="button"
-      text="Create Account"
-      [isLoading]="isLoading"
-      variant="primary"
-      (buttonClick)="submit()"
-    ></app-loading-button>
-    <app-divider text="or"></app-divider>
-    <app-google-button
-      text="Sign up with Google"
-      [isLoading]="isGoogleLoading"
-      (googleClick)="signUpWithGoogle()"
-    ></app-google-button>
 
     <p class="signup-footer">
       Already have an account?
       <a routerLink="/login" class="signup-link">Sign in</a>
     </p>
-  </div>
+  } @else {
+    <!-- Tab switcher (shown after selection) -->
+    <nav class="signup-tabs" role="tablist">
+      <button
+        type="button"
+        role="tab"
+        class="tab-button"
+        [class.tab-active]="activeTab === 'student'"
+        [attr.aria-selected]="activeTab === 'student'"
+        (click)="switchTab('student')"
+      >
+        🎒 Student
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class="tab-button"
+        [class.tab-active]="activeTab === 'enterprise'"
+        [attr.aria-selected]="activeTab === 'enterprise'"
+        (click)="switchTab('enterprise')"
+      >
+        🏢 Enterprise
+      </button>
+    </nav>
+
+    <div class="signup-form">
+      @if (activeTab === "student") {
+        <section [formGroup]="studentForm">
+          <app-form-field label="First Name" htmlFor="student-firstname">
+            <input
+              id="student-firstname"
+              class="form-input"
+              formControlName="firstName"
+              placeholder="Enter your first name"
+              autocomplete="given-name"
+            />
+          </app-form-field>
+          <app-form-field label="Last Name" htmlFor="student-lastname">
+            <input
+              id="student-lastname"
+              class="form-input"
+              formControlName="lastName"
+              placeholder="Enter your last name"
+              autocomplete="family-name"
+            />
+          </app-form-field>
+          <app-form-field label="Email Address" htmlFor="student-email">
+            <input
+              id="student-email"
+              class="form-input"
+              type="email"
+              formControlName="email"
+              placeholder="your.email@university.edu"
+              autocomplete="email"
+            />
+          </app-form-field>
+          <app-form-field label="Password" htmlFor="student-password">
+            <app-password-input
+              inputId="student-password"
+              formControlName="password"
+              placeholder="Create a strong password"
+              autocomplete="new-password"
+            ></app-password-input>
+          </app-form-field>
+
+          <app-form-field
+            label="Confirm Password"
+            htmlFor="student-confirm-password"
+          >
+            <app-password-input
+              inputId="student-confirm-password"
+              formControlName="confirmPassword"
+              placeholder="Confirm your password"
+              autocomplete="new-password"
+            ></app-password-input>
+          </app-form-field>
+        </section>
+      } @else {
+        <section [formGroup]="enterpriseForm">
+          <app-form-field label="Company Name" htmlFor="company-name">
+            <input
+              id="company-name"
+              class="form-input"
+              formControlName="companyName"
+              placeholder="Enter your company name"
+              autocomplete="organization"
+            />
+          </app-form-field>
+
+          <app-form-field label="Business Email" htmlFor="company-email">
+            <input
+              id="company-email"
+              class="form-input"
+              type="email"
+              formControlName="email"
+              placeholder="contact@company.com"
+              autocomplete="email"
+            />
+          </app-form-field>
+
+          <app-form-field label="Industry" htmlFor="company-industry">
+            <input
+              id="company-industry"
+              class="form-input"
+              formControlName="industry"
+              placeholder="e.g., Technology, Finance, Healthcare"
+            />
+          </app-form-field>
+          <app-form-field label="Password" htmlFor="enterprise-password">
+            <app-password-input
+              inputId="enterprise-password"
+              formControlName="password"
+              placeholder="Create a strong password"
+              autocomplete="new-password"
+            ></app-password-input>
+          </app-form-field>
+
+          <app-form-field
+            label="Confirm Password"
+            htmlFor="enterprise-confirm-password"
+          >
+            <app-password-input
+              inputId="enterprise-confirm-password"
+              formControlName="confirmPassword"
+              placeholder="Confirm your password"
+              autocomplete="new-password"
+            ></app-password-input>
+          </app-form-field>
+        </section>
+      }
+      <div
+        class="password-rules"
+        role="list"
+        aria-label="Password requirements"
+      >
+        <div class="password-rules-grid">
+          @for (req of passwordRequirements; track req.label) {
+            <div class="rule-item" role="listitem">
+              <span
+                class="rule-icon"
+                [ngClass]="{
+                  'rule-ok': req.check(currentPassword),
+                  'rule-not': !req.check(currentPassword),
+                }"
+                [attr.aria-hidden]="true"
+              >
+                {{ req.check(currentPassword) ? "✓" : "○" }}
+              </span>
+              <span
+                class="rule-text"
+                [ngClass]="{
+                  'rule-ok-text': req.check(currentPassword),
+                  'rule-not-text': !req.check(currentPassword),
+                }"
+              >
+                {{ req.label }}
+              </span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <app-loading-button
+        type="button"
+        text="Create Account"
+        [isLoading]="isLoading"
+        variant="primary"
+        (buttonClick)="submit()"
+      ></app-loading-button>
+      <app-divider text="or"></app-divider>
+      <app-google-button
+        text="Sign up with Google"
+        [isLoading]="isGoogleLoading"
+        (googleClick)="signUpWithGoogle()"
+      ></app-google-button>
+
+      <p class="signup-footer">
+        Already have an account?
+        <a routerLink="/login" class="signup-link">Sign in</a>
+      </p>
+    </div>
+  }
 
   <p auth-footer class="signup-terms">
     By creating an account, you agree to our

@@ -35,7 +35,7 @@ export class ApiService {
      * Get default headers with auth token
      */
     private getAuthHeaders(): HttpHeaders {
-        const token = localStorage.getItem('access_token');
+        const token = localStorage.getItem('pfe_match_token');
         let headers = new HttpHeaders({
             'Content-Type': 'application/json'
         });
@@ -95,15 +95,13 @@ export class ApiService {
     /**
      * POST form data (for file uploads)
      */
-    postFormData<TResponse>(endpoint: string, formData: FormData): Observable<TResponse> {
-        const token = localStorage.getItem('access_token');
+    postFormData<TResponse>(endpoint: string, formData: any): Observable<TResponse> {
+        const token = localStorage.getItem('pfe_match_token');
         let headers = new HttpHeaders();
 
         if (token) {
             headers = headers.set('Authorization', `Bearer ${token}`);
         }
-        // Don't set Content-Type for FormData, browser will set it with boundary
-
         return this.http.post<TResponse>(this.buildUrl(endpoint), formData, { headers })
             .pipe(catchError(this.handleError));
     }
@@ -145,5 +143,36 @@ export class ApiService {
         return this.http.post<TResponse>(this.buildUrl(endpoint), body.toString(), {
             headers: new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' })
         }).pipe(catchError(this.handleError));
+    }
+
+    /**
+     * Complete student profile after registration
+     * Sends all profile data including optional files in a single request
+     */
+    completeStudentProfile(
+        profileData: {
+            desired_job_role: string;
+            university: string;
+            bio: string;
+            resumeFile?: File;
+            profilePicture?: File;
+        }
+    ): Observable<any> {
+        const formData = new FormData();
+
+        // Add required text fields
+        formData.append('desired_job_role', profileData.desired_job_role);
+        formData.append('university', profileData.university);
+        formData.append('bio', profileData.bio);
+
+        // Add optional files
+        if (profileData.resumeFile) {
+            formData.append('resume', profileData.resumeFile, profileData.resumeFile.name);
+        }
+        if (profileData.profilePicture) {
+            formData.append('profile_picture', profileData.profilePicture, profileData.profilePicture.name);
+        }
+
+        return this.postFormData('/students/me/profile', formData);
     }
 }

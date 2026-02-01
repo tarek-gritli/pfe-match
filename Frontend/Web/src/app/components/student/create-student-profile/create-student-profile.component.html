@@ -223,6 +223,20 @@
               }
             </div>
 
+            <!-- Desired Job Role -->
+            <div class="form-field">
+              <app-label htmlFor="university">University *</app-label>
+              <app-input
+                type="text"
+                placeholder="e.g., INSAT, MIT, Stanford"
+                [(ngModel)]="formData.university"
+                [class.input-error]="errors['university']"
+              ></app-input>
+              @if (errors["university"]) {
+                <p class="error-message">{{ errors["university"] }}</p>
+              }
+            </div>
+
             <!-- Bio -->
             <div class="form-field">
               <app-label htmlFor="bio">Short Bio *</app-label>
@@ -281,7 +295,7 @@
             <div class="form-field">
               <app-label>Resume (PDF only)</app-label>
               <div class="resume-upload-area">
-                @if (formData.resumeName) {
+                @if (formData.resume) {
                   <div class="resume-uploaded">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -301,7 +315,7 @@
                       <path d="M14 2v4a2 2 0 0 0 2 2h4" />
                     </svg>
                     <div class="resume-info">
-                      <p class="resume-name">{{ formData.resumeName }}</p>
+                      <p class="resume-name">{{ formData.resume }}</p>
                       <p class="resume-status">Ready to upload</p>
                     </div>
                     <app-button
@@ -358,7 +372,7 @@
             </div>
 
             <!-- Links, Skills and Tools - Only show after resume is uploaded -->
-            @if (formData.resumeName) {
+            @if (formData.resume) {
               <!-- Links -->
               <div class="form-field">
                 <app-label>
