@@ -10,9 +10,10 @@ from app.schemas import (
     StudentProfileResponse,
     ResumeUploadResponse,
     ProfilePictureUploadResponse,
-    MessageResponse
+    MessageResponse,
+    ResumeExtractedData
 )
-from app.services.cv_parser import parse_resume
+from app.services.cv_parser import parse_resume, parse_resume_async
 
 router = APIRouter(prefix="/students", tags=["Students"])
 
@@ -304,3 +305,104 @@ async def upload_profile_picture(
         message="Profile picture uploaded successfully",
         profile_picture_url=file_path
     )
+
+
+@router.post("/parse-cv", response_model=ResumeExtractedData)
+async def parse_cv(
+    file: UploadFile = File(...)
+):
+    """
+    Parse a CV/resume and extract information using LLM.
+    This endpoint doesn't require authentication and doesn't save the file.
+    
+    Extracts:
+    - GitHub URL
+    - LinkedIn URL  
+    - Skills (programming languages, frameworks, soft skills)
+    - Technologies (tools, platforms, databases)
+    
+    Uses OpenAI GPT for intelligent extraction if API key is configured,
+    otherwise falls back to regex-based pattern matching.
+    """
+    # Validate file type
+    if not file.filename.endswith('.pdf'):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Only PDF files are allowed"
+        )
+    
+    # Read file content
+    content = await file.read()
+    
+    try:
+        # Use async version for better performance
+        extracted_data = await parse_resume_async(content)
+        return extracted_data
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to parse CV: {str(e)}"
+        )
+
+
+@router.post("/me/parse-resume", response_model=ResumeExtractedData)
+async def parse_my_resume(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Re-parse the current user's uploaded resume using LLM.
+    Useful to extract skills with updated parsing logic.
+    """
+    if current_user.role != UserRole.STUDENT:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only students can access this endpoint"
+        )
+    
+    student = db.query(Student).filter(Student.user_id == current_user.id).first()
+    if not student:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Student profile not found"
+        )
+    
+    if not student.resume_url:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No resume uploaded yet"
+        )
+    
+    # Read the existing resume file
+    try:
+        with open(student.resume_url, "rb") as f:
+            content = f.read()
+    except FileNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Resume file not found"
+        )
+    
+    try:
+        # Parse using LLM
+        extracted_data = await parse_resume_async(content)
+        
+        # Update student profile with new extracted data
+        student.resume_parsed = True
+        if extracted_data.github_url:
+            student.github_url = extracted_data.github_url
+        if extracted_data.linkedin_url:
+            student.linkedin_url = extracted_data.linkedin_url
+        if extracted_data.skills:
+            student.skills = extracted_data.skills
+        if extracted_data.technologies:
+            student.technologies = extracted_data.technologies
+        
+        db.commit()
+        
+        return extracted_data
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to parse resume: {str(e)}"
+        )
