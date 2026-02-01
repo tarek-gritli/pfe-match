@@ -64,9 +64,9 @@ export class RegisterComponent {
     private authService: AuthService
   ) {
     this.studentForm = this.fb.group({
-      name:             ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
+      firstName:        ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
+      lastName:         ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
       email:            ['', [Validators.required, Validators.email]],
-      university:       ['', [Validators.required, Validators.minLength(2)]],
       password:         ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword:  ['', Validators.required],
     });
@@ -175,8 +175,8 @@ export class RegisterComponent {
     const studentData: StudentRegisterRequest = {
       email:      this.studentForm.value.email,
       password:   this.studentForm.value.password,
-      first_name: this.studentForm.value.name,
-      last_name:  this.studentForm.value.name   // V1 only had a single "name" field; extend the form if you need a last name
+      first_name: this.studentForm.value.firstName,
+      last_name:  this.studentForm.value.lastName   // V1 only had a single "name" field; extend the form if you need a last name
     };
 
     this.authService.registerStudent(studentData).subscribe({

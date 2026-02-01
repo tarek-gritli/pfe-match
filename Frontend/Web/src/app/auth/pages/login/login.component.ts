@@ -61,22 +61,6 @@ export class LoginComponent {
   }
 
   /**
-   * Returns true if the email field has been touched and is invalid
-   */
-  get emailHasError(): boolean {
-    const email = this.loginForm.get('email');
-    return !!(email?.touched && email?.invalid);
-  }
-
-  /**
-   * Returns true if the password field has been touched and is invalid
-   */
-  get passwordHasError(): boolean {
-    const password = this.loginForm.get('password');
-    return !!(password?.touched && password?.invalid);
-  }
-
-  /**
    * Toggles password field visibility
    */
   togglePasswordVisibility(): void {
