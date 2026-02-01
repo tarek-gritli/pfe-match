@@ -10,18 +10,16 @@ import { CardComponent, CardContentComponent, CardDescriptionComponent, CardHead
 import { BadgeComponent } from '../../Common/badge/badge.component';
 import { ProgressComponent } from '../../Common/progress/progress.component';
 import { AuthService } from '../../../auth/services/auth.service';
-import { StudentProfileUpdate, ResumeExtractedData } from '../../../auth/model/auth.model';
-import { inject } from '@angular/core';
+import { StudentProfileUpdate } from '../../../auth/model/auth.model';
 
 interface ProfileFormData {
   profileImage: string;
-  fullName: string;
   title: string;
   university: string;
   bio: string;
   skills: string[];
   technologies: string[];
-  resumeName: string;
+  resume: string;
   linkedinUrl: string;
   githubUrl: string;
   portfolioUrl: string;
@@ -56,26 +54,18 @@ interface Step {
   templateUrl: './create-student-profile.component.html',
   styleUrls: ['./create-student-profile.component.css']
 })
-export class CreateStudentProfileComponent {
+export class CreateStudentProfileComponent implements OnInit {
   currentStep: number = 1;
   errors: Record<string, string> = {};
-  private authService = inject(AuthService);
-  private resumeFile: any;
-  private isUploadingResume: any;
-  private extractedData: any;
-  private isUploadingImage: any;
-  private profileImageFile: any;
-
 
   formData: ProfileFormData = {
     profileImage: '',
-    fullName: '',
     title: '',
     university: '',
     bio: '',
     skills: [],
     technologies: [],
-    resumeName: '',
+    resume: '',
     linkedinUrl: '',
     githubUrl: '',
     portfolioUrl: '',
@@ -98,7 +88,16 @@ export class CreateStudentProfileComponent {
     { id: 2, title: 'Resume', icon: 'file-text' }
   ];
 
-  constructor(private router: Router) { }
+  resumeFile: File | null = null;
+  isUploadingResume: boolean = false;
+  extractedData: any = null;
+  profileImageFile: File | null = null;
+  isUploadingImage: boolean = false;
+  isSubmitting: boolean = false;
+
+  constructor(private router: Router, private authService: AuthService) { }
+
+  ngOnInit(): void { }
 
   get progressValue(): number {
     return (this.currentStep / 2) * 100;
@@ -129,6 +128,9 @@ export class CreateStudentProfileComponent {
       if (!this.formData.title.trim()) {
         newErrors['title'] = 'Desired job role is required';
       }
+      if (!this.formData.university.trim()) {
+        newErrors['university'] = 'University is required';
+      }
       if (!this.formData.bio.trim()) {
         newErrors['bio'] = 'Bio is required';
       } else if (this.formData.bio.trim().length < 20) {
@@ -138,7 +140,7 @@ export class CreateStudentProfileComponent {
 
     if (step === 2) {
       // Only validate skills if resume is uploaded
-      if (this.formData.resumeName && this.formData.skills.length === 0) {
+      if (this.formData.resume && this.formData.skills.length === 0) {
         newErrors['skills'] = 'At least one skill is required';
       }
     }
@@ -198,16 +200,16 @@ export class CreateStudentProfileComponent {
     const file = input.files?.[0];
     if (file && file.type === 'application/pdf') {
       this.resumeFile = file;
-      this.formData.resumeName = file.name;
+      this.formData.resume = file.name;
       this.isUploadingResume = true;
 
-      // Upload resume and extract data
+      // Upload resume using AuthService
       this.authService.uploadResume(file).subscribe({
         next: (response) => {
           this.isUploadingResume = false;
 
           if (response.extracted_data) {
-            this.extractedData = response.extracted_data as ResumeExtractedData;
+            this.extractedData = response.extracted_data;
 
             // Pre-fill extracted data if fields are empty
             if (this.extractedData.github_url && !this.formData.githubUrl) {
@@ -245,7 +247,7 @@ export class CreateStudentProfileComponent {
       };
       reader.readAsDataURL(file);
 
-      // Upload to server
+      // Upload to server using AuthService
       this.isUploadingImage = true;
       this.authService.uploadStudentProfilePicture(file).subscribe({
         next: (response) => {
@@ -261,19 +263,43 @@ export class CreateStudentProfileComponent {
   }
 
   clearResume(): void {
-    this.formData.resumeName = '';
+    this.formData.resume = '';
     this.resumeFile = null;
     this.extractedData = null;
   }
 
   handleCreateProfile(): void {
-    if (!this.validateStep(2)) return;
+    if (!this.validateStep(1) || !this.validateStep(2)) return;
 
-    // TODO: Replace with actual service call
-    console.log('Creating profile:', this.formData);
+    this.isSubmitting = true;
+    this.errors = {};
 
-    // Navigate to profile page
-    this.router.navigate(['/profile']);
+    // Build the profile update data matching StudentProfileUpdate interface
+    const profileData: StudentProfileUpdate = {
+      desired_job_role: this.formData.title,
+      university: this.formData.university,
+      resume: this.formData.resume,
+      short_bio: this.formData.bio,
+      linkedin_url: this.formData.linkedinUrl || undefined,
+      github_url: this.formData.githubUrl || undefined,
+      portfolio_url: this.formData.portfolioUrl || undefined,
+      skills: this.formData.skills.length > 0 ? this.formData.skills : undefined,
+      technologies: this.formData.technologies.length > 0 ? this.formData.technologies : undefined
+    };
+
+    // Use AuthService.updateStudentProfile
+    this.authService.updateStudentProfile(profileData).subscribe({
+      next: (response) => {
+        this.isSubmitting = false;
+        console.log('Profile created successfully:', response);
+        this.router.navigate(['/profile']);
+      },
+      error: (error) => {
+        console.log('Profile creation failed:', error);
+        this.isSubmitting = false;
+        this.errors['submit'] = error.message || 'Failed to create profile. Please try again.';
+      }
+    });
   }
 
   onSkillKeyDown(event: KeyboardEvent): void {

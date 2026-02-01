@@ -1,19 +1,19 @@
-import { Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { FormsModule } from '@angular/forms';
-import { ButtonComponent } from '../../../components/Common/button/button.component';
-import { InputComponent } from '../../../components/Common/input/input.component';
-import { LabelComponent } from '../../../components/Common/label/label.component';
-import { CheckboxComponent } from '../../../components/Common/checkbox/checkbox.component';
-import { CardComponent } from '../../../components/Common/card/card.component';
-import { CardHeaderComponent } from '../../../components/Common/card/card.component';
-import { CardTitleComponent } from '../../../components/Common/card/card.component';
-import { CardDescriptionComponent } from '../../../components/Common/card/card.component';
-import { CardContentComponent } from '../../../components/Common/card/card.component';
-import { CardFooterComponent } from '../../../components/Common/card/card.component';
-import { SeparatorComponent } from '../../../components/Common/separator/separator.component';
+
+// Import Common components
+import { AuthCardComponent } from '../../../components/Common/auth-card/auth-card.component';
+import { FormFieldComponent } from '../../../components/Common/form-field/form-field.component';
+import { PasswordInputComponent } from '../../../components/Common/password-input/password-input.component';
+import { ErrorAlertComponent } from '../../../components/Common/error-alert/error-alert.component';
+import { SuccessAlertComponent } from '../../../components/Common/success-alert/success-alert.component';
+import { LoadingButtonComponent } from '../../../components/Common/loading-button/loading-button.component';
+import { DividerComponent } from '../../../components/Common/divider/divider.component';
+import { GoogleButtonComponent } from '../../../components/Common/google-button/google-button.component';
+
+// Import auth service
 import { AuthService } from '../../services/auth.service';
 import { LoginRequest } from '../../model/auth.model';
 
@@ -22,19 +22,17 @@ import { LoginRequest } from '../../model/auth.model';
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
     ReactiveFormsModule,
-    ButtonComponent,
-    InputComponent,
-    LabelComponent,
-    CheckboxComponent,
-    CardComponent,
-    CardHeaderComponent,
-    CardTitleComponent,
-    CardDescriptionComponent,
-    CardContentComponent,
-    CardFooterComponent,
-    SeparatorComponent
+    RouterModule,
+    // New Common components
+    AuthCardComponent,
+    FormFieldComponent,
+    PasswordInputComponent,
+    ErrorAlertComponent,
+    SuccessAlertComponent,
+    LoadingButtonComponent,
+    DividerComponent,
+    GoogleButtonComponent,
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
@@ -45,13 +43,11 @@ export class LoginComponent {
   isGoogleLoading = false;
   errorMessage = '';
   successMessage = '';
-  showPassword = false;
-
-  private authService = inject(AuthService);
 
   constructor(
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -61,7 +57,7 @@ export class LoginComponent {
   }
 
   /**
-   * Returns true if the email field has been touched and is invalid
+   * Check if email field has validation errors and has been touched
    */
   get emailHasError(): boolean {
     const email = this.loginForm.get('email');
@@ -69,7 +65,7 @@ export class LoginComponent {
   }
 
   /**
-   * Returns true if the password field has been touched and is invalid
+   * Check if password field has validation errors and has been touched
    */
   get passwordHasError(): boolean {
     const password = this.loginForm.get('password');
@@ -77,15 +73,7 @@ export class LoginComponent {
   }
 
   /**
-   * Toggles password field visibility
-   */
-  togglePasswordVisibility(): void {
-    this.showPassword = !this.showPassword;
-  }
-
-  /**
-   * Handles form submission via the AuthService.
-   * Navigates based on profile completion status and user type.
+   * Handle form submission
    */
   submit(): void {
     if (this.loginForm.invalid) {
@@ -107,19 +95,21 @@ export class LoginComponent {
         this.isLoading = false;
         this.successMessage = 'Login successful! Redirecting...';
 
+        // Navigate based on profile completion status and user type after short delay
         setTimeout(() => {
           if (!response.profile_completed) {
-            this.router.navigate([
-              response.user_type === 'student'
-                ? '/create-profile'
-                : '/enterprise/create-profile'
-            ]);
+            if (response.user_type === 'student') {
+              this.router.navigate(['/create-profile']);
+            } else {
+              this.router.navigate(['/enterprise/create-profile']);
+            }
           } else {
-            this.router.navigate([
-              response.user_type === 'student'
-                ? '/profile'
-                : '/enterprise/dashboard'
-            ]);
+            // Navigate to dashboard or profile
+            if (response.user_type === 'student') {
+              this.router.navigate(['/profile']);
+            } else {
+              this.router.navigate(['/enterprise/dashboard']);
+            }
           }
         }, 1000);
       },
@@ -131,7 +121,7 @@ export class LoginComponent {
   }
 
   /**
-   * Handles Google OAuth sign-in
+   * Handle Google OAuth sign-in
    */
   async signInWithGoogle(): Promise<void> {
     this.isGoogleLoading = true;
