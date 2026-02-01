@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/components/Common/label/label.component.css"],
-  "sourcesContent": [".label {\n  font-size: 0.875rem;\n  line-height: 1.25rem;\n  font-weight: 500;\n  line-height: 1;\n  cursor: pointer;\n}\n\n.label:has(~ :disabled),\n.label:has(+ :disabled) {\n  cursor: not-allowed;\n  opacity: 0.7;\n}"],
-  "mappings": ";AAAA,CAAC;AACC,aAAW;AACX,eAAa;AACb,eAAa;AACb,eAAa;AACb,UAAQ;AACV;AAEA,CARC,KAQK,KAAK,EAAE;AACb,CATC,KASK,KAAK,EAAE;AACX,UAAQ;AACR,WAAS;AACX;",
-  "names": []
-}

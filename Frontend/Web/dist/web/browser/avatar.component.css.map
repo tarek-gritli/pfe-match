@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/components/Common/avatar/avatar.component.css"],
-  "sourcesContent": ["/* Avatar Root */\n.avatar-root {\n  position: relative;\n  display: flex;\n  flex-shrink: 0;\n  overflow: hidden;\n  border-radius: 9999px;\n}\n\n/* Size variants */\n.avatar-sm {\n  height: 2rem;\n  width: 2rem;\n  font-size: 0.75rem;\n}\n\n.avatar-default {\n  height: 2.5rem;\n  width: 2.5rem;\n  font-size: 0.875rem;\n}\n\n.avatar-lg {\n  height: 3rem;\n  width: 3rem;\n  font-size: 1rem;\n}\n\n.avatar-xl {\n  height: 4rem;\n  width: 4rem;\n  font-size: 1.25rem;\n}\n\n/* Avatar Image */\n.avatar-image {\n  aspect-ratio: 1 / 1;\n  height: 100%;\n  width: 100%;\n  object-fit: cover;\n}\n\n.avatar-image-hidden {\n  opacity: 0;\n}\n\n/* Avatar Fallback */\n.avatar-fallback {\n  display: flex;\n  height: 100%;\n  width: 100%;\n  align-items: center;\n  justify-content: center;\n  border-radius: 9999px;\n  background-color: hsl(var(--muted));\n  color: hsl(var(--muted-foreground));\n  font-weight: 500;\n}"],
-  "mappings": ";AACA,CAAC;AACC,YAAU;AACV,WAAS;AACT,eAAa;AACb,YAAU;AACV,iBAAe;AACjB;AAGA,CAAC;AACC,UAAQ;AACR,SAAO;AACP,aAAW;AACb;AAEA,CAAC;AACC,UAAQ;AACR,SAAO;AACP,aAAW;AACb;AAEA,CAAC;AACC,UAAQ;AACR,SAAO;AACP,aAAW;AACb;AAEA,CAAC;AACC,UAAQ;AACR,SAAO;AACP,aAAW;AACb;AAGA,CAAC;AACC,gBAAc,EAAE,EAAE;AAClB,UAAQ;AACR,SAAO;AACP,cAAY;AACd;AAEA,CAAC;AACC,WAAS;AACX;AAGA,CAAC;AACC,WAAS;AACT,UAAQ;AACR,SAAO;AACP,eAAa;AACb,mBAAiB;AACjB,iBAAe;AACf,oBAAkB,IAAI,IAAI;AAC1B,SAAO,IAAI,IAAI;AACf,eAAa;AACf;",
-  "names": []
-}

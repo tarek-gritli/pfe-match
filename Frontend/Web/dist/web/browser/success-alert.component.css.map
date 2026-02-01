@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/components/Common/success-alert/success-alert.component.css"],
-  "sourcesContent": [".success-alert {\n    display: flex;\n    align-items: center;\n    gap: 0.75rem;\n    padding: 0.875rem 1rem;\n    border-radius: 0.5rem;\n    background-color: #dcfce7;\n    border: 1px solid #86efac;\n    margin-bottom: 1rem;\n}\n\n.success-icon {\n    flex-shrink: 0;\n    color: #16a34a;\n}\n\n.success-message {\n    font-size: 0.875rem;\n    color: #166534;\n    font-weight: 500;\n}\n"],
-  "mappings": ";AAAA,CAAC;AACG,WAAS;AACT,eAAa;AACb,OAAK;AACL,WAAS,SAAS;AAClB,iBAAe;AACf,oBAAkB;AAClB,UAAQ,IAAI,MAAM;AAClB,iBAAe;AACnB;AAEA,CAAC;AACG,eAAa;AACb,SAAO;AACX;AAEA,CAAC;AACG,aAAW;AACX,SAAO;AACP,eAAa;AACjB;",
-  "names": []
-}
