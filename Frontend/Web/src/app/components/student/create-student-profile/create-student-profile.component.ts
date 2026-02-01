@@ -55,7 +55,7 @@ interface Step {
 export class CreateStudentProfileComponent {
   currentStep: number = 1;
   errors: Record<string, string> = {};
-  
+
   formData: ProfileFormData = {
     profileImage: '',
     fullName: '',
@@ -86,7 +86,7 @@ export class CreateStudentProfileComponent {
     { id: 2, title: 'Resume', icon: 'file-text' }
   ];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
   get progressValue(): number {
     return (this.currentStep / 2) * 100;
@@ -94,8 +94,8 @@ export class CreateStudentProfileComponent {
 
   get suggestedSkills(): string[] {
     return this.allSkills
-      .filter(skill => 
-        !this.formData.skills.includes(skill) && 
+      .filter(skill =>
+        !this.formData.skills.includes(skill) &&
         skill.toLowerCase().includes(this.newSkill.toLowerCase())
       )
       .slice(0, 5);
@@ -103,8 +103,8 @@ export class CreateStudentProfileComponent {
 
   get suggestedTechs(): string[] {
     return this.allSkills
-      .filter(tech => 
-        !this.formData.technologies.includes(tech) && 
+      .filter(tech =>
+        !this.formData.technologies.includes(tech) &&
         tech.toLowerCase().includes(this.newTech.toLowerCase())
       )
       .slice(0, 5);
@@ -114,14 +114,8 @@ export class CreateStudentProfileComponent {
     const newErrors: Record<string, string> = {};
 
     if (step === 1) {
-      if (!this.formData.fullName.trim()) {
-        newErrors['fullName'] = 'Full name is required';
-      }
       if (!this.formData.title.trim()) {
         newErrors['title'] = 'Desired job role is required';
-      }
-      if (!this.formData.university.trim()) {
-        newErrors['university'] = 'University is required';
       }
       if (!this.formData.bio.trim()) {
         newErrors['bio'] = 'Bio is required';
@@ -216,7 +210,7 @@ export class CreateStudentProfileComponent {
 
     // TODO: Replace with actual service call
     console.log('Creating profile:', this.formData);
-    
+
     // Navigate to profile page
     this.router.navigate(['/profile']);
   }

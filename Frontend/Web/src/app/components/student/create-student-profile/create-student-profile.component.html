@@ -3,9 +3,20 @@
     <!-- Header -->
     <div class="header">
       <div class="header-icon-title">
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-primary">
-          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
-          <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="32"
+          height="32"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="icon-primary"
+        >
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+          <path d="M6 12v5c3 3 9 3 12 0v-5" />
         </svg>
         <h1>Create Your Profile</h1>
       </div>
@@ -20,36 +31,94 @@
         @for (step of steps; track step.id; let i = $index) {
           <div class="step-wrapper">
             <div class="step-item">
-              <div [class]="'step-circle ' + (currentStep > step.id ? 'step-complete' : currentStep === step.id ? 'step-active' : 'step-inactive')">
+              <div
+                [class]="
+                  'step-circle ' +
+                  (currentStep > step.id
+                    ? 'step-complete'
+                    : currentStep === step.id
+                      ? 'step-active'
+                      : 'step-inactive')
+                "
+              >
                 @if (currentStep > step.id) {
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M20 6 9 17l-5-5"/>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M20 6 9 17l-5-5" />
                   </svg>
                 }
-                @if (currentStep <= step.id && step.icon === 'user') {
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
-                    <circle cx="12" cy="7" r="4"/>
+                @if (currentStep <= step.id && step.icon === "user") {
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
                   </svg>
                 }
-                @if (currentStep <= step.id && step.icon === 'file-text') {
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
-                    <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+                @if (currentStep <= step.id && step.icon === "file-text") {
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"
+                    />
+                    <path d="M14 2v4a2 2 0 0 0 2 2h4" />
                   </svg>
                 }
               </div>
-              <span [class]="'step-title ' + (currentStep >= step.id ? 'step-title-active' : 'step-title-inactive')">
+              <span
+                [class]="
+                  'step-title ' +
+                  (currentStep >= step.id
+                    ? 'step-title-active'
+                    : 'step-title-inactive')
+                "
+              >
                 {{ step.title }}
               </span>
             </div>
             @if (i < steps.length - 1) {
-              <div [class]="'step-connector ' + (currentStep > step.id ? 'step-connector-active' : 'step-connector-inactive')"></div>
+              <div
+                [class]="
+                  'step-connector ' +
+                  (currentStep > step.id
+                    ? 'step-connector-active'
+                    : 'step-connector-inactive')
+                "
+              ></div>
             }
           </div>
         }
       </div>
-      <app-progress [value]="progressValue" class="progress-indicator"></app-progress>
+      <app-progress
+        [value]="progressValue"
+        class="progress-indicator"
+      ></app-progress>
     </div>
 
     <!-- Step Content -->
@@ -59,9 +128,19 @@
         <app-card-header>
           <app-card-title>
             <div class="card-title-with-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
               </svg>
               Basic Information
             </div>
@@ -77,24 +156,57 @@
               <div class="profile-picture-wrapper">
                 <div class="profile-picture-container">
                   @if (formData.profileImage) {
-                    <img [src]="formData.profileImage" alt="Profile" class="profile-picture-image" />
+                    <img
+                      [src]="formData.profileImage"
+                      alt="Profile"
+                      class="profile-picture-image"
+                    />
                   } @else {
-                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="profile-picture-placeholder">
-                      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
-                      <circle cx="12" cy="7" r="4"/>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="40"
+                      height="40"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="profile-picture-placeholder"
+                    >
+                      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
                     </svg>
                   }
                 </div>
                 <label for="profile-image" class="profile-picture-upload-btn">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="17 8 12 3 7 8"/>
-                    <line x1="12" x2="12" y1="3" y2="15"/>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" x2="12" y1="3" y2="15" />
                   </svg>
                 </label>
-                <input id="profile-image" type="file" accept="image/*" class="hidden-input" (change)="handleProfileImageUpload($event)" />
+                <input
+                  id="profile-image"
+                  type="file"
+                  accept="image/*"
+                  class="hidden-input"
+                  (change)="handleProfileImageUpload($event)"
+                />
               </div>
-              <span class="profile-picture-hint">Upload profile picture (optional)</span>
+              <span class="profile-picture-hint"
+                >Upload profile picture (optional)</span
+              >
             </div>
 
             <!-- Desired Job Role -->
@@ -106,8 +218,8 @@
                 [(ngModel)]="formData.title"
                 [class.input-error]="errors['title']"
               ></app-input>
-              @if (errors['title']) {
-                <p class="error-message">{{ errors['title'] }}</p>
+              @if (errors["title"]) {
+                <p class="error-message">{{ errors["title"] }}</p>
               }
             </div>
 
@@ -121,12 +233,14 @@
                 [class.input-error]="errors['bio']"
               ></app-textarea>
               <div class="bio-footer">
-                @if (errors['bio']) {
-                  <p class="error-message">{{ errors['bio'] }}</p>
+                @if (errors["bio"]) {
+                  <p class="error-message">{{ errors["bio"] }}</p>
                 } @else {
                   <span class="bio-hint">Minimum 20 characters</span>
                 }
-                <span class="bio-count">{{ formData.bio.length }} characters</span>
+                <span class="bio-count"
+                  >{{ formData.bio.length }} characters</span
+                >
               </div>
             </div>
           </div>
@@ -138,9 +252,21 @@
         <app-card-header>
           <app-card-title>
             <div class="card-title-with-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
-                <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"
+                />
+                <path d="M14 2v4a2 2 0 0 0 2 2h4" />
               </svg>
               Resume
             </div>
@@ -157,33 +283,77 @@
               <div class="resume-upload-area">
                 @if (formData.resumeName) {
                   <div class="resume-uploaded">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="resume-icon">
-                      <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
-                      <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="32"
+                      height="32"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="resume-icon"
+                    >
+                      <path
+                        d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"
+                      />
+                      <path d="M14 2v4a2 2 0 0 0 2 2h4" />
                     </svg>
                     <div class="resume-info">
                       <p class="resume-name">{{ formData.resumeName }}</p>
                       <p class="resume-status">Ready to upload</p>
                     </div>
-                    <app-button variant="ghost" size="icon" (buttonClick)="clearResume()">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M18 6 6 18"/>
-                        <path d="m6 6 12 12"/>
+                    <app-button
+                      variant="ghost"
+                      size="icon"
+                      (buttonClick)="clearResume()"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M18 6 6 18" />
+                        <path d="m6 6 12 12" />
                       </svg>
                     </app-button>
                   </div>
                 } @else {
                   <label for="resume" class="resume-upload-label">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="upload-icon">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                      <polyline points="17 8 12 3 7 8"/>
-                      <line x1="12" x2="12" y1="3" y2="15"/>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="40"
+                      height="40"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="upload-icon"
+                    >
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="17 8 12 3 7 8" />
+                      <line x1="12" x2="12" y1="3" y2="15" />
                     </svg>
                     <p class="upload-text">Click to upload or drag and drop</p>
                     <p class="upload-hint">PDF only (max 5MB)</p>
                   </label>
                 }
-                <input id="resume" type="file" accept=".pdf" class="hidden-input" (change)="handleResumeUpload($event)" />
+                <input
+                  id="resume"
+                  type="file"
+                  accept=".pdf"
+                  class="hidden-input"
+                  (change)="handleResumeUpload($event)"
+                />
               </div>
             </div>
 
@@ -193,17 +363,33 @@
               <div class="form-field">
                 <app-label>
                   <div class="label-with-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path
+                        d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+                      />
+                      <path
+                        d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+                      />
                     </svg>
                     Professional Links
                   </div>
                 </app-label>
-                
+
                 <div class="links-section">
                   <div class="link-field">
-                    <app-label htmlFor="linkedin" class="link-label">LinkedIn URL</app-label>
+                    <app-label htmlFor="linkedin" class="link-label"
+                      >LinkedIn URL</app-label
+                    >
                     <app-input
                       type="text"
                       placeholder="https://linkedin.com/in/yourprofile"
@@ -212,7 +398,9 @@
                   </div>
 
                   <div class="link-field">
-                    <app-label htmlFor="github" class="link-label">GitHub URL</app-label>
+                    <app-label htmlFor="github" class="link-label"
+                      >GitHub URL</app-label
+                    >
                     <app-input
                       type="text"
                       placeholder="https://github.com/yourusername"
@@ -266,27 +454,52 @@
                       </div>
                     }
                   </div>
-                  <app-button variant="default" size="icon" (buttonClick)="handleAddSkill()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M5 12h14"/>
-                      <path d="M12 5v14"/>
+                  <app-button
+                    variant="default"
+                    size="icon"
+                    (buttonClick)="handleAddSkill()"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M5 12h14" />
+                      <path d="M12 5v14" />
                     </svg>
                   </app-button>
                 </div>
-                @if (errors['skills']) {
-                  <p class="error-message">{{ errors['skills'] }}</p>
+                @if (errors["skills"]) {
+                  <p class="error-message">{{ errors["skills"] }}</p>
                 }
                 <div class="tags-container">
                   @for (skill of formData.skills; track skill) {
-                    <app-badge
-                      variant="secondary"
-                      class="tag-badge"
-                    >
+                    <app-badge variant="secondary" class="tag-badge">
                       {{ skill }}
-                      <button type="button" class="tag-remove" (click)="handleRemoveSkill(skill)">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M18 6 6 18"/>
-                          <path d="m6 6 12 12"/>
+                      <button
+                        type="button"
+                        class="tag-remove"
+                        (click)="handleRemoveSkill(skill)"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path d="M18 6 6 18" />
+                          <path d="m6 6 12 12" />
                         </svg>
                       </button>
                     </app-badge>
@@ -324,24 +537,49 @@
                       </div>
                     }
                   </div>
-                  <app-button variant="outline" size="icon" (buttonClick)="handleAddTech()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M5 12h14"/>
-                      <path d="M12 5v14"/>
+                  <app-button
+                    variant="default"
+                    size="icon"
+                    (buttonClick)="handleAddTech()"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M5 12h14" />
+                      <path d="M12 5v14" />
                     </svg>
                   </app-button>
                 </div>
                 <div class="tags-container">
                   @for (tech of formData.technologies; track tech) {
-                    <app-badge
-                      variant="outline"
-                      class="tag-badge"
-                    >
+                    <app-badge variant="outline" class="tag-badge">
                       {{ tech }}
-                      <button type="button" class="tag-remove" (click)="handleRemoveTech(tech)">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M18 6 6 18"/>
-                          <path d="m6 6 12 12"/>
+                      <button
+                        type="button"
+                        class="tag-remove"
+                        (click)="handleRemoveTech(tech)"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path d="M18 6 6 18" />
+                          <path d="m6 6 12 12" />
                         </svg>
                       </button>
                     </app-badge>
@@ -366,31 +604,55 @@
         (buttonClick)="handleBack()"
         [disabled]="currentStep === 1"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m15 18-6-6 6-6"/>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="m15 18-6-6 6-6" />
         </svg>
         Back
       </app-button>
 
       @if (currentStep < 2) {
-        <app-button
-          variant="default"
-          (buttonClick)="handleNext()"
-        >
+        <app-button variant="default" (buttonClick)="handleNext()">
           Next
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m9 18 6-6-6-6"/>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="m9 18 6-6-6-6" />
           </svg>
         </app-button>
       }
 
       @if (currentStep === 2) {
-        <app-button
-          variant="default"
-          (buttonClick)="handleCreateProfile()"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 6 9 17l-5-5"/>
+        <app-button variant="default" (buttonClick)="handleCreateProfile()">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M20 6 9 17l-5-5" />
           </svg>
           Create Profile
         </app-button>
