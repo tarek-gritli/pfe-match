@@ -232,3 +232,5 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted-foreground) / 0.5);
 }
+
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

@@ -20,16 +20,17 @@ app = FastAPI(
 # CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:4200",  # Angular dev server
-        "http://127.0.0.1:4200",
-        "http://localhost:4201",
-        "http://localhost:4202",
-        "http://localhost:50772",
-        "http://localhost:52174",
-        "http://127.0.0.1:50772",
-        "http://127.0.0.1:52174",
-    ],
+    #allow_origins=[
+    #    "http://localhost:4200",  # Angular dev server
+    #    "http://127.0.0.1:4200",
+    #    "http://localhost:4201",
+    #    "http://localhost:4202",
+    #    "http://localhost:50772",
+    #    "http://localhost:52174",
+    #    "http://127.0.0.1:50772",
+    #    "http://127.0.0.1:52174",
+    #],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

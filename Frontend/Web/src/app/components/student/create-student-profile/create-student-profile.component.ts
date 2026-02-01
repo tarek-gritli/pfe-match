@@ -11,6 +11,7 @@ import { BadgeComponent } from '../../Common/badge/badge.component';
 import { ProgressComponent } from '../../Common/progress/progress.component';
 import { AuthService } from '../../../auth/services/auth.service';
 import { StudentProfileUpdate, ResumeExtractedData } from '../../../auth/model/auth.model';
+import { inject } from '@angular/core';
 
 interface ProfileFormData {
   profileImage: string;
@@ -55,9 +56,16 @@ interface Step {
   templateUrl: './create-student-profile.component.html',
   styleUrls: ['./create-student-profile.component.css']
 })
-export class CreateStudentProfileComponent implements OnInit {
+export class CreateStudentProfileComponent {
   currentStep: number = 1;
   errors: Record<string, string> = {};
+  private authService = inject(AuthService);
+  private resumeFile: any;
+  private isUploadingResume: any;
+  private extractedData: any;
+  private isUploadingImage: any;
+  private profileImageFile: any;
+
 
   formData: ProfileFormData = {
     profileImage: '',

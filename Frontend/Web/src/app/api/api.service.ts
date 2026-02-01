@@ -35,7 +35,7 @@ export class ApiService {
      * Get default headers with auth token
      */
     private getAuthHeaders(): HttpHeaders {
-        const token = localStorage.getItem('access_token');
+        const token = localStorage.getItem('pfe_match_token');
         let headers = new HttpHeaders({
             'Content-Type': 'application/json'
         });
@@ -96,7 +96,7 @@ export class ApiService {
      * POST form data (for file uploads)
      */
     postFormData<TResponse>(endpoint: string, formData: FormData): Observable<TResponse> {
-        const token = localStorage.getItem('access_token');
+        const token = localStorage.getItem('pfe_match_token');
         let headers = new HttpHeaders();
 
         if (token) {
