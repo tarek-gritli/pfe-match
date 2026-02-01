@@ -25,3 +25,6 @@ pdfplumber
 
 # Optional: PyPDF2 as fallback
 PyPDF2
+
+# HTTP client for LLM API calls
+httpx>=0.24.0
