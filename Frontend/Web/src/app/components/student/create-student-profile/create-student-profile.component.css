@@ -262,6 +262,10 @@
   gap: 0.5rem;
 }
 
+.input-with-button app-input {
+  flex: 1;
+}
+
 .input-with-suggestions {
   flex: 1;
   position: relative;

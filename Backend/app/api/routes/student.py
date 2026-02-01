@@ -253,12 +253,14 @@ async def upload_resume(
             student.resume_url = file_path
             db.commit()
     
-    return ResumeUploadResponse(
+    response_data = ResumeUploadResponse(
         message="Resume uploaded successfully",
         resume_url=file_path,
         parsing_status=parsing_status,
         extracted_data=extracted_data.model_dump() if extracted_data else None
     )
+    print(f"Resume upload response: {response_data.model_dump()}")
+    return response_data
 
 
 @router.post("/me/profile-picture", response_model=ProfilePictureUploadResponse)

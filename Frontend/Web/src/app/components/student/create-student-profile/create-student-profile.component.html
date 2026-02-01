@@ -371,6 +371,39 @@
               </div>
             </div>
 
+            <!-- Debug info - Remove after testing -->
+            @if (extractedData) {
+              <div
+                class="form-field"
+                style="
+                  background: #e8f5e9;
+                  padding: 12px;
+                  border-radius: 8px;
+                  margin-bottom: 16px;
+                "
+              >
+                <p style="color: #2e7d32; font-weight: 500; margin: 0 0 8px 0">
+                  ✓ Data extracted from resume:
+                </p>
+                <ul style="margin: 0; padding-left: 20px; color: #1b5e20">
+                  @if (extractedData.github_url) {
+                    <li>GitHub: {{ extractedData.github_url }}</li>
+                  }
+                  @if (extractedData.linkedin_url) {
+                    <li>LinkedIn: {{ extractedData.linkedin_url }}</li>
+                  }
+                  @if (extractedData.skills?.length) {
+                    <li>Skills: {{ extractedData.skills.join(", ") }}</li>
+                  }
+                  @if (extractedData.technologies?.length) {
+                    <li>
+                      Technologies: {{ extractedData.technologies.join(", ") }}
+                    </li>
+                  }
+                </ul>
+              </div>
+            }
+
             <!-- Links, Skills and Tools - Only show after resume is uploaded -->
             @if (formData.resume) {
               <!-- Links -->
@@ -446,28 +479,13 @@
               <div class="form-field">
                 <app-label>Skills *</app-label>
                 <div class="input-with-button">
-                  <div class="input-with-suggestions">
-                    <app-input
-                      type="text"
-                      placeholder="e.g., Python, Machine Learning, React"
-                      [(ngModel)]="newSkill"
-                      (keydown)="onSkillKeyDown($event)"
-                      [class.input-error]="errors['skills']"
-                    ></app-input>
-                    @if (newSkill && suggestedSkills.length > 0) {
-                      <div class="suggestions-dropdown">
-                        @for (skill of suggestedSkills; track skill) {
-                          <button
-                            type="button"
-                            class="suggestion-item"
-                            (click)="selectSuggestedSkill(skill)"
-                          >
-                            {{ skill }}
-                          </button>
-                        }
-                      </div>
-                    }
-                  </div>
+                  <app-input
+                    type="text"
+                    placeholder="e.g., Python, Machine Learning, React"
+                    [(ngModel)]="newSkill"
+                    (keydown)="onSkillKeyDown($event)"
+                    [class.input-error]="errors['skills']"
+                  ></app-input>
                   <app-button
                     variant="default"
                     size="icon"
@@ -530,27 +548,12 @@
               <div class="form-field">
                 <app-label>Tools & Technologies (optional)</app-label>
                 <div class="input-with-button">
-                  <div class="input-with-suggestions">
-                    <app-input
-                      type="text"
-                      placeholder="e.g., Docker, AWS, VS Code, Git"
-                      [(ngModel)]="newTech"
-                      (keydown)="onTechKeyDown($event)"
-                    ></app-input>
-                    @if (newTech && suggestedTechs.length > 0) {
-                      <div class="suggestions-dropdown">
-                        @for (tech of suggestedTechs; track tech) {
-                          <button
-                            type="button"
-                            class="suggestion-item"
-                            (click)="selectSuggestedTech(tech)"
-                          >
-                            {{ tech }}
-                          </button>
-                        }
-                      </div>
-                    }
-                  </div>
+                  <app-input
+                    type="text"
+                    placeholder="e.g., Docker, AWS, VS Code, Git"
+                    [(ngModel)]="newTech"
+                    (keydown)="onTechKeyDown($event)"
+                  ></app-input>
                   <app-button
                     variant="default"
                     size="icon"

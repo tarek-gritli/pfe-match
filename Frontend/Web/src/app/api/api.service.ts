@@ -56,10 +56,15 @@ export class ApiService {
         if (error.error instanceof ErrorEvent) {
             errorMessage = error.error.message;
         } else {
-            errorMessage = error.error?.detail || error.message || errorMessage;
+            // Handle FastAPI validation errors (array of errors)
+            if (Array.isArray(error.error)) {
+                errorMessage = error.error.map((e: any) => `${e.loc?.join('.')}: ${e.msg}`).join(', ');
+            } else {
+                errorMessage = error.error?.detail || error.message || errorMessage;
+            }
         }
 
-        console.error('API Error:', errorMessage);
+        console.error('API Error:', error.error);
         return throwError(() => new Error(errorMessage));
     }
 

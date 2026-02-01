@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -95,7 +95,11 @@ export class CreateStudentProfileComponent implements OnInit {
   isUploadingImage: boolean = false;
   isSubmitting: boolean = false;
 
-  constructor(private router: Router, private authService: AuthService) { }
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void { }
 
@@ -207,9 +211,11 @@ export class CreateStudentProfileComponent implements OnInit {
       this.authService.uploadResume(file).subscribe({
         next: (response) => {
           this.isUploadingResume = false;
+          console.log('Resume upload response:', response);
 
           if (response.extracted_data) {
             this.extractedData = response.extracted_data;
+            console.log('Extracted data:', this.extractedData);
 
             // Pre-fill extracted data if fields are empty
             if (this.extractedData.github_url && !this.formData.githubUrl) {
@@ -224,11 +230,16 @@ export class CreateStudentProfileComponent implements OnInit {
             if (this.extractedData.technologies?.length && this.formData.technologies.length === 0) {
               this.formData.technologies = [...this.extractedData.technologies];
             }
+
+            console.log('Updated formData:', this.formData);
+            // Force change detection to update the view
+            this.cdr.detectChanges();
           }
         },
         error: (error) => {
           this.isUploadingResume = false;
           this.errors['resume'] = error.message || 'Failed to upload resume';
+          this.cdr.detectChanges();
         }
       });
     }
@@ -266,6 +277,11 @@ export class CreateStudentProfileComponent implements OnInit {
     this.formData.resume = '';
     this.resumeFile = null;
     this.extractedData = null;
+    // Also clear extracted data fields so new resume can populate them
+    this.formData.skills = [];
+    this.formData.technologies = [];
+    this.formData.githubUrl = '';
+    this.formData.linkedinUrl = '';
   }
 
   handleCreateProfile(): void {
@@ -275,10 +291,10 @@ export class CreateStudentProfileComponent implements OnInit {
     this.errors = {};
 
     // Build the profile update data matching StudentProfileUpdate interface
+    // Note: resume is NOT included here as it's already saved when uploaded
     const profileData: StudentProfileUpdate = {
       desired_job_role: this.formData.title,
       university: this.formData.university,
-      resume: this.formData.resume,
       short_bio: this.formData.bio,
       linkedin_url: this.formData.linkedinUrl || undefined,
       github_url: this.formData.githubUrl || undefined,
@@ -286,6 +302,8 @@ export class CreateStudentProfileComponent implements OnInit {
       skills: this.formData.skills.length > 0 ? this.formData.skills : undefined,
       technologies: this.formData.technologies.length > 0 ? this.formData.technologies : undefined
     };
+
+    console.log('Sending profile data:', JSON.stringify(profileData, null, 2));
 
     // Use AuthService.updateStudentProfile
     this.authService.updateStudentProfile(profileData).subscribe({
