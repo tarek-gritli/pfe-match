@@ -1,0 +1,136 @@
+<div class="applicants-container">
+  <!-- Header Section -->
+  <header class="page-header">
+    <div class="header-content">
+      <div class="header-title-section">
+        <h1 class="page-title">Applicants</h1>
+        <p class="page-subtitle">Review and manage PFE applications</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Filter Section -->
+  <section class="filter-section">
+    <div class="filter-group">
+      <label for="pfe-filter" class="filter-label">Filter by PFE</label>
+      <select
+        id="pfe-filter"
+        class="filter-select"
+        [ngModel]="selectedPfeId()"
+        (ngModelChange)="selectedPfeId.set($event)"
+        (change)="onPfeFilterChange()"
+      >
+        <option value="all">All PFE Listings ({{ allApplicants().length }} applicants)</option>
+        <option
+          *ngFor="let pfe of pfeListings()"
+          [value]="pfe.id"
+        >
+          {{ pfe.title }} ({{ pfe.applicantCount }} applicants)
+        </option>
+      </select>
+    </div>
+  </section>
+
+  <!-- Statistics Cards -->
+  <section class="stats-grid">
+    <div class="stat-card">
+      <p class="stat-label">Total Applicants</p>
+      <p class="stat-value stat-value--dark">{{ totalApplicants() }}</p>
+    </div>
+
+    <div class="stat-card">
+      <p class="stat-label">Avg. Match Rate</p>
+      <p class="stat-value stat-value--warning">{{ averageMatchRate() }}%</p>
+    </div>
+
+    <div class="stat-card">
+      <p class="stat-label">Pending Reviews</p>
+      <p class="stat-value stat-value--info">{{ pendingReviews() }}</p>
+    </div>
+
+    <div class="stat-card">
+      <p class="stat-label">Shortlisted</p>
+      <p class="stat-value stat-value--success">{{ shortlisted() }}</p>
+    </div>
+  </section>
+
+  <!-- Applicants List -->
+  <section class="applicants-section">
+    <div class="section-header">
+      <h2 class="section-title">
+        {{ selectedPfeId() === 'all' ? 'All Applicants' : 'Applicants for Selected PFE' }}
+      </h2>
+    </div>
+
+    <div class="applicants-list" *ngIf="filteredApplicants().length > 0">
+      <article
+        *ngFor="let applicant of filteredApplicants()"
+        class="applicant-card"
+        (click)="viewApplicantDetails(applicant.id)"
+      >
+        <div class="applicant-main">
+          <!-- Avatar and Basic Info -->
+          <div class="applicant-info-section">
+            <div class="applicant-avatar" [style.background-color]="applicant.avatarColor">
+              {{ applicant.initials }}
+            </div>
+            <div class="applicant-details">
+              <h3 class="applicant-name">{{ applicant.name }}</h3>
+              <p class="applicant-meta">
+                <span class="meta-item">{{ applicant.university }}</span>
+                <span class="meta-separator">•</span>
+                <span class="meta-item">{{ applicant.fieldOfStudy }}</span>
+              </p>
+              <p class="applicant-applied">Applied to: {{ applicant.appliedTo }}</p>
+            </div>
+          </div>
+
+          <!-- Match Rate Badge -->
+          <div class="applicant-match">
+            <div class="match-badge">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14.6666 7.38668V8.00001C14.6658 9.43763 14.2003 10.8365 13.3395 11.988C12.4787 13.1394 11.2688 13.9817 9.89016 14.3893C8.51154 14.7969 7.03809 14.748 5.68957 14.2498C4.34104 13.7516 3.18969 12.8308 2.40723 11.6247C1.62476 10.4186 1.25311 8.99235 1.34771 7.55762C1.44231 6.12289 1.99806 4.75762 2.93211 3.66479C3.86615 2.57195 5.1285 1.81033 6.53077 1.4935C7.93304 1.17668 9.40016 1.32163 10.7133 1.90668M14.6666 2.66668L7.99998 9.34001L5.99998 7.34001" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span class="match-percentage">{{ applicant.matchRate }}%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Skills -->
+        <div class="applicant-skills">
+          <span *ngFor="let skill of applicant.skills" class="skill-tag">
+            {{ skill }}
+          </span>
+        </div>
+
+        <!-- Footer with Status and Date -->
+        <div class="applicant-footer">
+          <div class="applicant-status">
+            <span class="status-badge" [ngClass]="getStatusClass(applicant.status)">
+              {{ getStatusLabel(applicant.status) }}
+            </span>
+            <span class="application-date">Applied {{ formatDate(applicant.applicationDate) }}</span>
+          </div>
+
+          <div class="applicant-actions">
+            <button class="btn-action btn-action--primary" (click)="viewApplicantDetails(applicant.id); $event.stopPropagation()">
+              View Details
+            </button>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="filteredApplicants().length === 0">
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M32 40C38.6274 40 44 34.6274 44 28C44 21.3726 38.6274 16 32 16C25.3726 16 20 21.3726 20 28C20 34.6274 25.3726 40 32 40Z" stroke="#94A3B8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 52V48C12 45.8783 12.8429 43.8434 14.3431 42.3431C15.8434 40.8429 17.8783 40 20 40H44C46.1217 40 48.1566 40.8429 49.6569 42.3431C51.1571 43.8434 52 45.8783 52 48V52" stroke="#94A3B8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <h3 class="empty-title">No applicants found</h3>
+      <p class="empty-description">
+        {{ selectedPfeId() === 'all' ? 'No applicants have applied yet.' : 'No applicants for this PFE listing yet.' }}
+      </p>
+    </div>
+  </section>
+</div>

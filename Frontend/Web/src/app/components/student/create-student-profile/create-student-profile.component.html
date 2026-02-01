@@ -1,12 +1,22 @@
-<p>create-student-profile works!</p>
 <div class="profile-create-container">
   <div class="profile-create-content">
     <!-- Header -->
     <div class="header">
       <div class="header-icon-title">
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-primary">
-          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
-          <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="32"
+          height="32"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="icon-primary"
+        >
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+          <path d="M6 12v5c3 3 9 3 12 0v-5" />
         </svg>
         <h1>Create Your Profile</h1>
       </div>
@@ -18,45 +28,119 @@
     <!-- Step Indicator -->
     <div class="step-indicator">
       <div class="step-progress">
-        <div *ngFor="let step of steps; let i = index" class="step-wrapper">
-          <div class="step-item">
-            <div [class]="'step-circle ' + (currentStep > step.id ? 'step-complete' : currentStep === step.id ? 'step-active' : 'step-inactive')">
-              <svg *ngIf="currentStep > step.id" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 6 9 17l-5-5"/>
-              </svg>
-              <svg *ngIf="currentStep <= step.id && step.icon === 'user'" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
-              </svg>
-              <svg *ngIf="currentStep <= step.id && step.icon === 'briefcase'" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
-                <rect width="20" height="14" x="2" y="6" rx="2"/>
-              </svg>
-              <svg *ngIf="currentStep <= step.id && step.icon === 'file-text'" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
-                <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
-              </svg>
+        @for (step of steps; track step.id; let i = $index) {
+          <div class="step-wrapper">
+            <div class="step-item">
+              <div
+                [class]="
+                  'step-circle ' +
+                  (currentStep > step.id
+                    ? 'step-complete'
+                    : currentStep === step.id
+                      ? 'step-active'
+                      : 'step-inactive')
+                "
+              >
+                @if (currentStep > step.id) {
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg>
+                }
+                @if (currentStep <= step.id && step.icon === "user") {
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                }
+                @if (currentStep <= step.id && step.icon === "file-text") {
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"
+                    />
+                    <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+                  </svg>
+                }
+              </div>
+              <span
+                [class]="
+                  'step-title ' +
+                  (currentStep >= step.id
+                    ? 'step-title-active'
+                    : 'step-title-inactive')
+                "
+              >
+                {{ step.title }}
+              </span>
             </div>
-            <span [class]="'step-title ' + (currentStep >= step.id ? 'step-title-active' : 'step-title-inactive')">
-              {{ step.title }}
-            </span>
+            @if (i < steps.length - 1) {
+              <div
+                [class]="
+                  'step-connector ' +
+                  (currentStep > step.id
+                    ? 'step-connector-active'
+                    : 'step-connector-inactive')
+                "
+              ></div>
+            }
           </div>
-          <div *ngIf="i < steps.length - 1" [class]="'step-connector ' + (currentStep > step.id ? 'step-connector-active' : 'step-connector-inactive')"></div>
-        </div>
+        }
       </div>
-      <app-progress [value]="progressValue" class="progress-indicator"></app-progress>
+      <app-progress
+        [value]="progressValue"
+        class="progress-indicator"
+      ></app-progress>
     </div>
 
     <!-- Step Content -->
     <app-card class="step-card">
       <!-- Step 1: Basic Information -->
-      <ng-container *ngIf="currentStep === 1">
+      @if (currentStep === 1) {
         <app-card-header>
           <app-card-title>
             <div class="card-title-with-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
               </svg>
               Basic Information
             </div>
@@ -71,34 +155,58 @@
             <div class="profile-picture-section">
               <div class="profile-picture-wrapper">
                 <div class="profile-picture-container">
-                  <img *ngIf="formData.profileImage" [src]="formData.profileImage" alt="Profile" class="profile-picture-image" />
-                  <svg *ngIf="!formData.profileImage" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="profile-picture-placeholder">
-                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
-                    <circle cx="12" cy="7" r="4"/>
-                  </svg>
+                  @if (formData.profileImage) {
+                    <img
+                      [src]="formData.profileImage"
+                      alt="Profile"
+                      class="profile-picture-image"
+                    />
+                  } @else {
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="40"
+                      height="40"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="profile-picture-placeholder"
+                    >
+                      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
+                    </svg>
+                  }
                 </div>
                 <label for="profile-image" class="profile-picture-upload-btn">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="17 8 12 3 7 8"/>
-                    <line x1="12" x2="12" y1="3" y2="15"/>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" x2="12" y1="3" y2="15" />
                   </svg>
                 </label>
-                <input id="profile-image" type="file" accept="image/*" class="hidden-input" (change)="handleProfileImageUpload($event)" />
+                <input
+                  id="profile-image"
+                  type="file"
+                  accept="image/*"
+                  class="hidden-input"
+                  (change)="handleProfileImageUpload($event)"
+                />
               </div>
-              <span class="profile-picture-hint">Upload profile picture (optional)</span>
-            </div>
-
-            <!-- Full Name -->
-            <div class="form-field">
-              <app-label htmlFor="fullName">Full Name *</app-label>
-              <app-input
-                type="text"
-                placeholder="John Doe"
-                [(ngModel)]="formData.fullName"
-                [class.input-error]="errors['fullName']"
-              ></app-input>
-              <p *ngIf="errors['fullName']" class="error-message">{{ errors['fullName'] }}</p>
+              <span class="profile-picture-hint"
+                >Upload profile picture (optional)</span
+              >
             </div>
 
             <!-- Desired Job Role -->
@@ -110,19 +218,9 @@
                 [(ngModel)]="formData.title"
                 [class.input-error]="errors['title']"
               ></app-input>
-              <p *ngIf="errors['title']" class="error-message">{{ errors['title'] }}</p>
-            </div>
-
-            <!-- University -->
-            <div class="form-field">
-              <app-label htmlFor="university">University / School *</app-label>
-              <app-input
-                type="text"
-                placeholder="e.g., École Polytechnique"
-                [(ngModel)]="formData.university"
-                [class.input-error]="errors['university']"
-              ></app-input>
-              <p *ngIf="errors['university']" class="error-message">{{ errors['university'] }}</p>
+              @if (errors["title"]) {
+                <p class="error-message">{{ errors["title"] }}</p>
+              }
             </div>
 
             <!-- Bio -->
@@ -135,150 +233,46 @@
                 [class.input-error]="errors['bio']"
               ></app-textarea>
               <div class="bio-footer">
-                <p *ngIf="errors['bio']" class="error-message">{{ errors['bio'] }}</p>
-                <span *ngIf="!errors['bio']" class="bio-hint">Minimum 20 characters</span>
-                <span class="bio-count">{{ formData.bio.length }} characters</span>
+                @if (errors["bio"]) {
+                  <p class="error-message">{{ errors["bio"] }}</p>
+                } @else {
+                  <span class="bio-hint">Minimum 20 characters</span>
+                }
+                <span class="bio-count"
+                  >{{ formData.bio.length }} characters</span
+                >
               </div>
             </div>
           </div>
         </app-card-content>
-      </ng-container>
+      }
 
-      <!-- Step 2: Skills & Tools -->
-      <ng-container *ngIf="currentStep === 2">
+      <!-- Step 2: Resume -->
+      @if (currentStep === 2) {
         <app-card-header>
           <app-card-title>
             <div class="card-title-with-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
-                <rect width="20" height="14" x="2" y="6" rx="2"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"
+                />
+                <path d="M14 2v4a2 2 0 0 0 2 2h4" />
               </svg>
-              Skills & Tools
+              Resume
             </div>
           </app-card-title>
           <app-card-description>
-            Add your skills and the tools you're proficient with
-          </app-card-description>
-        </app-card-header>
-        <app-card-content>
-          <div class="form-content">
-            <!-- Skills -->
-            <div class="form-field">
-              <app-label>Skills *</app-label>
-              <div class="input-with-button">
-                <div class="input-with-suggestions">
-                  <app-input
-                    type="text"
-                    placeholder="e.g., Python, Machine Learning, React"
-                    [(ngModel)]="newSkill"
-                    (keydown)="onSkillKeyDown($event)"
-                    [class.input-error]="errors['skills']"
-                  ></app-input>
-                  <div *ngIf="newSkill && suggestedSkills.length > 0" class="suggestions-dropdown">
-                    <button
-                      *ngFor="let skill of suggestedSkills"
-                      type="button"
-                      class="suggestion-item"
-                      (click)="selectSuggestedSkill(skill)"
-                    >
-                      {{ skill }}
-                    </button>
-                  </div>
-                </div>
-                <app-button variant="default" size="icon" (buttonClick)="handleAddSkill()">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M5 12h14"/>
-                    <path d="M12 5v14"/>
-                  </svg>
-                </app-button>
-              </div>
-              <p *ngIf="errors['skills']" class="error-message">{{ errors['skills'] }}</p>
-              <div class="tags-container">
-                <app-badge
-                  *ngFor="let skill of formData.skills"
-                  variant="secondary"
-                  class="tag-badge"
-                >
-                  {{ skill }}
-                  <button type="button" class="tag-remove" (click)="handleRemoveSkill(skill)">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M18 6 6 18"/>
-                      <path d="m6 6 12 12"/>
-                    </svg>
-                  </button>
-                </app-badge>
-                <span *ngIf="formData.skills.length === 0" class="empty-tags-message">
-                  No skills added yet. Add at least one skill to continue.
-                </span>
-              </div>
-            </div>
-
-            <!-- Technologies -->
-            <div class="form-field">
-              <app-label>Tools & Technologies (optional)</app-label>
-              <div class="input-with-button">
-                <div class="input-with-suggestions">
-                  <app-input
-                    type="text"
-                    placeholder="e.g., Docker, AWS, VS Code, Git"
-                    [(ngModel)]="newTech"
-                    (keydown)="onTechKeyDown($event)"
-                  ></app-input>
-                  <div *ngIf="newTech && suggestedTechs.length > 0" class="suggestions-dropdown">
-                    <button
-                      *ngFor="let tech of suggestedTechs"
-                      type="button"
-                      class="suggestion-item"
-                      (click)="selectSuggestedTech(tech)"
-                    >
-                      {{ tech }}
-                    </button>
-                  </div>
-                </div>
-                <app-button variant="outline" size="icon" (buttonClick)="handleAddTech()">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M5 12h14"/>
-                    <path d="M12 5v14"/>
-                  </svg>
-                </app-button>
-              </div>
-              <div class="tags-container">
-                <app-badge
-                  *ngFor="let tech of formData.technologies"
-                  variant="outline"
-                  class="tag-badge"
-                >
-                  {{ tech }}
-                  <button type="button" class="tag-remove" (click)="handleRemoveTech(tech)">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M18 6 6 18"/>
-                      <path d="m6 6 12 12"/>
-                    </svg>
-                  </button>
-                </app-badge>
-                <span *ngIf="formData.technologies.length === 0" class="empty-tags-message">
-                  Add tools and technologies you work with
-                </span>
-              </div>
-            </div>
-          </div>
-        </app-card-content>
-      </ng-container>
-
-      <!-- Step 3: Resume & Links -->
-      <ng-container *ngIf="currentStep === 3">
-        <app-card-header>
-          <app-card-title>
-            <div class="card-title-with-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
-                <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
-              </svg>
-              Resume & Links
-            </div>
-          </app-card-title>
-          <app-card-description>
-            Upload your resume and add your professional links (all optional)
+            Upload your resume, add professional links, and showcase your skills
           </app-card-description>
         </app-card-header>
         <app-card-content>
@@ -287,90 +281,320 @@
             <div class="form-field">
               <app-label>Resume (PDF only)</app-label>
               <div class="resume-upload-area">
-                <div *ngIf="formData.resumeName; else noResume" class="resume-uploaded">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="resume-icon">
-                    <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
-                    <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
-                  </svg>
-                  <div class="resume-info">
-                    <p class="resume-name">{{ formData.resumeName }}</p>
-                    <p class="resume-status">Ready to upload</p>
-                  </div>
-                  <app-button variant="ghost" size="icon" (buttonClick)="clearResume()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M18 6 6 18"/>
-                      <path d="m6 6 12 12"/>
+                @if (formData.resumeName) {
+                  <div class="resume-uploaded">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="32"
+                      height="32"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="resume-icon"
+                    >
+                      <path
+                        d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"
+                      />
+                      <path d="M14 2v4a2 2 0 0 0 2 2h4" />
                     </svg>
-                  </app-button>
-                </div>
-                <ng-template #noResume>
+                    <div class="resume-info">
+                      <p class="resume-name">{{ formData.resumeName }}</p>
+                      <p class="resume-status">Ready to upload</p>
+                    </div>
+                    <app-button
+                      variant="ghost"
+                      size="icon"
+                      (buttonClick)="clearResume()"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M18 6 6 18" />
+                        <path d="m6 6 12 12" />
+                      </svg>
+                    </app-button>
+                  </div>
+                } @else {
                   <label for="resume" class="resume-upload-label">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="upload-icon">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                      <polyline points="17 8 12 3 7 8"/>
-                      <line x1="12" x2="12" y1="3" y2="15"/>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="40"
+                      height="40"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="upload-icon"
+                    >
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="17 8 12 3 7 8" />
+                      <line x1="12" x2="12" y1="3" y2="15" />
                     </svg>
                     <p class="upload-text">Click to upload or drag and drop</p>
                     <p class="upload-hint">PDF only (max 5MB)</p>
                   </label>
-                </ng-template>
-                <input id="resume" type="file" accept=".pdf" class="hidden-input" (change)="handleResumeUpload($event)" />
+                }
+                <input
+                  id="resume"
+                  type="file"
+                  accept=".pdf"
+                  class="hidden-input"
+                  (change)="handleResumeUpload($event)"
+                />
               </div>
             </div>
 
-            <!-- Links -->
-            <div class="form-field">
-              <app-label>
-                <div class="label-with-icon">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-                  </svg>
-                  Professional Links
-                </div>
-              </app-label>
-              
-              <div class="links-section">
-                <div class="link-field">
-                  <app-label htmlFor="linkedin" class="link-label">LinkedIn URL</app-label>
-                  <app-input
-                    type="text"
-                    placeholder="https://linkedin.com/in/yourprofile"
-                    [(ngModel)]="formData.linkedinUrl"
-                  ></app-input>
-                </div>
+            <!-- Links, Skills and Tools - Only show after resume is uploaded -->
+            @if (formData.resumeName) {
+              <!-- Links -->
+              <div class="form-field">
+                <app-label>
+                  <div class="label-with-icon">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path
+                        d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+                      />
+                      <path
+                        d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+                      />
+                    </svg>
+                    Professional Links
+                  </div>
+                </app-label>
 
-                <div class="link-field">
-                  <app-label htmlFor="github" class="link-label">GitHub URL</app-label>
-                  <app-input
-                    type="text"
-                    placeholder="https://github.com/yourusername"
-                    [(ngModel)]="formData.githubUrl"
-                  ></app-input>
-                </div>
-
-                <div class="link-field">
-                  <app-label class="link-label">Custom Link</app-label>
-                  <div class="custom-link-inputs">
+                <div class="links-section">
+                  <div class="link-field">
+                    <app-label htmlFor="linkedin" class="link-label"
+                      >LinkedIn URL</app-label
+                    >
                     <app-input
                       type="text"
-                      placeholder="Label (e.g., Portfolio)"
-                      [(ngModel)]="formData.customLinkLabel"
-                      class="custom-link-label-input"
+                      placeholder="https://linkedin.com/in/yourprofile"
+                      [(ngModel)]="formData.linkedinUrl"
                     ></app-input>
+                  </div>
+
+                  <div class="link-field">
+                    <app-label htmlFor="github" class="link-label"
+                      >GitHub URL</app-label
+                    >
                     <app-input
                       type="text"
-                      placeholder="https://yourwebsite.com"
-                      [(ngModel)]="formData.customLinkUrl"
-                      class="custom-link-url-input"
+                      placeholder="https://github.com/yourusername"
+                      [(ngModel)]="formData.githubUrl"
                     ></app-input>
+                  </div>
+
+                  <div class="link-field">
+                    <app-label class="link-label">Custom Link</app-label>
+                    <div class="custom-link-inputs">
+                      <app-input
+                        type="text"
+                        placeholder="Label (e.g., Portfolio)"
+                        [(ngModel)]="formData.customLinkLabel"
+                        class="custom-link-label-input"
+                      ></app-input>
+                      <app-input
+                        type="text"
+                        placeholder="https://yourwebsite.com"
+                        [(ngModel)]="formData.customLinkUrl"
+                        class="custom-link-url-input"
+                      ></app-input>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+
+              <!-- Skills -->
+              <div class="form-field">
+                <app-label>Skills *</app-label>
+                <div class="input-with-button">
+                  <div class="input-with-suggestions">
+                    <app-input
+                      type="text"
+                      placeholder="e.g., Python, Machine Learning, React"
+                      [(ngModel)]="newSkill"
+                      (keydown)="onSkillKeyDown($event)"
+                      [class.input-error]="errors['skills']"
+                    ></app-input>
+                    @if (newSkill && suggestedSkills.length > 0) {
+                      <div class="suggestions-dropdown">
+                        @for (skill of suggestedSkills; track skill) {
+                          <button
+                            type="button"
+                            class="suggestion-item"
+                            (click)="selectSuggestedSkill(skill)"
+                          >
+                            {{ skill }}
+                          </button>
+                        }
+                      </div>
+                    }
+                  </div>
+                  <app-button
+                    variant="default"
+                    size="icon"
+                    (buttonClick)="handleAddSkill()"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M5 12h14" />
+                      <path d="M12 5v14" />
+                    </svg>
+                  </app-button>
+                </div>
+                @if (errors["skills"]) {
+                  <p class="error-message">{{ errors["skills"] }}</p>
+                }
+                <div class="tags-container">
+                  @for (skill of formData.skills; track skill) {
+                    <app-badge variant="secondary" class="tag-badge">
+                      {{ skill }}
+                      <button
+                        type="button"
+                        class="tag-remove"
+                        (click)="handleRemoveSkill(skill)"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path d="M18 6 6 18" />
+                          <path d="m6 6 12 12" />
+                        </svg>
+                      </button>
+                    </app-badge>
+                  }
+                  @if (formData.skills.length === 0) {
+                    <span class="empty-tags-message">
+                      No skills added yet. Add at least one skill to continue.
+                    </span>
+                  }
+                </div>
+              </div>
+
+              <!-- Technologies -->
+              <div class="form-field">
+                <app-label>Tools & Technologies (optional)</app-label>
+                <div class="input-with-button">
+                  <div class="input-with-suggestions">
+                    <app-input
+                      type="text"
+                      placeholder="e.g., Docker, AWS, VS Code, Git"
+                      [(ngModel)]="newTech"
+                      (keydown)="onTechKeyDown($event)"
+                    ></app-input>
+                    @if (newTech && suggestedTechs.length > 0) {
+                      <div class="suggestions-dropdown">
+                        @for (tech of suggestedTechs; track tech) {
+                          <button
+                            type="button"
+                            class="suggestion-item"
+                            (click)="selectSuggestedTech(tech)"
+                          >
+                            {{ tech }}
+                          </button>
+                        }
+                      </div>
+                    }
+                  </div>
+                  <app-button
+                    variant="default"
+                    size="icon"
+                    (buttonClick)="handleAddTech()"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M5 12h14" />
+                      <path d="M12 5v14" />
+                    </svg>
+                  </app-button>
+                </div>
+                <div class="tags-container">
+                  @for (tech of formData.technologies; track tech) {
+                    <app-badge variant="outline" class="tag-badge">
+                      {{ tech }}
+                      <button
+                        type="button"
+                        class="tag-remove"
+                        (click)="handleRemoveTech(tech)"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path d="M18 6 6 18" />
+                          <path d="m6 6 12 12" />
+                        </svg>
+                      </button>
+                    </app-badge>
+                  }
+                  @if (formData.technologies.length === 0) {
+                    <span class="empty-tags-message">
+                      Add tools and technologies you work with
+                    </span>
+                  }
+                </div>
+              </div>
+            }
           </div>
         </app-card-content>
-      </ng-container>
+      }
     </app-card>
 
     <!-- Navigation Buttons -->
@@ -380,30 +604,59 @@
         (buttonClick)="handleBack()"
         [disabled]="currentStep === 1"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m15 18-6-6 6-6"/>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="m15 18-6-6 6-6" />
         </svg>
         Back
       </app-button>
 
-      <app-button
-        *ngIf="currentStep < 3"
-        variant="default"
-        (buttonClick)="handleNext()"
-      >
-        Next
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-<path d="m9 18 6-6-6-6"/>
-</svg>
-</app-button>
-<app-button
-    *ngIf="currentStep === 3"
-    variant="default"
-    (buttonClick)="handleCreateProfile()"
-  >
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M20 6 9 17l-5-5"/>
-    </svg>
-    Create Profile
-  </app-button>
+      @if (currentStep < 2) {
+        <app-button variant="default" (buttonClick)="handleNext()">
+          Next
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </app-button>
+      }
+
+      @if (currentStep === 2) {
+        <app-button variant="default" (buttonClick)="handleCreateProfile()">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M20 6 9 17l-5-5" />
+          </svg>
+          Create Profile
+        </app-button>
+      }
+    </div>
+  </div>
 </div>

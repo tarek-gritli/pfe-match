@@ -58,12 +58,6 @@ interface Step {
 export class CreateStudentProfileComponent implements OnInit {
   currentStep: number = 1;
   errors: Record<string, string> = {};
-  isLoading = false;
-  isUploadingResume = false;
-  isUploadingImage = false;
-  resumeFile: File | null = null;
-  profileImageFile: File | null = null;
-  extractedData: ResumeExtractedData | null = null;
 
   formData: ProfileFormData = {
     profileImage: '',
@@ -93,42 +87,13 @@ export class CreateStudentProfileComponent implements OnInit {
 
   steps: Step[] = [
     { id: 1, title: 'Basic Information', icon: 'user' },
-    { id: 2, title: 'Skills & Tools', icon: 'briefcase' },
-    { id: 3, title: 'Resume & Links', icon: 'file-text' }
+    { id: 2, title: 'Resume', icon: 'file-text' }
   ];
 
-  constructor(
-    private router: Router,
-    private authService: AuthService
-  ) { }
-
-  ngOnInit(): void {
-    // Load existing profile data if available
-    this.loadExistingProfile();
-  }
-
-  private loadExistingProfile(): void {
-    this.authService.getStudentProfile().subscribe({
-      next: (profile) => {
-        this.formData.fullName = `${profile.first_name} ${profile.last_name}`;
-        if (profile.university) this.formData.university = profile.university;
-        if (profile.short_bio) this.formData.bio = profile.short_bio;
-        if (profile.desired_job_role) this.formData.title = profile.desired_job_role;
-        if (profile.linkedin_url) this.formData.linkedinUrl = profile.linkedin_url;
-        if (profile.github_url) this.formData.githubUrl = profile.github_url;
-        if (profile.portfolio_url) this.formData.portfolioUrl = profile.portfolio_url;
-        if (profile.skills) this.formData.skills = profile.skills;
-        if (profile.technologies) this.formData.technologies = profile.technologies;
-        if (profile.profile_picture) this.formData.profileImage = profile.profile_picture;
-      },
-      error: (error) => {
-        console.log('Could not load existing profile:', error.message);
-      }
-    });
-  }
+  constructor(private router: Router) { }
 
   get progressValue(): number {
-    return (this.currentStep / 3) * 100;
+    return (this.currentStep / 2) * 100;
   }
 
   get suggestedSkills(): string[] {
@@ -153,14 +118,8 @@ export class CreateStudentProfileComponent implements OnInit {
     const newErrors: Record<string, string> = {};
 
     if (step === 1) {
-      if (!this.formData.fullName.trim()) {
-        newErrors['fullName'] = 'Full name is required';
-      }
       if (!this.formData.title.trim()) {
         newErrors['title'] = 'Desired job role is required';
-      }
-      if (!this.formData.university.trim()) {
-        newErrors['university'] = 'University is required';
       }
       if (!this.formData.bio.trim()) {
         newErrors['bio'] = 'Bio is required';
@@ -170,7 +129,8 @@ export class CreateStudentProfileComponent implements OnInit {
     }
 
     if (step === 2) {
-      if (this.formData.skills.length === 0) {
+      // Only validate skills if resume is uploaded
+      if (this.formData.resumeName && this.formData.skills.length === 0) {
         newErrors['skills'] = 'At least one skill is required';
       }
     }
@@ -181,7 +141,7 @@ export class CreateStudentProfileComponent implements OnInit {
 
   handleNext(): void {
     if (this.validateStep(this.currentStep)) {
-      this.currentStep = Math.min(this.currentStep + 1, 3);
+      this.currentStep = Math.min(this.currentStep + 1, 2);
     }
   }
 
@@ -299,31 +259,13 @@ export class CreateStudentProfileComponent implements OnInit {
   }
 
   handleCreateProfile(): void {
-    if (!this.validateStep(3)) return;
+    if (!this.validateStep(2)) return;
 
-    this.isLoading = true;
+    // TODO: Replace with actual service call
+    console.log('Creating profile:', this.formData);
 
-    const profileData: StudentProfileUpdate = {
-      university: this.formData.university,
-      short_bio: this.formData.bio,
-      desired_job_role: this.formData.title,
-      linkedin_url: this.formData.linkedinUrl || undefined,
-      github_url: this.formData.githubUrl || undefined,
-      portfolio_url: this.formData.portfolioUrl || undefined,
-      skills: this.formData.skills,
-      technologies: this.formData.technologies
-    };
-
-    this.authService.updateStudentProfile(profileData).subscribe({
-      next: () => {
-        this.isLoading = false;
-        this.router.navigate(['/profile']);
-      },
-      error: (error) => {
-        this.isLoading = false;
-        this.errors['submit'] = error.message || 'Failed to create profile';
-      }
-    });
+    // Navigate to profile page
+    this.router.navigate(['/profile']);
   }
 
   onSkillKeyDown(event: KeyboardEvent): void {

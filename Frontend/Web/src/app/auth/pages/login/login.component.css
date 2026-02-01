@@ -47,9 +47,9 @@
 /* Form Options Row */
 .form-options {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin: 0.25rem 0;
+  justify-content: space-between;
+  margin-top: 0.5rem;
 }
 
 .remember-me {
@@ -61,10 +61,9 @@
   cursor: pointer;
 }
 
-.remember-me input[type="checkbox"] {
-  width: 0.875rem;
-  height: 0.875rem;
-  accent-color: hsl(var(--primary));
+.remember-label {
+  font-size: 0.875rem;
+  margin: 0;
   cursor: pointer;
 }
 
@@ -72,31 +71,29 @@
   font-size: 1rem;
   color: hsl(var(--primary));
   text-decoration: none;
-  font-weight: 500;
-  transition: all 0.2s ease;
+  transition: text-decoration 0.2s;
 }
 
 .forgot-link:hover {
   text-decoration: underline;
-  color: hsl(var(--accent));
 }
 
 /* Footer */
-.login-footer {
-  margin-top: 0.75rem;
+.footer-text {
   text-align: center;
   font-size: 0.8rem;
   color: hsl(var(--muted-foreground));
+  margin: 0;
 }
 
-.login-link {
+.signup-link {
   color: hsl(var(--primary));
   text-decoration: none;
-  font-weight: 600;
-  transition: all 0.2s ease;
+  font-weight: 500;
+  margin-left: 0.25rem;
 }
 
-.login-link:hover {
+.signup-link:hover {
   text-decoration: underline;
   color: hsl(var(--accent));
 }

@@ -4,6 +4,8 @@ import { CreateStudentProfileComponent } from './components/student/create-stude
 import { EditStudentProfileComponent } from './components/student/edit-student-profile/edit-student-profile.component';
 import { RegisterComponent } from './auth/pages/register/register.component';
 import { LoginComponent } from './auth/pages/login/login.component';
+import {OverviewComponent} from './components/company/overview/overview.component';
+import {ApplicantsComponent} from './components/company/applicants/applicants.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -15,4 +17,8 @@ export const routes: Routes = [
   // Enterprise routes (placeholder for now)
   { path: 'enterprise/create-profile', component: CreateStudentProfileComponent }, // TODO: Create EnterpriseProfileComponent
   { path: 'enterprise/dashboard', component: StudentProfileComponent }, // TODO: Create EnterpriseDashboardComponent
+];
+  {path: 'login', component: LoginComponent },
+  {path: 'companies/overview-pfe', component: OverviewComponent},
+  {path: 'companies/applicants', component: ApplicantsComponent}
 ];

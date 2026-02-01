@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -14,7 +16,7 @@ import { AuthService } from '../../services/auth.service';
 import { StudentRegisterRequest, EnterpriseRegisterRequest } from '../../model/auth.model';
 
 @Component({
-  selector: 'app-register',
+  selector: 'app-signup',
   standalone: true,
   imports: [
     CommonModule,
@@ -72,9 +74,8 @@ export class RegisterComponent {
     });
   }
 
-  get currentPassword(): string {
-    const form = this.activeTab === 'student' ? this.studentForm : this.enterpriseForm;
-    return form.get('password')?.value || '';
+  get studentPasswordsMatch(): boolean {
+    return this.studentPassword === this.studentConfirmPassword && this.studentPassword.length > 0;
   }
 
   /**

@@ -1,7 +1,17 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { ButtonComponent } from '../../../components/Common/button/button.component';
+import { InputComponent } from '../../../components/Common/input/input.component';
+import { LabelComponent } from '../../../components/Common/label/label.component';
+import { CheckboxComponent } from '../../../components/Common/checkbox/checkbox.component';
+import { CardComponent } from '../../../components/Common/card/card.component';
+import { CardHeaderComponent } from '../../../components/Common/card/card.component';
+import { CardTitleComponent } from '../../../components/Common/card/card.component';
+import { CardDescriptionComponent } from '../../../components/Common/card/card.component';
+import { CardContentComponent } from '../../../components/Common/card/card.component';
+import { CardFooterComponent } from '../../../components/Common/card/card.component';
+import { SeparatorComponent } from '../../../components/Common/separator/separator.component';
 
 // Import new Common components
 import { AuthCardComponent } from '../../../components/Common/auth-card/auth-card.component';

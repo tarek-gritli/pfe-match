@@ -1,196 +1,233 @@
+/* Signup Component Styles */
+
+.signup-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.signup-card-wrapper {
+  width: 100%;
+  max-width: 400px;
+  animation: scale-in 0.2s ease-out;
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Header */
+.header-content {
+  text-align: center;
+}
+
+.logo {
+  margin-bottom: 1.5rem;
+}
+
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(to right, hsl(var(--primary)), hsl(var(--primary) / 0.7));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Account Type Selection */
+.account-type-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.account-type-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 2px solid hsl(var(--border));
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.account-type-btn:hover {
+  border-color: hsl(var(--primary) / 0.5);
+  background-color: hsl(var(--muted) / 0.5);
+}
+
+.account-type-btn-active {
+  border-color: hsl(var(--primary));
+  background-color: hsl(var(--primary) / 0.05);
+  color: hsl(var(--primary));
+}
+
+.account-type-btn svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.account-type-label {
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+/* Form */
 .signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  animation: fade-in 0.3s ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-field {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.signup-inner-header {
-  text-align: center;
-  margin-bottom: 1rem;
-}
-
-.signup-inner-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin: 0;
-  color: hsl(var(--foreground));
-}
-
-.signup-inner-subtitle {
-  font-size: 0.875rem;
-  color: hsl(var(--muted-foreground));
-  margin: 0.25rem 0 0 0;
-}
-
-/* Tabs */
-.signup-tabs {
-  display: flex;
-  gap: 0.5rem;
-  padding: 0.25rem;
-  background: hsl(var(--secondary));
-  border-radius: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.tab-button {
-  flex: 1;
-  padding: 0.75rem 1rem;
-  border: none;
-  border-radius: 0.375rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.25s ease;
+/* Password toggle button */
+.password-toggle {
   background: transparent;
-  color: hsl(var(--muted-foreground));
-}
-
-.tab-button:hover:not(.tab-active) {
-  background: hsl(var(--secondary) / 0.8);
-  color: hsl(var(--foreground));
-}
-
-.tab-active {
-  background: hsl(var(--card));
-  color: hsl(var(--primary));
-  box-shadow: var(--shadow-sm);
-}
-
-/* Form Input - Used within FormFieldComponent */
-.form-input {
-  padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid hsl(var(--border));
-  background-color: hsl(var(--card));
-  color: hsl(var(--foreground));
-  font-size: 0.95rem;
-  outline: none;
-  transition: all 0.2s ease;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.form-input::placeholder {
-  color: hsl(var(--muted-foreground) / 0.7);
-}
-
-.form-input:hover {
-  border-color: hsl(var(--muted-foreground) / 0.5);
-}
-
-.form-input:focus {
-  border-color: hsl(var(--primary));
-  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.12);
-}
-
-/* Password Requirements */
-.password-rules {
-  background: hsl(var(--secondary) / 0.5);
-  border: 1px solid hsl(var(--border) / 0.5);
-  border-radius: 0.375rem;
-  padding: 0.5rem 0.75rem;
-  margin-top: 0.25rem;
-}
-
-.password-rules-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem 0.75rem;
-}
-
-.rule-item {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 0.8rem;
-}
-
-.rule-icon {
-  width: 0.875rem;
-  height: 0.875rem;
-  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.5rem;
-  flex-shrink: 0;
-  transition: all 0.2s ease;
+  color: hsl(var(--muted-foreground));
+  transition: color 0.2s;
 }
 
-.rule-ok {
-  background: hsl(var(--success));
-  color: white;
+.password-toggle:hover {
+  color: hsl(var(--foreground));
 }
 
-.rule-not {
-  background: hsl(var(--border));
+.password-toggle:focus {
+  outline: none;
+}
+
+/* Error message */
+.error-message {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: hsl(var(--destructive));
+  margin: 0;
+  margin-top: -0.25rem;
+}
+
+/* Input error state */
+:host ::ng-deep .input-error .input {
+  border-color: hsl(var(--destructive));
+}
+
+:host ::ng-deep .input-error .input:focus-visible {
+  outline-color: hsl(var(--destructive));
+}
+
+/* Submit button */
+.submit-button {
+  margin-top: 0.5rem;
+  width: 100%;
+}
+
+.submit-button app-button {
+  width: 100%;
+  display: block;
+}
+
+.submit-button ::ng-deep button {
+  width: 100%;
+}
+
+/* Separator */
+.separator-wrapper {
+  position: relative;
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.separator-text {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-color: hsl(var(--card));
+  padding: 0 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
   color: hsl(var(--muted-foreground));
 }
 
-.rule-text {
-  transition: color 0.2s ease;
+/* Google button */
+.google-button {
+  width: 100%;
 }
 
-.rule-ok-text {
-  color: hsl(var(--success));
+.google-button app-button {
+  width: 100%;
+  display: block;
 }
 
-.rule-not-text {
+.google-button ::ng-deep button {
+  width: 100%;
+}
+
+.google-icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 0.5rem;
+}
+
+/* No selection text */
+.no-selection-text {
+  text-align: center;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
   color: hsl(var(--muted-foreground));
+  padding: 1rem 0;
+  margin: 0;
 }
 
 /* Footer */
-.signup-footer {
-  margin-top: 0.5rem;
+.footer-text {
   text-align: center;
   font-size: 0.875rem;
   color: hsl(var(--muted-foreground));
+  margin: 0;
 }
 
-.signup-link {
+.login-link {
   color: hsl(var(--primary));
   text-decoration: none;
-  font-weight: 600;
-  transition: all 0.2s ease;
+  font-weight: 500;
+  margin-left: 0.25rem;
 }
 
-.signup-link:hover {
+.login-link:hover {
   text-decoration: underline;
-  color: hsl(var(--accent));
-}
-
-/* Terms Footer */
-.signup-terms {
-  margin-top: 1rem;
-  text-align: center;
-  font-size: 0.8rem;
-  color: hsl(var(--muted-foreground));
-}
-
-/* Mobile responsiveness */
-@media (max-width: 480px) {
-  .password-rules-grid {
-    flex-direction: column;
-    gap: 0.375rem;
-  }
-
-  .tab-button {
-    padding: 0.5rem 0.5rem;
-    font-size: 0.85rem;
-  }
-
-  .signup-inner-title {
-    font-size: 1.1rem;
-  }
-}
-
-@media (max-width: 360px) {
-  .tab-button {
-    padding: 0.4rem 0.375rem;
-    font-size: 0.8rem;
-  }
-
-  .signup-inner-title {
-    font-size: 1rem;
-  }
 }
