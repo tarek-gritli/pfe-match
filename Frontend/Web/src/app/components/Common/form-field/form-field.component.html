@@ -1,0 +1,9 @@
+<div class="form-group">
+  <label class="form-label" [attr.for]="htmlFor">{{ label }}</label>
+  <!-- Projected content (input, password-input, select, etc.) -->
+  <ng-content></ng-content>
+  <!-- Error message display -->
+  <span *ngIf="showError && errorMessage" class="form-error">
+    {{ errorMessage }}
+  </span>
+</div>

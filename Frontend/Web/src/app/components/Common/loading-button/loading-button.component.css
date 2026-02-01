@@ -1,0 +1,73 @@
+/* Loading Button Component Styles */
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  min-height: 2.75rem;
+}
+
+.loading-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Variant: Primary (gradient) */
+.loading-button-primary,
+.loading-button-gradient {
+  background: var(--gradient-primary);
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.loading-button-primary:hover:not(:disabled),
+.loading-button-gradient:hover:not(:disabled) {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-1px);
+}
+
+/* Variant: Secondary */
+.loading-button-secondary {
+  background-color: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+}
+
+.loading-button-secondary:hover:not(:disabled) {
+  background-color: hsl(var(--secondary) / 0.8);
+}
+
+/* Variant: Outline */
+.loading-button-outline {
+  background-color: transparent;
+  border: 1px solid hsl(var(--border));
+  color: hsl(var(--foreground));
+}
+
+.loading-button-outline:hover:not(:disabled) {
+  background-color: hsl(var(--secondary));
+}
+
+/* Spinner */
+.spinner {
+  width: 1.125rem;
+  height: 1.125rem;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}

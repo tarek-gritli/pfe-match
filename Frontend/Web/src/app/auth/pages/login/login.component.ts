@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../../components/Common/button/button.component';
 import { InputComponent } from '../../../components/Common/input/input.component';
@@ -12,12 +14,16 @@ import { CardDescriptionComponent } from '../../../components/Common/card/card.c
 import { CardContentComponent } from '../../../components/Common/card/card.component';
 import { CardFooterComponent } from '../../../components/Common/card/card.component';
 import { SeparatorComponent } from '../../../components/Common/separator/separator.component';
+import { AuthService } from '../../services/auth.service';
+import { LoginRequest } from '../../model/auth.model';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [
+    CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     ButtonComponent,
     InputComponent,
     LabelComponent,
@@ -34,29 +40,111 @@ import { SeparatorComponent } from '../../../components/Common/separator/separat
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
+  loginForm: FormGroup;
+  isLoading = false;
+  isGoogleLoading = false;
+  errorMessage = '';
+  successMessage = '';
   showPassword = false;
-  email = '';
-  password = '';
-  rememberMe = false;
 
-  constructor(private router: Router) {}
+  private authService = inject(AuthService);
 
-  get isFormValid(): boolean {
-    return this.email.trim() !== '' && this.password.trim() !== '';
+  constructor(
+    private fb: FormBuilder,
+    private router: Router
+  ) {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required],
+      rememberMe: [false]
+    });
   }
 
-  handleSubmit(event: Event): void {
-    event.preventDefault();
-    // For now, just navigate to home
-    this.router.navigate(['/']);
+  /**
+   * Returns true if the email field has been touched and is invalid
+   */
+  get emailHasError(): boolean {
+    const email = this.loginForm.get('email');
+    return !!(email?.touched && email?.invalid);
   }
 
-  handleGoogleSignIn(): void {
-    // Placeholder for Google sign-in
-    this.router.navigate(['/']);
+  /**
+   * Returns true if the password field has been touched and is invalid
+   */
+  get passwordHasError(): boolean {
+    const password = this.loginForm.get('password');
+    return !!(password?.touched && password?.invalid);
   }
 
+  /**
+   * Toggles password field visibility
+   */
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
+  }
+
+  /**
+   * Handles form submission via the AuthService.
+   * Navigates based on profile completion status and user type.
+   */
+  submit(): void {
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
+    }
+
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    const loginData: LoginRequest = {
+      email: this.loginForm.value.email,
+      password: this.loginForm.value.password
+    };
+
+    this.authService.login(loginData).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        this.successMessage = 'Login successful! Redirecting...';
+
+        setTimeout(() => {
+          if (!response.profile_completed) {
+            this.router.navigate([
+              response.user_type === 'student'
+                ? '/create-profile'
+                : '/enterprise/create-profile'
+            ]);
+          } else {
+            this.router.navigate([
+              response.user_type === 'student'
+                ? '/profile'
+                : '/enterprise/dashboard'
+            ]);
+          }
+        }, 1000);
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.errorMessage = error.message || 'Invalid email or password. Please try again.';
+      }
+    });
+  }
+
+  /**
+   * Handles Google OAuth sign-in
+   */
+  async signInWithGoogle(): Promise<void> {
+    this.isGoogleLoading = true;
+    this.errorMessage = '';
+
+    try {
+      // TODO: Implement Google OAuth
+      await new Promise(res => setTimeout(res, 1500));
+      this.router.navigate(['/dashboard']);
+    } catch (error) {
+      this.errorMessage = 'Google sign-in failed. Please try again.';
+    } finally {
+      this.isGoogleLoading = false;
+    }
   }
 }

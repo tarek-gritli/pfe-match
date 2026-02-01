@@ -14,24 +14,23 @@
       </app-card-header>
 
       <app-card-content>
-        <!-- Account Type Selection -->
+
+        <!-- ─── Global feedback banners ─────────────────────────── -->
+        @if (successMessage) {
+          <p class="success-message">{{ successMessage }}</p>
+        }
+        @if (errorMessage) {
+          <p class="error-message">{{ errorMessage }}</p>
+        }
+
+        <!-- ─── Account Type Selection ──────────────────────────── -->
         <div class="account-type-grid">
           <button
             type="button"
             (click)="setAccountType('student')"
             [class]="accountType === 'student' ? 'account-type-btn account-type-btn-active' : 'account-type-btn'"
           >
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              width="24" 
-              height="24" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              stroke-width="2" 
-              stroke-linecap="round" 
-              stroke-linejoin="round"
-            >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
               <path d="M6 12v5c3 3 9 3 12 0v-5"/>
             </svg>
@@ -43,62 +42,40 @@
             (click)="setAccountType('enterprise')"
             [class]="accountType === 'enterprise' ? 'account-type-btn account-type-btn-active' : 'account-type-btn'"
           >
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              width="24" 
-              height="24" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              stroke-width="2" 
-              stroke-linecap="round" 
-              stroke-linejoin="round"
-            >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect width="16" height="20" x="4" y="2" rx="2" ry="2"/>
               <path d="M9 22v-4h6v4"/>
-              <path d="M8 6h.01"/>
-              <path d="M16 6h.01"/>
-              <path d="M12 6h.01"/>
-              <path d="M12 10h.01"/>
-              <path d="M12 14h.01"/>
-              <path d="M16 10h.01"/>
-              <path d="M16 14h.01"/>
-              <path d="M8 10h.01"/>
-              <path d="M8 14h.01"/>
+              <path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/>
+              <path d="M12 10h.01"/><path d="M12 14h.01"/>
+              <path d="M16 10h.01"/><path d="M16 14h.01"/>
+              <path d="M8 10h.01"/><path d="M8 14h.01"/>
             </svg>
             <span class="account-type-label">Enterprise</span>
           </button>
         </div>
 
-        <!-- Student Form -->
+        <!-- ─── Student Form ────────────────────────────────────── -->
         @if (accountType === 'student') {
-          <form (submit)="handleStudentSubmit($event)" class="signup-form">
+          <form [formGroup]="studentForm" (submit)="handleStudentSubmit($event)" class="signup-form">
+
             <!-- Full Name -->
             <div class="form-field">
               <app-label htmlFor="student-name">Full Name</app-label>
               <app-input
                 type="text"
                 placeholder="Enter your full name"
-                [(ngModel)]="studentName"
+                formControlName="name"
                 name="studentName"
                 [hasLeftIcon]="true"
               >
-                <svg 
-                  leftIcon
-                  xmlns="http://www.w3.org/2000/svg" 
-                  width="16" 
-                  height="16" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  stroke-width="2" 
-                  stroke-linecap="round" 
-                  stroke-linejoin="round"
-                >
+                <svg leftIcon xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
                   <circle cx="12" cy="7" r="4"/>
                 </svg>
               </app-input>
+              @if (studentForm.get('name')?.touched && studentForm.get('name')?.invalid) {
+                <p class="error-message">Please enter your full name</p>
+              }
             </div>
 
             <!-- Email -->
@@ -107,28 +84,17 @@
               <app-input
                 type="email"
                 placeholder="Enter your email"
-                [(ngModel)]="studentEmail"
+                formControlName="email"
                 name="studentEmail"
                 [hasLeftIcon]="true"
-                [class]="getEmailInputClass(studentEmail)"
+                [class]="getEmailInputClass()"
               >
-                <svg 
-                  leftIcon
-                  xmlns="http://www.w3.org/2000/svg" 
-                  width="16" 
-                  height="16" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  stroke-width="2" 
-                  stroke-linecap="round" 
-                  stroke-linejoin="round"
-                >
+                <svg leftIcon xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <rect width="20" height="16" x="2" y="4" rx="2"/>
                   <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
                 </svg>
               </app-input>
-              @if (studentEmail && !isValidEmail(studentEmail)) {
+              @if (studentForm.get('email')?.touched && studentForm.get('email')?.invalid) {
                 <p class="error-message">Please enter a valid email address</p>
               }
             </div>
@@ -139,26 +105,18 @@
               <app-input
                 type="text"
                 placeholder="Enter your university name"
-                [(ngModel)]="university"
+                formControlName="university"
                 name="university"
                 [hasLeftIcon]="true"
               >
-                <svg 
-                  leftIcon
-                  xmlns="http://www.w3.org/2000/svg" 
-                  width="24" 
-                  height="24" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  stroke-width="2" 
-                  stroke-linecap="round" 
-                  stroke-linejoin="round"
-                >
+                <svg leftIcon xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
                   <path d="M6 12v5c3 3 9 3 12 0v-5"/>
                 </svg>
               </app-input>
+              @if (studentForm.get('university')?.touched && studentForm.get('university')?.invalid) {
+                <p class="error-message">Please enter your university name</p>
+              }
             </div>
 
             <!-- Password -->
@@ -167,62 +125,25 @@
               <app-input
                 [type]="showPassword ? 'text' : 'password'"
                 placeholder="Create a password"
-                [(ngModel)]="studentPassword"
+                formControlName="password"
                 name="studentPassword"
                 [hasLeftIcon]="true"
-                [hasRightIcon]="false"
+                [hasRightIcon]="true"
               >
-                <svg 
-                  leftIcon
-                  xmlns="http://www.w3.org/2000/svg" 
-                  width="16" 
-                  height="16" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  stroke-width="2" 
-                  stroke-linecap="round" 
-                  stroke-linejoin="round"
-                >
+                <svg leftIcon xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
                   <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                 </svg>
-                
-                <button
-                  rightIcon
-                  type="button"
-                  (click)="togglePasswordVisibility()"
-                  class="password-toggle"
-                >
+                <button rightIcon type="button" (click)="togglePasswordVisibility()" class="password-toggle">
                   @if (showPassword) {
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      width="16" 
-                      height="16" 
-                      viewBox="0 0 24 24" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      stroke-width="2" 
-                      stroke-linecap="round" 
-                      stroke-linejoin="round"
-                    >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/>
                       <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/>
                       <path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/>
                       <path d="m2 2 20 20"/>
                     </svg>
                   } @else {
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      width="16" 
-                      height="16" 
-                      viewBox="0 0 24 24" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      stroke-width="2" 
-                      stroke-linecap="round" 
-                      stroke-linejoin="round"
-                    >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/>
                       <circle cx="12" cy="12" r="3"/>
                     </svg>
@@ -237,71 +158,48 @@
               <app-input
                 [type]="showConfirmPassword ? 'text' : 'password'"
                 placeholder="Confirm your password"
-                [(ngModel)]="studentConfirmPassword"
+                formControlName="confirmPassword"
                 name="studentConfirmPassword"
                 [hasLeftIcon]="true"
-                [hasRightIcon]="false"
-                [class]="getPasswordInputClass(studentConfirmPassword, studentPasswordsMatch)"
+                [hasRightIcon]="true"
+                [class]="getConfirmPasswordInputClass()"
               >
-                <svg 
-                  leftIcon
-                  xmlns="http://www.w3.org/2000/svg" 
-                  width="16" 
-                  height="16" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  stroke-width="2" 
-                  stroke-linecap="round" 
-                  stroke-linejoin="round"
-                >
+                <svg leftIcon xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
                   <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                 </svg>
-                
-                <button
-                  rightIcon
-                  type="button"
-                  (click)="toggleConfirmPasswordVisibility()"
-                  class="password-toggle"
-                >
+                <button rightIcon type="button" (click)="toggleConfirmPasswordVisibility()" class="password-toggle">
                   @if (showConfirmPassword) {
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      width="16" 
-                      height="16" 
-                      viewBox="0 0 24 24" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      stroke-width="2" 
-                      stroke-linecap="round" 
-                      stroke-linejoin="round"
-                    >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/>
                       <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/>
                       <path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/>
                       <path d="m2 2 20 20"/>
                     </svg>
                   } @else {
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      width="16" 
-                      height="16" 
-                      viewBox="0 0 24 24" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      stroke-width="2" 
-                      stroke-linecap="round" 
-                      stroke-linejoin="round"
-                    >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/>
                       <circle cx="12" cy="12" r="3"/>
                     </svg>
                   }
                 </button>
               </app-input>
-              @if (studentConfirmPassword && !studentPasswordsMatch) {
+              @if (studentForm.get('confirmPassword')?.touched && !passwordsMatch()) {
                 <p class="error-message">Passwords do not match</p>
+              }
+            </div>
+
+            <!-- Password Requirements Checklist -->
+            <div class="password-requirements">
+              @for (req of passwordRequirements; track req.label) {
+                <div class="requirement-item">
+                  <span class="requirement-icon" [class.met]="req.check(currentPassword)" [class.unmet]="!req.check(currentPassword)">
+                    {{ req.check(currentPassword) ? '✓' : '○' }}
+                  </span>
+                  <span class="requirement-text" [class.met]="req.check(currentPassword)" [class.unmet]="!req.check(currentPassword)">
+                    {{ req.label }}
+                  </span>
+                </div>
               }
             </div>
 
@@ -311,9 +209,9 @@
                 type="submit"
                 variant="default"
                 size="lg"
-                [disabled]="!isStudentFormValid"
+                [disabled]="studentForm.invalid || !passwordsMatch() || !passwordMeetsRequirements() || isLoading"
               >
-                Create Account
+                {{ isLoading ? 'Creating Account...' : 'Create Account' }}
               </app-button>
             </div>
 
@@ -329,70 +227,47 @@
                 type="button"
                 variant="outline"
                 size="lg"
+                [disabled]="isGoogleLoading"
                 (buttonClick)="handleGoogleSignUp()"
               >
                 <svg class="google-icon" viewBox="0 0 24 24">
-                  <path
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                    fill="#4285F4"
-                  />
-                  <path
-                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                    fill="#34A853"
-                  />
-                  <path
-                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                    fill="#FBBC05"
-                  />
-                  <path
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                    fill="#EA4335"
-                  />
+                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                 </svg>
-                Sign up with Google
+                {{ isGoogleLoading ? 'Signing up...' : 'Sign up with Google' }}
               </app-button>
             </div>
           </form>
         }
 
-        <!-- Enterprise Form -->
+        <!-- ─── Enterprise Form ──────────────────────────────────── -->
         @if (accountType === 'enterprise') {
-          <form (submit)="handleEnterpriseSubmit($event)" class="signup-form">
+          <form [formGroup]="enterpriseForm" (submit)="handleEnterpriseSubmit($event)" class="signup-form">
+
             <!-- Company Name -->
             <div class="form-field">
               <app-label htmlFor="company-name">Company Name</app-label>
               <app-input
                 type="text"
                 placeholder="Enter your company name"
-                [(ngModel)]="companyName"
+                formControlName="companyName"
                 name="companyName"
                 [hasLeftIcon]="true"
               >
-                <svg 
-                  leftIcon
-                  xmlns="http://www.w3.org/2000/svg" 
-                  width="24" 
-                  height="24" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  stroke-width="2" 
-                  stroke-linecap="round" 
-                  stroke-linejoin="round"
-                >
+                <svg leftIcon xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <rect width="16" height="20" x="4" y="2" rx="2" ry="2"/>
                   <path d="M9 22v-4h6v4"/>
-                  <path d="M8 6h.01"/>
-                  <path d="M16 6h.01"/>
-                  <path d="M12 6h.01"/>
-                  <path d="M12 10h.01"/>
-                  <path d="M12 14h.01"/>
-                  <path d="M16 10h.01"/>
-                  <path d="M16 14h.01"/>
-                  <path d="M8 10h.01"/>
-                  <path d="M8 14h.01"/>
+                  <path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/>
+                  <path d="M12 10h.01"/><path d="M12 14h.01"/>
+                  <path d="M16 10h.01"/><path d="M16 14h.01"/>
+                  <path d="M8 10h.01"/><path d="M8 14h.01"/>
                 </svg>
               </app-input>
+              @if (enterpriseForm.get('companyName')?.touched && enterpriseForm.get('companyName')?.invalid) {
+                <p class="error-message">Please enter your company name</p>
+              }
             </div>
 
             <!-- Business Email -->
@@ -401,28 +276,17 @@
               <app-input
                 type="email"
                 placeholder="Enter your business email"
-                [(ngModel)]="businessEmail"
+                formControlName="email"
                 name="businessEmail"
                 [hasLeftIcon]="true"
-                [class]="getEmailInputClass(businessEmail)"
+                [class]="getEmailInputClass()"
               >
-                <svg 
-                  leftIcon
-                  xmlns="http://www.w3.org/2000/svg" 
-                  width="16" 
-                  height="16" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  stroke-width="2" 
-                  stroke-linecap="round" 
-                  stroke-linejoin="round"
-                >
+                <svg leftIcon xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <rect width="20" height="16" x="2" y="4" rx="2"/>
                   <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
                 </svg>
               </app-input>
-              @if (businessEmail && !isValidEmail(businessEmail)) {
+              @if (enterpriseForm.get('email')?.touched && enterpriseForm.get('email')?.invalid) {
                 <p class="error-message">Please enter a valid email address</p>
               }
             </div>
@@ -433,30 +297,21 @@
               <app-input
                 type="text"
                 placeholder="e.g., Technology, Finance, Healthcare"
-                [(ngModel)]="industry"
+                formControlName="industry"
                 name="industry"
                 [hasLeftIcon]="true"
               >
-                <svg 
-                  leftIcon
-                  xmlns="http://www.w3.org/2000/svg" 
-                  width="16" 
-                  height="16" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  stroke-width="2" 
-                  stroke-linecap="round" 
-                  stroke-linejoin="round"
-                >
+                <svg leftIcon xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <rect width="20" height="8" x="2" y="14" rx="2"/>
-                  <path d="M6.01 18H6"/>
-                  <path d="M10.01 18H10"/>
+                  <path d="M6.01 18H6"/><path d="M10.01 18H10"/>
                   <path d="M15 10v4"/>
                   <path d="M17.84 7.17a4 4 0 0 0-5.66 0"/>
                   <path d="M20.66 4.34a8 8 0 0 0-11.31 0"/>
                 </svg>
               </app-input>
+              @if (enterpriseForm.get('industry')?.touched && enterpriseForm.get('industry')?.invalid) {
+                <p class="error-message">Please enter your industry</p>
+              }
             </div>
 
             <!-- Password -->
@@ -465,62 +320,25 @@
               <app-input
                 [type]="showPassword ? 'text' : 'password'"
                 placeholder="Create a password"
-                [(ngModel)]="enterprisePassword"
+                formControlName="password"
                 name="enterprisePassword"
                 [hasLeftIcon]="true"
-                [hasRightIcon]="false"
+                [hasRightIcon]="true"
               >
-                <svg 
-                  leftIcon
-                  xmlns="http://www.w3.org/2000/svg" 
-                  width="16" 
-                  height="16" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  stroke-width="2" 
-                  stroke-linecap="round" 
-                  stroke-linejoin="round"
-                >
+                <svg leftIcon xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
                   <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                 </svg>
-                
-                <button
-                  rightIcon
-                  type="button"
-                  (click)="togglePasswordVisibility()"
-                  class="password-toggle"
-                >
+                <button rightIcon type="button" (click)="togglePasswordVisibility()" class="password-toggle">
                   @if (showPassword) {
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      width="16" 
-                      height="16" 
-                      viewBox="0 0 24 24" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      stroke-width="2" 
-                      stroke-linecap="round" 
-                      stroke-linejoin="round"
-                    >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/>
                       <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/>
                       <path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/>
                       <path d="m2 2 20 20"/>
                     </svg>
                   } @else {
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      width="16" 
-                      height="16" 
-                      viewBox="0 0 24 24" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      stroke-width="2" 
-                      stroke-linecap="round" 
-                      stroke-linejoin="round"
-                    >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/>
                       <circle cx="12" cy="12" r="3"/>
                     </svg>
@@ -535,71 +353,48 @@
               <app-input
                 [type]="showConfirmPassword ? 'text' : 'password'"
                 placeholder="Confirm your password"
-                [(ngModel)]="enterpriseConfirmPassword"
+                formControlName="confirmPassword"
                 name="enterpriseConfirmPassword"
                 [hasLeftIcon]="true"
-                [hasRightIcon]="false"
-                [class]="getPasswordInputClass(enterpriseConfirmPassword, enterprisePasswordsMatch)"
+                [hasRightIcon]="true"
+                [class]="getConfirmPasswordInputClass()"
               >
-                <svg 
-                  leftIcon
-                  xmlns="http://www.w3.org/2000/svg" 
-                  width="16" 
-                  height="16" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  stroke-width="2" 
-                  stroke-linecap="round" 
-                  stroke-linejoin="round"
-                >
+                <svg leftIcon xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
                   <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                 </svg>
-                
-                <button
-                  rightIcon
-                  type="button"
-                  (click)="toggleConfirmPasswordVisibility()"
-                  class="password-toggle"
-                >
+                <button rightIcon type="button" (click)="toggleConfirmPasswordVisibility()" class="password-toggle">
                   @if (showConfirmPassword) {
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      width="16" 
-                      height="16" 
-                      viewBox="0 0 24 24" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      stroke-width="2" 
-                      stroke-linecap="round" 
-                      stroke-linejoin="round"
-                    >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/>
                       <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/>
                       <path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/>
                       <path d="m2 2 20 20"/>
                     </svg>
                   } @else {
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      width="16" 
-                      height="16" 
-                      viewBox="0 0 24 24" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      stroke-width="2" 
-                      stroke-linecap="round" 
-                      stroke-linejoin="round"
-                    >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/>
                       <circle cx="12" cy="12" r="3"/>
                     </svg>
                   }
                 </button>
               </app-input>
-              @if (enterpriseConfirmPassword && !enterprisePasswordsMatch) {
+              @if (enterpriseForm.get('confirmPassword')?.touched && !passwordsMatch()) {
                 <p class="error-message">Passwords do not match</p>
+              }
+            </div>
+
+            <!-- Password Requirements Checklist -->
+            <div class="password-requirements">
+              @for (req of passwordRequirements; track req.label) {
+                <div class="requirement-item">
+                  <span class="requirement-icon" [class.met]="req.check(currentPassword)" [class.unmet]="!req.check(currentPassword)">
+                    {{ req.check(currentPassword) ? '✓' : '○' }}
+                  </span>
+                  <span class="requirement-text" [class.met]="req.check(currentPassword)" [class.unmet]="!req.check(currentPassword)">
+                    {{ req.label }}
+                  </span>
+                </div>
               }
             </div>
 
@@ -609,9 +404,9 @@
                 type="submit"
                 variant="default"
                 size="lg"
-                [disabled]="!isEnterpriseFormValid"
+                [disabled]="enterpriseForm.invalid || !passwordsMatch() || !passwordMeetsRequirements() || isLoading"
               >
-                Create Account
+                {{ isLoading ? 'Creating Account...' : 'Create Account' }}
               </app-button>
             </div>
           </form>

@@ -1,0 +1,334 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam backgroundColor #FEFEFE
+skinparam class {
+    BackgroundColor #E8F5E9
+    BorderColor #424242
+    ArrowColor #424242
+}
+skinparam stereotypeCBackgroundColor #FFF3E0
+
+' ================= ENUMS =================
+enum UserRole {
+    STUDENT
+    ENTERPRISE
+    ADMIN
+}
+
+class UserInfo {
+    +firstName: String
+    +lastName: String
+    +email: String
+    +university: String <<optional>>
+    +role: UserRole
+}
+
+enum ApplicationStatus {
+    PENDING
+    UNDER_REVIEW
+    ACCEPTED
+    REJECTED
+    WITHDRAWN
+    OPEN
+    ClOSED
+}
+
+enum PFEStatus {
+    DRAFT
+    OPEN
+    IN_PROGRESS
+    COMPLETED
+    CANCELLED
+}
+
+enum NotificationType {
+    APPLICATION_SUBMITTED
+    APPLICATION_ACCEPTED
+    APPLICATION_REJECTED
+    NEW_PFE_POSTED
+    MATCH_FOUND
+}
+
+' ================= BASE ENTITY =================
+abstract class BaseEntity {
+    +id: UUID
+    +createdAt: DateTime
+    +updatedAt: DateTime
+}
+
+' ================= USER & AUTH =================
+class User extends BaseEntity {
+    +email: String {unique}
+    +passwordHash: String
+    +role: UserRole
+    +isActive: Boolean
+    +isVerified: Boolean
+    +lastLogin: DateTime
+}
+' ================= AUTH / SECURITY =================
+class AuthService {
+    +signup(userInfo: userInfo, password: String): User
+    +login(email: String, password: String): String 
+    +logout(token: String): void
+    +generateToken(user: User): String
+}
+
+User <-- AuthService : creates / validates >
+
+' ================= STUDENT =================
+class Student extends BaseEntity {
+    +userId: UUID {unique}
+    +firstName: String
+    +lastName: String
+    +phoneNumber: String
+    +university: String
+    +graduationYear: Integer
+    +linkedinUrl: String
+    +githubUrl: String
+    +bio: Text
+    --
+    +getFullName(): String
+    +calculateMatchScore(pfe: PFEOffer): Float
+}
+class Resume extends BaseEntity {
+    +studentId: UUID
+    +fileUrl: String
+    +uploadedAt: DateTime
+    +fileType: String
+    +fileSize: Float
+}
+class StudentSkill extends BaseEntity {
+    +studentId: UUID
+    +skillName: String
+    +proficiencyLevel: String
+    +yearsOfExperience: Float
+}
+
+class StudentTechnology extends BaseEntity {
+    +studentId: UUID
+    +technologyName: String
+    +proficiencyLevel: String
+}
+' ================= CV ANALYSIS =================
+class CVParserService {
+    +extractText(cvUrl: String): String
+}
+
+class SkillExtractionServiceMLService {
+    +extractSkills(text: String): List<SkillDTO>
+    +extractTechnologies(text: String): List<TechDTO>
+}
+
+' ================= ENTERPRISE =================
+class Enterprise extends BaseEntity {
+    +userId: UUID {unique}
+    +companyName: String
+    +industry: String
+    +size: String
+    +location: String
+    +address: String
+    +phoneNumber: String
+    +website: String
+    +logoUrl: String
+    +description: Text
+    +foundedYear: Integer
+}
+
+' ================= PFE OFFER =================
+class PFEOffer extends BaseEntity {
+    +enterpriseId: UUID
+    +title: String
+    +description: Text
+    +requirements: Text
+    +duration: Integer
+    +startDate: Date
+    +endDate: Date
+    +location: String
+    +isRemote: Boolean
+    +maxApplicants: Integer
+    +status: PFEStatus
+    +publishedAt: DateTime
+    +closedAt: DateTime
+    --
+    +isOpen(): Boolean
+    +canApply(): Boolean
+    +getRemainingSlots(): Integer
+}
+
+class PFESkillRequired extends BaseEntity {
+    +pfeId: UUID
+    +skillName: String
+    +isRequired: Boolean
+    +proficiencyLevel: String
+}
+
+class PFETechnologyRequired extends BaseEntity {
+    +pfeId: UUID
+    +technologyName: String
+    +isRequired: Boolean
+}
+class MatchingService {
+    +calculateMatch(studentId: UUID, pfeId: UUID): MatchScore
+}
+
+
+' ================= APPLICATION =================
+class Application {
+    +studentId: UUID
+    +pfeOfferId: UUID
+    +status: ApplicationStatus
+    +appliedAt: DateTime
+    +rejectionReason: Text
+    +notes: Text
+}
+
+
+' ================= MATCHING =================
+class MatchScore extends BaseEntity {
+    +studentId: UUID
+    +pfeOfferId: UUID
+    +overallScore: Float
+    +skillMatchScore: Float
+    +technologyMatchScore: Float
+    +experienceScore: Float
+    +calculatedAt: DateTime
+    --
+    +isGoodMatch(): Boolean
+    +getMatchPercentage(): Float
+}
+
+' ================= NOTIFICATION =================
+class Notification extends BaseEntity {
+    +userId: UUID
+    +type: NotificationType
+    +title: String
+    +message: Text
+    +isRead: Boolean
+    +readAt: DateTime
+    --
+    +markAsRead(): void
+}
+
+' ================= ADMIN =================
+class Admin extends BaseEntity {
+    +userId: UUID {unique}
+    +firstName: String
+    +lastName: String    --
+    +hasPermission(permission: String): Boolean
+}
+
+class ApplicationService {
+    +applyToPFE(studentId: UUID, pfeId: UUID): Application
+    +canApplyToPFE(studentId: UUID, pfeId: UUID): Boolean
+    +accept(applicationId: UUID, pfeIdId: UUID): void
+    +canWithdraw(): Boolean
+    +viewPfeOffers(): list <PFEOffer>
+    +reject(role : UserRole,applicationId: UUID, pfeId: UUID, reason: String): void
+}
+
+class PFEManagementService {
+    +createPFE(PFEOfferDTO): PFEOffer
+    +viewApplications(userRole: UserRole,pfeId: UUID): List<Application>
+    +getTotalPFEs(): List <PFEOffer>
+    +viewApplicants(pfe: pfeOfferId): List<Student>
+    
+}
+
+class SearchService {
+    +searchEnterprisesByName(name: String): List<Enterprise>
+    +searchEnterprisesByIndustry(industry: String): List<Enterprise>
+    +searchEnterprisesByLocation(location: String): List<Enterprise>
+}
+Student ..> SearchService : uses >
+SearchService ..> Enterprise : queries >
+
+Enterprise ..> PFEManagementService : uses >
+PFEManagementService ..> Application : reads >
+
+' ================= RELATIONSHIPS =================
+
+' User relationships
+User "1" -- "0..1" Student : has >
+User "1" -- "0..1" Enterprise : has >
+User "1" -- "0..1" Admin : has >
+User "1" -- "*" Notification : receives >
+
+' Student relationships
+Student "1" -- "*" StudentSkill : has >
+Student "1" -- "*" StudentTechnology : knows >
+Student "1" -- "*" MatchScore : has >
+Student "1" -- "0..*" Resume : uploads >
+Student "*" -- "*" PFEOffer : potential matches (via MatchScore)
+Student ..> ApplicationService : calls >
+
+
+' Enterprise relationships
+Enterprise "1" -- "*" PFEOffer : posts >
+Enterprise ..> ApplicationService : uses >
+
+' PFE relationships
+PFEOffer "1" -- "*" PFESkillRequired : requires >
+PFEOffer "1" -- "*" PFETechnologyRequired : requires >
+PFEOffer "1" -- "*" MatchScore : has >
+
+' Application relationships
+Application "*" -- "1" PFEOffer
+' Match Score relationships
+MatchScore "*" -- "1" Student
+MatchScore "*" -- "1" PFEOffer
+
+' Application Service relationships
+ApplicationService ..> Application : creates
+ApplicationService ..> PFEOffer : checks 
+ApplicationService ..> MatchScore : verifies minimum match
+Enterprise ..> Application : views applicantions
+
+Student ..> CVParserService : uploads CV
+CVParserService ..> SkillExtractionService : sends text
+MatchingService --> MatchScore : produces
+SkillExtractionService ..> StudentSkill : creates
+SkillExtractionService ..> StudentTechnology : creates
+' ================= NOTES =================
+note top of AuthService
+    Handles login, roles, and permissions.
+    Each user has exactly one role.
+end note
+
+note right of Student
+    **Student Profile**
+    Extended profile for students.
+    Skills extracted from CV or manually added.
+    Used by matching engine.
+end note
+
+note bottom of PFEOffer
+    **PFE Opportunity**
+    Internship offers posted by enterprises.
+    Contains requirements for matching.
+    Status workflow: DRAFT → OPEN → IN_PROGRESS → COMPLETED
+end note
+
+note left of Application
+    **Application Workflow**
+    PENDING → Student applies
+    UNDER_REVIEW → Enterprise reviewing
+    ACCEPTED/REJECTED → Final decision
+    WITHDRAWN → Student cancels
+end note
+note bottom of User
+    Exactly one profile is attached
+    based on User.role
+end note
+
+note top of MatchingService 
+    Reads StudentSkill, StudentTechnology,
+    reads PFESkillRequired, PFETechnologyRequired
+    produces MatchScore
+end note
+note right of Enterprise
+Enterprise can view and manage Applications for
+its own PFEOffers via ApplicationService
+end note
+
+
+@enduml

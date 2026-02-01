@@ -1,0 +1,14 @@
+<div class="auth-container">
+  <div class="auth-card" [style.max-width]="maxWidth">
+    <header class="auth-header">
+      <h1 class="auth-title">{{ title }}</h1>
+      <p *ngIf="subtitle" class="auth-subtitle">{{ subtitle }}</p>
+    </header>
+
+    <div class="auth-inner-card">
+      <ng-content></ng-content>
+    </div>
+
+    <ng-content select="[auth-footer]"></ng-content>
+  </div>
+</div>
