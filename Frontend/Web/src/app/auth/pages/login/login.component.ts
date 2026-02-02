@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
@@ -24,6 +24,7 @@ import { LoginRequest } from '../../model/auth.model';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    RouterLink,
     ButtonComponent,
     InputComponent,
     LabelComponent,

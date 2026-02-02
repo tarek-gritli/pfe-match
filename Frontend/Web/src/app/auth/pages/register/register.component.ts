@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ButtonComponent } from '../../../components/Common/button/button.component';
@@ -23,6 +23,7 @@ type AccountType = 'student' | 'enterprise' | null;
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    RouterLink,
     ButtonComponent,
     InputComponent,
     LabelComponent,
