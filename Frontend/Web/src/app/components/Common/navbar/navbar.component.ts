@@ -46,9 +46,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
     if (this.authState?.userType === 'student') {
       this.profileSubscription = this.authService.getStudentProfile().subscribe({
         next: (profile: StudentProfile) => {
-          this.userName = `${profile.first_name} ${profile.last_name}`;
-          if (profile.profile_picture) {
-            this.profilePicture = `${API_CONFIG.BASE_URL}${profile.profile_picture}`;
+          this.userName = `${profile.firstName} ${profile.lastName}`;
+          if (profile.profileImage) {
+            this.profilePicture = `${API_CONFIG.BASE_URL}${profile.profileImage}`;
           }
         },
         error: () => {
