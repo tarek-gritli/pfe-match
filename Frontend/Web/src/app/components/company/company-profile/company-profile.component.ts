@@ -76,6 +76,10 @@ export class CompanyProfileComponent implements OnInit {
     };
   }
 
+    getProfileImageUrl(path: string | undefined): string {
+      return this.companyService.getProfileImageUrl(path);
+    }
+
   loadPfes(): void {
     // TODO: Replace with actual service call
     const allPfes: Pfe[] = [

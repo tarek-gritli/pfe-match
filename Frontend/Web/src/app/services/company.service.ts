@@ -23,4 +23,8 @@ export class CompanyService {
       payload
     );
   }
+
+    getProfileImageUrl(path: string | undefined): string {
+    return this.api.getAssetUrl(path);
+}
 }

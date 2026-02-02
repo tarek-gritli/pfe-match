@@ -21,7 +21,7 @@
             <app-card-content>
               <div class="profile-overview">
                 <app-avatar
-                  [src]="currentEnterprise.logo || ''"
+                  [src]="getProfileImageUrl(currentEnterprise.logo) || ''"
                   [fallback]="getInitials(currentEnterprise.name)"
                   size="xl">
                 </app-avatar>
