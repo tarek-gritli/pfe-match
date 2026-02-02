@@ -19,14 +19,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
   userName: string = '';
   notificationCount = signal(3); // Can be made dynamic later
   isDropdownOpen = signal(false);
-  
+
   private authSubscription?: Subscription;
   private profileSubscription?: Subscription;
 
   constructor(
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.authSubscription = this.authService.authState$.subscribe((state: AuthState) => {
@@ -91,11 +91,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   navigateToProfile(): void {
     this.closeDropdown();
-    if (this.authState?.userType === 'student') {
-      this.router.navigate(['/profile']);
-    } else {
-      this.router.navigate(['/enterprise/dashboard']);
-    }
+    this.router.navigate(['/profile']);
   }
 
   logout(): void {

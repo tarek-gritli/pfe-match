@@ -109,7 +109,7 @@ export class LoginComponent {
             this.router.navigate([
               response.user_type === 'student'
                 ? '/explore'
-                : '/enterprise/dashboard'
+                : '/companies/overview-pfe'
             ]);
           }
         }, 1000);
@@ -138,4 +138,4 @@ export class LoginComponent {
       this.isGoogleLoading = false;
     }
   }
-}
+} 

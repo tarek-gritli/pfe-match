@@ -170,6 +170,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           );
                         }
                         if (auth.error != null) {
+                          print('Auth Error: ${auth.error}');
                           return _buildMessage(auth.error!, AppColors.error);
                         }
                         return const SizedBox.shrink();
@@ -299,14 +300,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     return 'Invalid email';
                   return null;
                 },
-              ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: _studentUniversityController,
-                label: 'University / School',
-                hint: 'Enter your university',
-                prefixIcon: Icons.school_outlined,
-                validator: (v) => v == null || v.isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 16),
               CustomTextField(

@@ -31,7 +31,4 @@ export const routes: Routes = [
   { path: 'companies/overview-pfe', component: OverviewComponent, canActivate: [authGuard] },
   { path: 'companies/applicants', component: ApplicantsComponent, canActivate: [authGuard] }
 ];
-  //{path: 'login', component: LoginComponent },
-  //{path: 'companies/overview-pfe', component: OverviewComponent},
-  //{path: 'companies/applicants', component: ApplicantsComponent}
-//];
+

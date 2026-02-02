@@ -90,7 +90,7 @@ export class CompanyProfileComponent implements OnInit {
   }
 
   navigateToManagePfes(): void {
-    this.router.navigate(['/']);
+    this.router.navigate(['/companies/overview-pfe']);
   }
 
   getMailtoLink(): string {
