@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import '../core/config/api_config.dart';
 
 class AuthService {
+
   Future<Map<String, dynamic>> registerStudent({
     required String firstName,
     required String lastName,
@@ -138,4 +139,6 @@ class AuthService {
   Future<void> signInWithGoogle() async {
     throw UnimplementedError('Google Sign-In not implemented');
   }
+
+  
 }
