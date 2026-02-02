@@ -25,6 +25,7 @@ export class AuthService {
     private readonly TOKEN_KEY = 'pfe_match_token';
     private readonly USER_TYPE_KEY = 'pfe_match_user_type';
     private readonly PROFILE_COMPLETED_KEY = 'pfe_match_profile_completed';
+    private readonly EMAIL_KEY = 'pfe_match_email';
 
     private authState = new BehaviorSubject<AuthState>({
         isAuthenticated: false,
@@ -50,6 +51,7 @@ export class AuthService {
         const token = localStorage.getItem(this.TOKEN_KEY);
         const userType = localStorage.getItem(this.USER_TYPE_KEY) as UserType | null;
         const profileCompleted = localStorage.getItem(this.PROFILE_COMPLETED_KEY) === 'true';
+        const email = localStorage.getItem(this.EMAIL_KEY);
 
         if (token) {
             this.authState.next({
@@ -88,7 +90,7 @@ export class AuthService {
      */
     registerStudent(data: StudentRegisterRequest): Observable<AuthResponse> {
         return this.api.postPublic<AuthResponse>(ENDPOINTS.AUTH.REGISTER_STUDENT, data).pipe(
-            tap((response: AuthResponse) => this.handleAuthResponse(response)),
+            tap((response: AuthResponse) => this.handleAuthResponse(response, data.email)),
             catchError(error => this.handleError(error))
         );
     }
@@ -98,7 +100,7 @@ export class AuthService {
      */
     registerEnterprise(data: EnterpriseRegisterRequest): Observable<AuthResponse> {
         return this.api.postPublic<AuthResponse>(ENDPOINTS.AUTH.REGISTER_ENTERPRISE, data).pipe(
-            tap((response: AuthResponse) => this.handleAuthResponse(response)),
+            tap((response: AuthResponse) => this.handleAuthResponse(response, data.email)),
             catchError(error => this.handleError(error))
         );
     }
@@ -108,7 +110,7 @@ export class AuthService {
      */
     login(data: LoginRequest): Observable<AuthResponse> {
         return this.api.postPublic<AuthResponse>(ENDPOINTS.AUTH.LOGIN, data).pipe(
-            tap((response: AuthResponse) => this.handleAuthResponse(response)),
+            tap((response: AuthResponse) => this.handleAuthResponse(response, data.email)),
             catchError(error => this.handleError(error))
         );
     }
@@ -116,10 +118,11 @@ export class AuthService {
     /**
      * Handle successful authentication response
      */
-    private handleAuthResponse(response: AuthResponse): void {
+    private handleAuthResponse(response: AuthResponse, email: string): void {
         localStorage.setItem(this.TOKEN_KEY, response.access_token);
         localStorage.setItem(this.USER_TYPE_KEY, response.user_type);
         localStorage.setItem(this.PROFILE_COMPLETED_KEY, String(response.profile_completed));
+        localStorage.setItem(this.EMAIL_KEY, email); 
 
         this.authState.next({
             isAuthenticated: true,
@@ -137,6 +140,7 @@ export class AuthService {
         localStorage.removeItem(this.TOKEN_KEY);
         localStorage.removeItem(this.USER_TYPE_KEY);
         localStorage.removeItem(this.PROFILE_COMPLETED_KEY);
+        localStorage.removeItem(this.EMAIL_KEY);
 
         this.authState.next({
             isAuthenticated: false,

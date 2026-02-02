@@ -163,4 +163,38 @@ getAssetUrl(path: string | undefined | null): string {
     
     return `${this.baseUrl}/${cleanPath}`;
 }
+
+/**
+ * GET request for blob data (files/images)
+ */
+getBlob(endpoint: string): Observable<Blob> {
+    const token = localStorage.getItem('pfe_match_token');
+    let headers = new HttpHeaders();
+
+    if (token) {
+        headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    return this.http.get(this.buildUrl(endpoint), {
+        headers: headers,
+        responseType: 'blob'
+    }).pipe(catchError(this.handleError));
+}
+/**
+ * GET blob from absolute URL (for direct file downloads)
+ */
+getBlobFromUrl(url: string): Observable<Blob> {
+    const token = localStorage.getItem('pfe_match_token');
+    let headers = new HttpHeaders();
+
+    if (token) {
+        headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    return this.http.get(url, {
+        headers: headers,
+        responseType: 'blob'
+    }).pipe(catchError(this.handleError));
+}
+
 }

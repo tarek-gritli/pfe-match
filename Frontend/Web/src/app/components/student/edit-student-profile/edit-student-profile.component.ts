@@ -11,6 +11,9 @@ import { BadgeComponent } from '../../Common/badge/badge.component';
 import { StudentService } from '../../../services/student.service';
 import { inject } from '@angular/core';
 import { Student } from '../../../models/student-profile.model';
+import { AuthService} from '../../../auth/services/auth.service';
+import { ResumeExtractedData } from '../../../auth/model/auth.model';
+import { ViewChild, ElementRef } from '@angular/core';
 
 interface FormData {
   firstName: string;
@@ -47,6 +50,7 @@ interface FormData {
 })
 export class EditStudentProfileComponent implements OnInit {
   private studentService = inject(StudentService);
+  private authService = inject(AuthService);
   currentStudent: Student = {
     firstName: '',
     lastName: '',
@@ -56,6 +60,15 @@ export class EditStudentProfileComponent implements OnInit {
     fieldOfStudy: '',
     bio: '',
   };
+
+  @ViewChild('resumeFileInput') resumeFileInput!: ElementRef<HTMLInputElement>;
+
+  isUploadingResume: any;
+  private extractedData: any;
+  isUploadingImage: any;
+  private resumeFile: any;
+  resumeName: any;
+  errors: Record<string, string> = {};
 
   formData: FormData = {
     firstName: '',
@@ -94,7 +107,7 @@ export class EditStudentProfileComponent implements OnInit {
         this.formData = {
         firstName: this.currentStudent.firstName,
         lastName: this.currentStudent.lastName,
-        email: 'john.doe@university.fr',
+        email: localStorage.getItem('pfe_match_email') || '',
         university: this.currentStudent.university,
         fieldOfStudy: this.currentStudent.fieldOfStudy,
         title: 'Software Engineering Student',
@@ -163,15 +176,48 @@ export class EditStudentProfileComponent implements OnInit {
   });
 }
 
-  handleResumeUpload(): void {
-    // TODO: Implement actual file upload
-    const today = new Date().toISOString().split('T')[0];
-    this.currentStudent.resumeName = 'new_resume.pdf';
-    this.currentStudent.resumeUploadDate = today;
-    
-    // Show success message
-    alert('Resume uploaded successfully!');
+  triggerFileInput(): void {
+    this.resumeFileInput.nativeElement.click();
   }
+
+  handleResumeUpload(event: Event): void {
+      const input = event.target as HTMLInputElement;
+      const file = input.files?.[0];
+      if (file && file.type === 'application/pdf') {
+        this.resumeFile = file;
+        this.resumeName = file.name;
+        this.isUploadingResume = true;
+  
+        // Upload resume and extract data
+        this.authService.uploadResume(file).subscribe({
+          next: (response) => {
+            this.isUploadingResume = false;
+  
+            if (response.extracted_data) {
+              this.extractedData = response.extracted_data as ResumeExtractedData;
+  
+              // Pre-fill extracted data if fields are empty
+              if (this.extractedData.github_url && !this.formData.githubUrl) {
+                this.formData.githubUrl = this.extractedData.github_url;
+              }
+              if (this.extractedData.linkedin_url && !this.formData.linkedinUrl) {
+                this.formData.linkedinUrl = this.extractedData.linkedin_url;
+              }
+              if (this.extractedData.skills?.length && this.skills.length === 0) {
+                this.skills = [...this.extractedData.skills];
+              }
+              if (this.extractedData.technologies?.length && this.technologies.length === 0) {
+                this.technologies = [...this.extractedData.technologies];
+              }
+            }
+          },
+          error: (error) => {
+            this.isUploadingResume = false;
+            this.errors['resume'] = error.message || 'Failed to upload resume';
+          }
+        });
+      }
+    }
 
   handleCancel(): void {
     this.router.navigate(['/profile']);
