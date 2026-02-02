@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { PFEListing, DashboardStatistics } from '../common/interfaces/interface';
@@ -10,10 +10,25 @@ import { PFEListing, DashboardStatistics } from '../common/interfaces/interface'
 export class PFEService {
   private http = inject(HttpClient);
   private readonly API_URL = 'http://localhost:8000/api';
+  private readonly TOKEN_KEY = 'pfe_match_token';
 
   // BehaviorSubject pour garder l'état en mémoire (cache)
   private pfeListingsSubject = new BehaviorSubject<PFEListing[]>([]);
   public pfeListings$ = this.pfeListingsSubject.asObservable();
+
+  /**
+   * Get HTTP headers with Authorization token
+   */
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem(this.TOKEN_KEY);
+    let headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+    return headers;
+  }
 
   // ============================================
   // GET - Récupérer les données
@@ -23,7 +38,7 @@ export class PFEService {
    * Récupérer toutes les PFE listings
    */
   getPFEListings(): Observable<PFEListing[]> {
-    return this.http.get<PFEListing[]>(`${this.API_URL}/pfe/listings`).pipe(
+    return this.http.get<PFEListing[]>(`${this.API_URL}/pfe/listings`, { headers: this.getAuthHeaders() }).pipe(
       tap(listings => this.pfeListingsSubject.next(listings)), // Mise à jour du cache
       catchError(error => {
         console.error('Error fetching PFE listings:', error);
@@ -36,7 +51,7 @@ export class PFEService {
    * Récupérer une PFE par ID
    */
   getPFEById(id: string): Observable<PFEListing> {
-    return this.http.get<PFEListing>(`${this.API_URL}/pfe/listings/${id}`).pipe(
+    return this.http.get<PFEListing>(`${this.API_URL}/pfe/listings/${id}`, { headers: this.getAuthHeaders() }).pipe(
       catchError(error => {
         console.error('Error fetching PFE:', error);
         return throwError(() => error);
@@ -48,7 +63,7 @@ export class PFEService {
    * Récupérer les statistiques du dashboard
    */
   getStatistics(): Observable<DashboardStatistics> {
-    return this.http.get<DashboardStatistics>(`${this.API_URL}/dashboard/statistics`).pipe(
+    return this.http.get<DashboardStatistics>(`${this.API_URL}/dashboard/statistics`, { headers: this.getAuthHeaders() }).pipe(
       catchError(error => {
         console.error('Error fetching statistics:', error);
         return throwError(() => error);
@@ -64,7 +79,7 @@ export class PFEService {
    * Créer une nouvelle PFE
    */
   createPFE(pfe: Omit<PFEListing, 'id'>): Observable<PFEListing> {
-    return this.http.post<PFEListing>(`${this.API_URL}/pfe/listings`, pfe).pipe(
+    return this.http.post<PFEListing>(`${this.API_URL}/pfe/listings`, pfe, { headers: this.getAuthHeaders() }).pipe(
       tap(newPFE => {
         // Ajouter au cache local
         const currentListings = this.pfeListingsSubject.value;
@@ -85,7 +100,7 @@ export class PFEService {
    * Modifier une PFE existante
    */
   updatePFE(id: string, pfe: Partial<PFEListing>): Observable<PFEListing> {
-    return this.http.put<PFEListing>(`${this.API_URL}/pfe/listings/${id}`, pfe).pipe(
+    return this.http.put<PFEListing>(`${this.API_URL}/pfe/listings/${id}`, pfe, { headers: this.getAuthHeaders() }).pipe(
       tap(updatedPFE => {
         // Mettre à jour le cache local
         const currentListings = this.pfeListingsSubject.value;
@@ -109,7 +124,7 @@ export class PFEService {
    * Supprimer une PFE
    */
   deletePFE(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.API_URL}/pfe/listings/${id}`).pipe(
+    return this.http.delete<void>(`${this.API_URL}/pfe/listings/${id}`, { headers: this.getAuthHeaders() }).pipe(
       tap(() => {
         // Retirer du cache local
         const currentListings = this.pfeListingsSubject.value;
