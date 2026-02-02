@@ -95,16 +95,22 @@ class StudentProfileUpdate(BaseModel):
     technologies: Optional[List[str]] = Field(default=None)
 
 
+from pydantic import BaseModel, HttpUrl, Field
+
 class EnterpriseProfileUpdate(BaseModel):
-    """Update enterprise profile (profile completion step)"""
+    company_name: Optional[str] = Field(None, max_length=200)
+    industry: Optional[str] = Field(None, max_length=100)
     location: Optional[str] = Field(None, max_length=200)
     employee_count: Optional[str] = Field(None, max_length=50)
-    company_description: Optional[str] = Field(None, max_length=2000)
-    technologies_used: Optional[List[str]] = Field(default=None)
-    website: Optional[str] = None
-    founded_year: Optional[int] = Field(None, ge=1800, le=2030)
-    company_logo: Optional[str] = Field(None, max_length=500)
+    company_description: Optional[str] = None
+    technologies_used: Optional[List[str]] = []
+    website: Optional[HttpUrl] = None
+    founded_year: Optional[int] = None
+    # Optional frontend-only field
+    linkedin_url: Optional[HttpUrl] = None
 
+    class Config:
+        orm_mode = True
 
 # ==================== RESPONSE SCHEMAS ====================
 
@@ -121,26 +127,25 @@ class UserResponse(BaseModel):
 
 
 class StudentProfileResponse(BaseModel):
-    """Student profile response"""
-    id: int
-    user_id: int
-    first_name: str
-    last_name: str
-    university: Optional[str] = None
-    short_bio: Optional[str] = None
-    profile_picture: Optional[str] = None
-    desired_job_role: Optional[str] = None
-    linkedin_url: Optional[str] = None
-    github_url: Optional[str] = None
-    portfolio_url: Optional[str] = None
-    skills: Optional[List[str]] = None
-    technologies: Optional[List[str]] = None
-    resume_url: Optional[str] = None
-    resume_parsed: bool = False
-    
+    firstName: str
+    lastName: str
+    profileImage: Optional[str]
+    title: Optional[str]
+    university: Optional[str]
+    bio: Optional[str]
+
+    skills: List[str]
+    technologies: List[str]
+
+    linkedinUrl: Optional[str]
+    githubUrl: Optional[str]
+    customLinkUrl: Optional[str]
+    customLinkLabel: Optional[str]
+
+    resumeName: Optional[str]
+
     class Config:
         from_attributes = True
-
 
 class EnterpriseProfileResponse(BaseModel):
     """Enterprise profile response"""

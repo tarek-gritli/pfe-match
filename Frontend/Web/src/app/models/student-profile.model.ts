@@ -11,17 +11,31 @@ export interface Resume {
 }
 
 // Full student profile structure returned by backend
-export interface StudentProfile {
-  profileIntegrity: number;
-  profile: {
-    name: string;
-    title: string;
-    university: string;
-    location: string;
-    imageUrl: string;
-    summary: string;
-  };
-  skills: NamedItem[];
-  tools: NamedItem[];
-  resume: Resume;
+export interface Student {
+  firstName: string;
+  lastName: string;
+  profileImage?: string;
+  title?: string;
+  university: string;
+  fieldOfStudy: string;
+  bio: string;
+  skills: string[];
+  technologies: string[];
+  linkedinUrl?: string;
+  githubUrl?: string;
+  customLinkUrl?: string;
+  customLinkLabel?: string;
+  resumeName?: string;
+  resumeUploadDate?: string;
+}
+
+export interface StudentProfileUpdate {
+  university?: string;
+  short_bio?: string;
+  desired_job_role?: string;
+  linkedin_url?: string;
+  github_url?: string;
+  portfolio_url?: string;
+  skills?: string[];
+  technologies?: string[];
 }

@@ -41,21 +41,40 @@ def get_my_profile(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Get current student's profile"""
     if current_user.role != UserRole.STUDENT:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only students can access this endpoint"
         )
-    
-    student = db.query(Student).filter(Student.user_id == current_user.id).first()
+
+    student = (
+        db.query(Student)
+        .filter(Student.user_id == current_user.id)
+        .first()
+    )
+
     if not student:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Student profile not found"
         )
-    
-    return student
+
+    return {
+        "firstName": student.first_name,
+        "lastName" : student.last_name,
+        "profileImage": student.profile_picture,
+        "title": student.desired_job_role,
+        "university": student.university,
+        "bio": student.short_bio,
+        "skills": student.skills or [],
+        "technologies": student.technologies or [],
+        "linkedinUrl": student.linkedin_url,
+        "githubUrl": student.github_url,
+        "customLinkUrl": student.portfolio_url,
+        "customLinkLabel": "Portfolio",
+        "resumeName": student.resume_url.split("/")[-1] if student.resume_url else None,
+    }
+
 
 
 @router.put("/me/profile", response_model=MessageResponse)

@@ -1,0 +1,811 @@
+.profile-create-container {
+  min-height: 100vh;
+  background-color: hsl(var(--background));
+}
+
+.profile-create-content {
+  max-width: 768px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.header-icon-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.header-icon-title h1 {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+  margin: 0;
+}
+
+.icon-primary {
+  color: hsl(var(--primary));
+}
+
+.header-subtitle {
+  color: hsl(var(--muted-foreground));
+  margin: 0;
+}
+
+/* Form Card */
+.form-card {
+  margin-bottom: 1.5rem;
+}
+
+.card-title-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Form Content */
+.form-content {
+  padding-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Logo Section */
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding-top: 1.5rem;
+}
+
+.logo-preview-wrapper {
+  position: relative;
+}
+
+.logo-container {
+  width: 6rem;
+  height: 6rem;
+  border-radius: 0.75rem;
+  background-color: hsl(var(--muted));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 2px dashed hsl(var(--muted-foreground) / 0.3);
+}
+
+.logo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.logo-placeholder-icon {
+  color: hsl(var(--muted-foreground));
+}
+
+.logo-upload-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 2rem;
+  height: 2rem;
+  background-color: hsl(var(--primary));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border: none;
+}
+
+.logo-upload-btn:hover {
+  background-color: hsl(var(--primary) / 0.9);
+}
+
+.logo-upload-btn svg {
+  color: hsl(var(--primary-foreground));
+}
+
+.logo-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.logo-hint {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Native Select */
+.native-select {
+  width: 100%;
+  height: 2.25rem;
+  padding: 0 0.75rem;
+  border-radius: 0.375rem;
+  border: 1px solid hsl(var(--input));
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  appearance: auto;
+}
+
+.native-select:focus {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.15);
+}
+
+.native-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.native-select.input-error {
+  border-color: hsl(var(--destructive));
+}
+
+/* Input Errors */
+.input-error ::ng-deep .input,
+.input-error ::ng-deep .textarea {
+  border-color: hsl(var(--destructive));
+}
+
+.error-message {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: hsl(var(--destructive));
+  margin: 0;
+}
+
+/* Description */
+.description-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.description-hint {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.description-count {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Technologies Input */
+.input-with-button {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.input-with-suggestions {
+  flex: 1;
+  position: relative;
+}
+
+.suggestions-dropdown {
+  position: absolute;
+  z-index: 10;
+  width: 100%;
+  margin-top: 0.25rem;
+  background-color: hsl(var(--popover));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.375rem;
+  box-shadow: var(--shadow-lg);
+}
+
+.suggestion-item {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  color: hsl(var(--foreground));
+}
+
+.suggestion-item:hover {
+  background-color: hsl(var(--accent));
+}
+
+/* Tags */
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  align-items: flex-start;
+}
+
+.tag-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding-right: 0.25rem;
+}
+
+.tag-remove {
+  margin-left: 0.25rem;
+  padding: 0.125rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tag-remove:hover {
+  background-color: hsl(var(--muted-foreground) / 0.2);
+}
+
+.empty-tags-message {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: hsl(var(--muted-foreground));
+  font-style: italic;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.action-buttons app-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Hidden Input */
+.hidden-input {
+  display: none;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .logo-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-buttons app-button {
+    width: 100%;
+  }
+}
+
+.profile-create-container {
+  min-height: 100vh;
+  background-color: hsl(var(--background));
+}
+
+.profile-create-content {
+  max-width: 768px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.header-icon-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.header-icon-title h1 {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+  margin: 0;
+}
+
+.icon-primary {
+  color: hsl(var(--primary));
+}
+
+.header-subtitle {
+  color: hsl(var(--muted-foreground));
+  margin: 0;
+}
+
+/* Step Indicator */
+.step-indicator {
+  margin-bottom: 2rem;
+}
+
+.step-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  gap: 2rem;
+}
+
+.step-wrapper {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 0 0 auto;
+  width: 100%;
+}
+
+.step-circle {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid;
+  transition: all 0.2s;
+}
+
+.step-complete {
+  background-color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.step-active {
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary));
+  background-color: hsl(var(--primary) / 0.1);
+}
+
+.step-inactive {
+  border-color: hsl(var(--muted-foreground) / 0.3);
+  color: hsl(var(--muted-foreground));
+  background-color: transparent;
+}
+
+.step-title {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  margin-top: 0.5rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.step-title-active {
+  color: hsl(var(--foreground));
+}
+
+.step-title-inactive {
+  color: hsl(var(--muted-foreground));
+}
+
+.step-connector {
+  height: 2px;
+  width: 8rem;
+  flex: 1;
+  margin: 0 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.step-connector-active {
+  background-color: hsl(var(--primary));
+}
+
+.step-connector-inactive {
+  background-color: hsl(var(--muted-foreground) / 0.3);
+}
+
+.progress-indicator ::ng-deep .progress-root {
+  height: 0.5rem;
+}
+
+/* Card */
+.step-card {
+  margin-bottom: 1.5rem;
+}
+
+.card-title-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Form Content */
+.form-content {
+  padding-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Profile Picture */
+.profile-picture-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profile-picture-wrapper {
+  position: relative;
+}
+
+.profile-picture-container {
+  width: 6rem;
+  height: 6rem;
+  border-radius: 50%;
+  background-color: hsl(var(--muted));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 2px dashed hsl(var(--muted-foreground) / 0.3);
+}
+
+.profile-picture-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-picture-placeholder {
+  color: hsl(var(--muted-foreground));
+}
+
+.profile-picture-upload-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 2rem;
+  height: 2rem;
+  background-color: hsl(var(--primary));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border: none;
+}
+
+.profile-picture-upload-btn:hover {
+  background-color: hsl(var(--primary) / 0.9);
+}
+
+.profile-picture-upload-btn svg {
+  color: hsl(var(--primary-foreground));
+}
+
+.profile-picture-hint {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Input Fields */
+.input-error ::ng-deep .input,
+.input-error ::ng-deep .textarea {
+  border-color: hsl(var(--destructive));
+}
+
+.error-message {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: hsl(var(--destructive));
+  margin: 0;
+}
+
+/* Bio */
+.bio-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bio-hint {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.bio-count {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Skills & Tech Input */
+.input-with-button {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.input-with-suggestions {
+  flex: 1;
+  position: relative;
+}
+
+.suggestions-dropdown {
+  position: absolute;
+  z-index: 10;
+  width: 100%;
+  margin-top: 0.25rem;
+  background-color: hsl(var(--popover));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.375rem;
+  box-shadow: var(--shadow-lg);
+}
+
+.suggestion-item {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  color: hsl(var(--foreground));
+}
+
+.suggestion-item:hover {
+  background-color: hsl(var(--accent));
+}
+
+/* Tags */
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  align-items: flex-start;
+}
+
+.tag-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding-right: 0.25rem;
+}
+
+.tag-remove {
+  margin-left: 0.25rem;
+  padding: 0.125rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tag-remove:hover {
+  background-color: hsl(var(--muted-foreground) / 0.2);
+}
+
+.empty-tags-message {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: hsl(var(--muted-foreground));
+  font-style: italic;
+}
+
+/* Resume Upload */
+.resume-upload-area {
+  border: 2px dashed hsl(var(--muted-foreground) / 0.3);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+
+.resume-upload-area:hover {
+  border-color: hsl(var(--primary) / 0.5);
+}
+
+.resume-uploaded {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.resume-icon {
+  color: hsl(var(--primary));
+}
+
+.resume-info {
+  text-align: left;
+  flex: 1;
+}
+
+.resume-name {
+  font-weight: 500;
+  color: hsl(var(--foreground));
+  margin: 0 0 0.25rem 0;
+}
+
+.resume-status {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: hsl(var(--muted-foreground));
+  margin: 0;
+}
+
+.resume-upload-label {
+  cursor: pointer;
+  display: block;
+}
+
+.upload-icon {
+  color: hsl(var(--muted-foreground));
+  margin: 0 auto 0.5rem;
+}
+
+.upload-text {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: hsl(var(--muted-foreground));
+  margin: 0 0 0.25rem 0;
+}
+
+.upload-hint {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: hsl(var(--muted-foreground));
+  margin: 0;
+}
+
+/* Links */
+.label-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.links-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.link-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.link-label ::ng-deep .label {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: hsl(var(--muted-foreground));
+}
+
+.custom-link-inputs {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.custom-link-label-input {
+  width: 33.333%;
+}
+
+.custom-link-url-input {
+  flex: 1;
+}
+
+/* Navigation Buttons */
+.navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.navigation-buttons app-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Hidden Input */
+.hidden-input {
+  display: none;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .step-title {
+    font-size: 0.65rem;
+    max-width: 80px;
+  }
+
+  .step-circle {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .step-circle svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .custom-link-inputs {
+    flex-direction: column;
+  }
+
+  .custom-link-label-input {
+    width: 100%;
+  }
+}

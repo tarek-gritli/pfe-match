@@ -1,0 +1,533 @@
+<div class="profile-create-container">
+  <div class="profile-create-content">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-icon-title">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="32"
+          height="32"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="icon-primary"
+        >
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        <h1>Create Company Profile</h1>
+      </div>
+      <p class="header-subtitle">
+        Set up your company profile to start posting PFE opportunities
+      </p>
+    </div>
+
+    <!-- Step Indicator -->
+    <div class="step-indicator">
+      <div class="step-progress">
+        @for (step of steps; track step.id; let i = $index) {
+          <div class="step-wrapper">
+            <div class="step-item">
+              <div
+                [class]="
+                  'step-circle ' +
+                  (currentStep > step.id
+                    ? 'step-complete'
+                    : currentStep === step.id
+                      ? 'step-active'
+                      : 'step-inactive')
+                "
+              >
+                @if (currentStep > step.id) {
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg>
+                }
+                @if (currentStep <= step.id && step.icon === 'building') {
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9 22 9 12 15 12 15 22"/>
+                  </svg>
+                }
+                @if (currentStep <= step.id && step.icon === 'link') {
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                  </svg>
+                }
+              </div>
+              <span
+                [class]="
+                  'step-title ' +
+                  (currentStep >= step.id
+                    ? 'step-title-active'
+                    : 'step-title-inactive')
+                "
+              >
+                {{ step.title }}
+              </span>
+            </div>
+            @if (i < steps.length - 1) {
+              <div
+                [class]="
+                  'step-connector ' +
+                  (currentStep > step.id
+                    ? 'step-connector-active'
+                    : 'step-connector-inactive')
+                "
+              ></div>
+            }
+          </div>
+        }
+      </div>
+      <app-progress
+        [value]="progressValue"
+        class="progress-indicator"
+      ></app-progress>
+    </div>
+
+    <!-- Step Content -->
+    <app-card class="step-card">
+      <!-- Step 1: Basic Information -->
+      @if (currentStep === 1) {
+        <app-card-header>
+          <app-card-title>
+            <div class="card-title-with-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+              Basic Information
+            </div>
+          </app-card-title>
+          <app-card-description>
+            Provide essential details about your company
+          </app-card-description>
+        </app-card-header>
+        <app-card-content>
+          <div class="form-content">
+            <!-- Logo -->
+            <div class="logo-section">
+              <div class="logo-preview-wrapper">
+                <div class="logo-container">
+                  @if (formData.logo) {
+                    <img [src]="formData.logo" alt="Company logo" class="logo-image" />
+                  } @else {
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="40"
+                      height="40"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="logo-placeholder-icon"
+                    >
+                      <rect width="20" height="20" x="2" y="2" rx="2"/>
+                      <circle cx="8" cy="8" r="2"/>
+                      <path d="m21 15-5-5L5 21"/>
+                    </svg>
+                  }
+                </div>
+                <label for="logo-upload" class="logo-upload-btn">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" x2="12" y1="3" y2="15"/>
+                  </svg>
+                </label>
+                <input
+                  id="logo-upload"
+                  type="file"
+                  accept="image/*"
+                  class="hidden-input"
+                  (change)="handleLogoUpload($event)"
+                />
+              </div>
+              <div class="logo-info">
+                <span class="logo-hint">Upload company logo (optional)</span>
+                @if (formData.logo) {
+                  <app-button variant="ghost" size="sm" (buttonClick)="removeLogo()">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M3 6h18"/>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+                      <path d="M10 11v6"/>
+                      <path d="M14 11v6"/>
+                      <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                    </svg>
+                    Remove
+                  </app-button>
+                }
+              </div>
+            </div>
+
+            <!-- Location & Size -->
+            <div class="form-grid">
+              <div class="form-field">
+                <app-label htmlFor="location">Location *</app-label>
+                <app-input
+                  type="text"
+                  placeholder="e.g., Tunis, Tunisia"
+                  [(ngModel)]="formData.location"
+                  [class.input-error]="errors['location']"
+                ></app-input>
+                @if (errors['location']) {
+                  <p class="error-message">{{ errors['location'] }}</p>
+                }
+              </div>
+              <div class="form-field">
+                <app-label htmlFor="size">Company Size *</app-label>
+                <select
+                  class="native-select"
+                  [(ngModel)]="formData.size"
+                  [class.input-error]="errors['size']"
+                >
+                  <option value="" disabled>Select company size</option>
+                  @for (option of sizeOptions; track option) {
+                    <option [value]="option">{{ option }}</option>
+                  }
+                </select>
+                @if (errors['size']) {
+                  <p class="error-message">{{ errors['size'] }}</p>
+                }
+              </div>
+            </div>
+
+            <!-- Founded Year -->
+            <div class="form-field">
+              <app-label htmlFor="foundedYear">Founded Year</app-label>
+              <app-input
+                type="number"
+                placeholder="e.g., 2018"
+                [(ngModel)]="formData.foundedYear"
+              ></app-input>
+            </div>
+
+            <!-- Description -->
+            <div class="form-field">
+              <app-label htmlFor="description">Company Description *</app-label>
+              <app-textarea
+                placeholder="Tell us about your company, what you do, and what makes you unique..."
+                [(ngModel)]="formData.description"
+                [rows]="5"
+                [class.input-error]="errors['description']"
+              ></app-textarea>
+              <div class="description-footer">
+                @if (errors['description']) {
+                  <p class="error-message">{{ errors['description'] }}</p>
+                } @else {
+                  <span class="description-hint">Minimum 20 characters</span>
+                }
+                <span class="description-count">{{ formData.description.length }} characters</span>
+              </div>
+            </div>
+          </div>
+        </app-card-content>
+      }
+
+      <!-- Step 2: Details & Links -->
+      @if (currentStep === 2) {
+        <app-card-header>
+          <app-card-title>
+            <div class="card-title-with-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+              </svg>
+              Details & Links
+            </div>
+          </app-card-title>
+          <app-card-description>
+            Add technologies, contact info, and links to your online presence
+          </app-card-description>
+        </app-card-header>
+        <app-card-content>
+          <div class="form-content">
+            <!-- Contact Email -->
+            <div class="form-field">
+              <app-label htmlFor="contactEmail">Contact Email *</app-label>
+              <app-input
+                type="email"
+                placeholder="contact@company.com"
+                [(ngModel)]="formData.contactEmail"
+                [class.input-error]="errors['contactEmail']"
+              ></app-input>
+              @if (errors['contactEmail']) {
+                <p class="error-message">{{ errors['contactEmail'] }}</p>
+              }
+            </div>
+
+            <!-- Technologies -->
+            <div class="form-field">
+              <app-label>
+                <div class="label-with-icon">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="16 18 22 12 16 6"/>
+                    <polyline points="8 6 2 12 8 18"/>
+                  </svg>
+                  Technologies & Stack (optional)
+                </div>
+              </app-label>
+              <div class="input-with-button">
+                <div class="input-with-suggestions">
+                  <app-input
+                    type="text"
+                    placeholder="e.g., Angular, Node.js, AWS"
+                    [(ngModel)]="newTech"
+                    (keydown)="onTechKeyDown($event)"
+                  ></app-input>
+                  @if (newTech && suggestedTechs.length > 0) {
+                    <div class="suggestions-dropdown">
+                      @for (tech of suggestedTechs; track tech) {
+                        <button
+                          type="button"
+                          class="suggestion-item"
+                          (click)="selectSuggestedTech(tech)"
+                        >
+                          {{ tech }}
+                        </button>
+                      }
+                    </div>
+                  }
+                </div>
+                <app-button variant="default" size="icon" (buttonClick)="handleAddTech()">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14"/>
+                    <path d="M12 5v14"/>
+                  </svg>
+                </app-button>
+              </div>
+              <div class="tags-container">
+                @for (tech of formData.technologies; track tech) {
+                  <app-badge variant="secondary" class="tag-badge">
+                    {{ tech }}
+                    <button type="button" class="tag-remove" (click)="handleRemoveTech(tech)">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M18 6 6 18"/>
+                        <path d="m6 6 12 12"/>
+                      </svg>
+                    </button>
+                  </app-badge>
+                }
+                @if (formData.technologies.length === 0) {
+                  <span class="empty-tags-message">
+                    Add technologies your company uses
+                  </span>
+                }
+              </div>
+            </div>
+
+            <!-- Links -->
+            <div class="form-field">
+              <app-label>
+                <div class="label-with-icon">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M2 12h20"/>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                  </svg>
+                  Online Presence (optional)
+                </div>
+              </app-label>
+              <div class="links-section">
+                <div class="link-field">
+                  <app-label htmlFor="website" class="link-label">Company Website</app-label>
+                  <app-input
+                    type="text"
+                    placeholder="https://yourcompany.com"
+                    [(ngModel)]="formData.website"
+                  ></app-input>
+                </div>
+                <div class="link-field">
+                  <app-label htmlFor="linkedinUrl" class="link-label">LinkedIn URL</app-label>
+                  <app-input
+                    type="text"
+                    placeholder="https://linkedin.com/company/yourcompany"
+                    [(ngModel)]="formData.linkedinUrl"
+                  ></app-input>
+                </div>
+              </div>
+            </div>
+          </div>
+        </app-card-content>
+      }
+    </app-card>
+
+    <!-- Navigation Buttons -->
+    <div class="navigation-buttons">
+      <app-button
+        variant="outline"
+        (buttonClick)="handleBack()"
+        [disabled]="currentStep === 1"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="m15 18-6-6 6-6" />
+        </svg>
+        Back
+      </app-button>
+
+      @if (currentStep < 2) {
+        <app-button variant="default" (buttonClick)="handleNext()">
+          Next
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </app-button>
+      }
+
+      @if (currentStep === 2) {
+        <app-button variant="default" (buttonClick)="handleCreateProfile()">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M20 6 9 17l-5-5" />
+          </svg>
+          Create Company Profile
+        </app-button>
+      }
+    </div>
+  </div>
+</div>

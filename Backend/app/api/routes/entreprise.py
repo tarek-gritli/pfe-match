@@ -27,21 +27,38 @@ def get_my_profile(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Get current enterprise's profile"""
+    """Get current enterprise's profile mapped to frontend interface"""
     if current_user.role != UserRole.ENTERPRISE:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only enterprises can access this endpoint"
         )
-    
+
     enterprise = db.query(Enterprise).filter(Enterprise.user_id == current_user.id).first()
     if not enterprise:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Enterprise profile not found"
         )
-    
-    return enterprise
+
+    # Map backend fields to frontend Enterprise interface
+    response_data = {
+        "name": enterprise.company_name,
+        "logo": enterprise.company_logo,
+        "industry": enterprise.industry,
+        "location": enterprise.location,
+        "size": enterprise.employee_count,
+        "description": enterprise.company_description,
+        "technologies": enterprise.technologies_used or [],
+        "website": enterprise.website,
+        "foundedYear": enterprise.founded_year,
+        # Optional frontend-only fields
+        "linkedinUrl": getattr(enterprise.user, "linkedin_url", None),
+        "contactEmail": getattr(enterprise.user, "email", None)
+    }
+
+    return response_data
+
 
 
 @router.put("/me/profile", response_model=MessageResponse)
@@ -50,7 +67,7 @@ def complete_enterprise_profile(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Complete or update enterprise profile"""
+    """Complete or update enterprise profile from frontend form"""
     if current_user.role != UserRole.ENTERPRISE:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -64,18 +81,34 @@ def complete_enterprise_profile(
             detail="Enterprise profile not found"
         )
 
-    # Update profile fields
+    # Map frontend fields to backend model
     update_data = data.model_dump(exclude_unset=True)
+
+    # Rename frontend field keys to backend keys
+    field_mapping = {
+        "company_name": "company_name",
+        "industry": "industry",
+        "location": "location",
+        "employee_count": "employee_count",
+        "company_description": "company_description",
+        "technologies_used": "technologies_used",
+        "website": "website",
+        "founded_year": "founded_year",
+        "linkedin_url": "linkedin_url",
+    }
+
     for field, value in update_data.items():
-        if value is not None:
-            setattr(enterprise, field, value)
+        backend_field = field_mapping.get(field)
+        if backend_field and value is not None:
+            setattr(enterprise, backend_field, value)
 
     # Mark profile as completed
     current_user.profile_completed = True
-    
+
     db.commit()
-    
+
     return MessageResponse(message="Profile updated successfully")
+
 
 
 @router.post("/me/logo", response_model=ProfilePictureUploadResponse)

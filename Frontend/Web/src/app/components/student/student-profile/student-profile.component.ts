@@ -6,23 +6,9 @@ import { ButtonComponent } from '../../Common/button/button.component';
 import { BadgeComponent } from '../../Common/badge/badge.component';
 import { ProgressComponent } from '../../Common/progress/progress.component';
 import { AvatarComponent } from '../../Common/avatar/avatar.component';
-
-interface Student {
-  fullName: string;
-  profileImage?: string;
-  title?: string;
-  university: string;
-  fieldOfStudy?: string;
-  bio?: string;
-  skills: string[];
-  technologies: string[];
-  linkedinUrl?: string;
-  githubUrl?: string;
-  customLinkUrl?: string;
-  customLinkLabel?: string;
-  resumeName?: string;
-  resumeUploadDate?: string;
-}
+import { Student } from '../../../models/student-profile.model';
+import { StudentService } from '../../../services/student.service';
+import { inject } from '@angular/core';
 
 interface ProfileCompleteness {
   percentage: number;
@@ -48,10 +34,13 @@ interface ProfileCompleteness {
 })
 export class StudentProfileComponent implements OnInit {
   currentStudent: Student = {
-    fullName: '',
+    firstName: '',
+    lastName: '',
     university: '',
     skills: [],
-    technologies: []
+    technologies: [],
+    fieldOfStudy: '',
+    bio: '',
   };
 
   profileCompleteness: ProfileCompleteness = {
@@ -59,33 +48,21 @@ export class StudentProfileComponent implements OnInit {
     tip: ''
   };
 
+  private studentService = inject(StudentService);
+  isLoading = true;
+
   constructor(private router: Router) {}
 
   ngOnInit(): void {
-    // TODO: Load current student data from your service
-    // For now, using mock data
-    this.loadStudentData();
-    this.profileCompleteness = this.calculateProfileCompleteness(this.currentStudent);
-  }
-
-  loadStudentData(): void {
-    // TODO: Replace with actual service call
-    this.currentStudent = {
-      fullName: 'John Doe',
-      profileImage: 'https://github.com/shadcn.png',
-      title: 'Software Engineering Student',
-      university: 'Example University',
-      fieldOfStudy: 'Computer Science',
-      bio: 'Passionate about building innovative software solutions and learning new technologies.',
-      skills: ['JavaScript', 'TypeScript', 'Angular', 'React', 'Node.js'],
-      technologies: ['Git', 'Docker', 'AWS', 'MongoDB', 'PostgreSQL'],
-      linkedinUrl: 'https://linkedin.com/in/johndoe',
-      githubUrl: 'https://github.com/johndoe',
-      customLinkUrl: 'https://johndoe.com',
-      customLinkLabel: 'Portfolio',
-      resumeName: 'John_Doe_Resume.pdf',
-      resumeUploadDate: '2024-01-15'
-    };
+    this.studentService.getProfile().subscribe({
+      next: (student) => {
+        this.currentStudent = student;
+        this.profileCompleteness = this.calculateProfileCompleteness(this.currentStudent);
+      },
+      error: () => {
+        this.isLoading = false;
+      }
+    })
   }
 
   calculateProfileCompleteness(student: Student): ProfileCompleteness {
@@ -95,7 +72,7 @@ export class StudentProfileComponent implements OnInit {
 
     // Basic info (40 points)
     total += 10;
-    if (student.fullName) completed += 10;
+    if (student.firstName) completed += 10;
     else tips.push('Add your full name');
 
     total += 10;

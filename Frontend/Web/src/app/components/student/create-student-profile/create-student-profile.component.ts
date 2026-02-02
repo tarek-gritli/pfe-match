@@ -12,6 +12,7 @@ import { ProgressComponent } from '../../Common/progress/progress.component';
 import { AuthService } from '../../../auth/services/auth.service';
 import { StudentProfileUpdate, ResumeExtractedData } from '../../../auth/model/auth.model';
 import { inject } from '@angular/core';
+import { StudentService} from '../../../services/student.service'
 
 interface ProfileFormData {
   profileImage: string;
@@ -60,6 +61,7 @@ export class CreateStudentProfileComponent {
   currentStep: number = 1;
   errors: Record<string, string> = {};
   private authService = inject(AuthService);
+  private studentService = inject(StudentService);
   private resumeFile: any;
   private isUploadingResume: any;
   private extractedData: any;
@@ -267,13 +269,27 @@ export class CreateStudentProfileComponent {
   }
 
   handleCreateProfile(): void {
-    if (!this.validateStep(2)) return;
-
-    // TODO: Replace with actual service call
+    const payload = {
+      university: this.formData.university,
+      short_bio: this.formData.bio,
+      desired_job_role: this.formData.title,
+      linkedin_url: this.formData.linkedinUrl,
+      github_url: this.formData.githubUrl,
+      portfolio_url: this.formData.customLinkUrl,
+      skills: this.formData.skills,
+      technologies: this.formData.technologies
+    };
     console.log('Creating profile:', this.formData);
-
-    // Navigate to profile page
-    this.router.navigate(['/profile']);
+    this.studentService.updateMyProfile(payload).subscribe({
+      next: () => {
+        alert('Profile updated successfully!');
+        this.router.navigate(['/profile']);
+      },
+      error: (err : any) => {
+        console.error(err);
+        alert('Failed to update profile');
+      }
+    });
   }
 
   onSkillKeyDown(event: KeyboardEvent): void {
