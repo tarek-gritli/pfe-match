@@ -13,20 +13,23 @@ import { CreateCompanyProfileComponent } from './components/company/create-compa
 import { ProfileComponent } from './components/profile/profile.component';
 import { CreateProfileComponent } from './components/create-profile/create-profile.component';
 import { EditProfileComponent } from './components/edit-profile/edit-profile.component';
+import { authGuard } from './auth/guards/auth.guard';
+import { guestGuard } from './auth/guards/guest.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: 'profile', component: ProfileComponent },
-  { path: 'create-profile', component: CreateProfileComponent },
-  { path: 'edit-profile', component: EditProfileComponent },
-  { path: 'explore', component: ExploreComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'login', component: LoginComponent },
-  // Enterprise routes (placeholder for now)
-  { path: 'enterprise/dashboard', component: StudentProfileComponent }, // TODO: Create EnterpriseDashboardComponent
-  {path: 'companies/overview-pfe', component: OverviewComponent},
-  {path: 'companies/applicants', component: ApplicantsComponent}
 
+  { path: 'register', component: RegisterComponent, canActivate: [guestGuard] },
+  { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
+
+  { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
+  { path: 'create-profile', component: CreateProfileComponent, canActivate: [authGuard] },
+  { path: 'edit-profile', component: EditProfileComponent, canActivate: [authGuard] },
+  { path: 'explore', component: ExploreComponent, canActivate: [authGuard] },
+
+  { path: 'enterprise/dashboard', component: StudentProfileComponent, canActivate: [authGuard] }, // TODO: Create EnterpriseDashboardComponent
+  { path: 'companies/overview-pfe', component: OverviewComponent, canActivate: [authGuard] },
+  { path: 'companies/applicants', component: ApplicantsComponent, canActivate: [authGuard] }
 ];
   //{path: 'login', component: LoginComponent },
   //{path: 'companies/overview-pfe', component: OverviewComponent},
