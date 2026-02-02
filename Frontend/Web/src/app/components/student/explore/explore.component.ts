@@ -3,11 +3,15 @@ import {
   computed,
   signal,
   ChangeDetectionStrategy,
+  inject,
 } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PfeCardComponent } from '../pfe-card/pfe-card.component';
 import { PFEListing } from '../../../common/interfaces/interface';
+import { ApiService } from '../../../api/api.service';
+import { ENDPOINTS } from '../../../api/api.config';
 
 @Component({
   selector: 'app-explore',
@@ -18,47 +22,21 @@ import { PFEListing } from '../../../common/interfaces/interface';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExploreComponent {
-  private allOffers = signal<PFEListing[]>([
-    {
-      id: '1',
-      title: 'Full-Stack Web Development with React & Node.js',
-      status: 'open',
-      description:
-        'Join our dynamic team to build modern web applications using cutting-edge technologies. You will work on real-world projects involving React, Node.js, and MongoDB, gaining hands-on experience in full-stack development.',
-      duration: '6 months',
-      category: 'Web Development',
-      applicantCount: 8,
-      location: 'Tunis, Tunisia',
-      company: {
-        id: '1',
-        name: 'TechCorp Tunisia',
-        industry: 'Information Technology',
-      },
-      skills: ['JavaScript', 'React', 'Communication', 'Problem Solving'],
-    },
-    {
-      id: '2',
-      title: 'Mobile App Development - Flutter & Firebase',
-      description:
-        'Design and develop cross-platform mobile applications using Flutter framework. Work with Firebase for backend services and gain experience in mobile UI/UX design principles.',
-      duration: '5 months',
-      category: 'Mobile Development',
-      location: 'Sfax, Tunisia',
-      status: 'closed',
-      company: {
-        id: '2',
-        name: 'Mobile Solutions Inc',
-        industry: 'Mobile Apps',
-      },
-      skills: ['Dart', 'Flutter', 'UI/UX Design', 'Mobile Development'],
-      applicantCount: 5,
-    },
-  ]).asReadonly();
+  private api = inject(ApiService);
+
+  private offersResource = rxResource({
+    loader: () => this.api.get<PFEListing[]>(ENDPOINTS.PFE.EXPLORE)
+  });
+
+  // Get all offers from resource
+  private allOffers = computed(() => this.offersResource.value() ?? []);
+
+  // Loading and error states from resource
+  loading = this.offersResource.isLoading;
+  error = computed(() => typeof this.offersResource.error() === 'string' ? this.offersResource.error() : null);
 
   searchInput = signal('');
   favorites = signal(new Set<string>());
-  loading = signal(false);
-  error = signal<string | null>(null);
 
   offers = computed(() => {
     const query = this.searchInput().toLowerCase().trim();
@@ -120,6 +98,6 @@ export class ExploreComponent {
   }
 
   refreshOffers(): void {
-    console.log('Mock data is static, no refresh needed');
+    this.offersResource.reload();
   }
 }
