@@ -3,6 +3,7 @@ import { StudentProfileComponent } from './components/student/student-profile/st
 import { CreateStudentProfileComponent } from './components/student/create-student-profile/create-student-profile.component';
 import { EditStudentProfileComponent } from './components/student/edit-student-profile/edit-student-profile.component';
 import { ExploreComponent } from './components/student/explore/explore.component';
+import { MyApplicationsComponent } from './components/student/my-applications/my-applications.component';
 import { RegisterComponent } from './auth/pages/register/register.component';
 import { LoginComponent } from './auth/pages/login/login.component';
 import {OverviewComponent} from './components/company/overview/overview.component';
@@ -26,6 +27,7 @@ export const routes: Routes = [
   { path: 'create-profile', component: CreateProfileComponent, canActivate: [authGuard] },
   { path: 'edit-profile', component: EditProfileComponent, canActivate: [authGuard] },
   { path: 'explore', component: ExploreComponent, canActivate: [authGuard] },
+  { path: 'my-applications', component: MyApplicationsComponent, canActivate: [authGuard] },
 
   { path: 'enterprise/dashboard', component: StudentProfileComponent, canActivate: [authGuard] }, // TODO: Create EnterpriseDashboardComponent
   { path: 'companies/overview-pfe', component: OverviewComponent, canActivate: [authGuard] },

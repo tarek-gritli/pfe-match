@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { PFEListing, DashboardStatistics } from '../common/interfaces/interface';
+import { PFEListing, DashboardStatistics, MatchResult, ApplicationResponse, StudentApplication } from '../common/interfaces/interface';
 
 @Injectable({
   providedIn: 'root'
@@ -154,5 +154,51 @@ export class PFEService {
    */
   getCachedListings(): PFEListing[] {
     return this.pfeListingsSubject.value;
+  }
+
+  // ============================================
+  // Applications & Match Score
+  // ============================================
+
+  /**
+   * Get match preview for a PFE listing (without applying)
+   */
+  getMatchPreview(pfeId: string): Observable<MatchResult> {
+    return this.http.get<MatchResult>(`${this.API_URL}/pfe/listings/${pfeId}/match-preview`, { 
+      headers: this.getAuthHeaders() 
+    }).pipe(
+      catchError(error => {
+        console.error('Error fetching match preview:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Apply to a PFE listing
+   */
+  applyToPFE(pfeId: string): Observable<ApplicationResponse> {
+    return this.http.post<ApplicationResponse>(`${this.API_URL}/pfe/listings/${pfeId}/apply`, {}, { 
+      headers: this.getAuthHeaders() 
+    }).pipe(
+      catchError(error => {
+        console.error('Error applying to PFE:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Get student's applications
+   */
+  getMyApplications(): Observable<StudentApplication[]> {
+    return this.http.get<StudentApplication[]>(`${this.API_URL}/pfe/applications/me`, { 
+      headers: this.getAuthHeaders() 
+    }).pipe(
+      catchError(error => {
+        console.error('Error fetching applications:', error);
+        return throwError(() => error);
+      })
+    );
   }
 }

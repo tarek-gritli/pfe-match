@@ -8,6 +8,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PfeCardComponent } from '../pfe-card/pfe-card.component';
+import { PfeDetailModalComponent } from '../pfe-detail-modal/pfe-detail-modal.component';
 import { PFEListing } from '../../../common/interfaces/interface';
 import { ApiService } from '../../../api/api.service';
 import { ENDPOINTS } from '../../../api/api.config';
@@ -15,7 +16,7 @@ import { ENDPOINTS } from '../../../api/api.config';
 @Component({
   selector: 'app-explore',
   standalone: true,
-  imports: [CommonModule, FormsModule, PfeCardComponent],
+  imports: [CommonModule, FormsModule, PfeCardComponent, PfeDetailModalComponent],
   templateUrl: './explore.component.html',
   styleUrls: ['./explore.component.css'],
 })
@@ -35,6 +36,10 @@ export class ExploreComponent {
 
   searchInput = signal('');
   favorites = signal(new Set<string>());
+  
+  // Modal state
+  selectedOffer = signal<PFEListing | null>(null);
+  isModalOpen = signal(false);
 
   offers = computed(() => {
     const query = this.searchInput().toLowerCase().trim();
@@ -91,8 +96,18 @@ export class ExploreComponent {
   }
 
   onCardClick(offer: PFEListing): void {
-    // TODO: Navigate to offer details page
-    console.log('Clicked offer:', offer);
+    this.selectedOffer.set(offer);
+    this.isModalOpen.set(true);
+  }
+
+  closeModal(): void {
+    this.isModalOpen.set(false);
+    this.selectedOffer.set(null);
+  }
+
+  onApplied(): void {
+    // Refresh offers to update applicant count
+    this.refreshOffers();
   }
 
   refreshOffers(): void {

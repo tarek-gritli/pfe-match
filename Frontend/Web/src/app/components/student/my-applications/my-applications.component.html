@@ -1,0 +1,210 @@
+<div class="applications-container">
+  <!-- Header -->
+  <header class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">My Applications</h1>
+      <p class="page-subtitle">Track your PFE applications and match scores</p>
+    </div>
+    <button class="refresh-btn" (click)="refresh()" [disabled]="loading()">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" [class.spinning]="loading()">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+      </svg>
+      Refresh
+    </button>
+  </header>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-container">
+      <div class="loading-grid">
+        @for (i of [1, 2, 3]; track i) {
+          <div class="skeleton-card">
+            <div class="skeleton-header"></div>
+            <div class="skeleton-body">
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line short"></div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="error-container">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="error-icon">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+      </svg>
+      <p>{{ error() }}</p>
+      <button class="retry-btn" (click)="refresh()">Try Again</button>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && !error() && !hasApplications()) {
+    <div class="empty-container">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="empty-icon">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+      </svg>
+      <h3>No Applications Yet</h3>
+      <p>You haven't applied to any PFE offers yet.</p>
+      <a routerLink="/explore" class="explore-btn">Explore PFE Offers</a>
+    </div>
+  }
+
+  <!-- Applications List -->
+  @if (!loading() && hasApplications()) {
+    <div class="applications-list">
+      @for (application of applications(); track application.id) {
+        <div class="application-card" (click)="openDetail(application)">
+          <div class="card-main">
+            <img [src]="getCompanyLogo(application)" [alt]="application.pfe_listing?.company?.name" class="company-logo" />
+            <div class="card-info">
+              <h3 class="pfe-title">{{ application.pfe_listing?.title || 'PFE Offer' }}</h3>
+              <p class="company-name">{{ application.pfe_listing?.company?.name || 'Company' }}</p>
+              <div class="meta-row">
+                <span class="meta-item">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                  </svg>
+                  Applied {{ formatDate(application.applied_at) }}
+                </span>
+                <span class="status-badge" [ngClass]="getStatusClass(application.status)">
+                  {{ application.status }}
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="match-score-section">
+            <div class="score-circle-small" [style.border-color]="getMatchScoreColor(application.match_score)">
+              <span class="score-value" [style.color]="getMatchScoreColor(application.match_score)">{{ application.match_score }}%</span>
+            </div>
+            <span class="score-label">{{ getMatchScoreLabel(application.match_score) }}</span>
+          </div>
+          
+          <div class="card-arrow">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<!-- Detail Modal -->
+@if (showDetailModal() && selectedApplication()) {
+  <div class="modal-backdrop" (click)="closeDetail()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Application Details</h2>
+        <button class="close-btn" (click)="closeDetail()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <!-- PFE Info -->
+        <div class="pfe-info-section">
+          <img [src]="getCompanyLogo(selectedApplication()!)" [alt]="selectedApplication()!.pfe_listing?.company?.name" class="modal-logo" />
+          <div>
+            <h3>{{ selectedApplication()!.pfe_listing?.title }}</h3>
+            <p>{{ selectedApplication()!.pfe_listing?.company?.name }}</p>
+          </div>
+        </div>
+
+        <!-- Status & Date -->
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Status</span>
+            <span class="status-badge" [ngClass]="getStatusClass(selectedApplication()!.status)">
+              {{ selectedApplication()!.status }}
+            </span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Applied On</span>
+            <span class="info-value">{{ formatDate(selectedApplication()!.applied_at) }}</span>
+          </div>
+        </div>
+
+        <!-- Match Score -->
+        <div class="match-detail-section">
+          <h4 class="section-title">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="section-icon">
+              <path fill-rule="evenodd" d="M9 4.5a.75.75 0 01.721.544l.813 2.846a3.75 3.75 0 002.576 2.576l2.846.813a.75.75 0 010 1.442l-2.846.813a3.75 3.75 0 00-2.576 2.576l-.813 2.846a.75.75 0 01-1.442 0l-.813-2.846a3.75 3.75 0 00-2.576-2.576l-2.846-.813a.75.75 0 010-1.442l2.846-.813A3.75 3.75 0 007.466 7.89l.813-2.846A.75.75 0 019 4.5z" clip-rule="evenodd" />
+            </svg>
+            AI Match Analysis
+          </h4>
+          
+          <div class="score-display">
+            <div class="score-circle-large" [style.border-color]="getMatchScoreColor(selectedApplication()!.match_score)">
+              <span class="score-number" [style.color]="getMatchScoreColor(selectedApplication()!.match_score)">
+                {{ selectedApplication()!.match_score }}%
+              </span>
+              <span class="score-text">{{ getMatchScoreLabel(selectedApplication()!.match_score) }}</span>
+            </div>
+          </div>
+
+          @if (selectedApplication()!.match_explanation) {
+            <div class="explanation-box">
+              <p>{{ selectedApplication()!.match_explanation }}</p>
+            </div>
+          }
+
+          @if (selectedApplication()!.matched_skills && selectedApplication()!.matched_skills.length > 0) {
+            <div class="skills-box matched">
+              <h5>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
+                </svg>
+                Matching Skills
+              </h5>
+              <div class="skill-tags">
+                @for (skill of selectedApplication()!.matched_skills; track skill) {
+                  <span class="skill-tag matched">{{ skill }}</span>
+                }
+              </div>
+            </div>
+          }
+
+          @if (selectedApplication()!.missing_skills && selectedApplication()!.missing_skills.length > 0) {
+            <div class="skills-box missing">
+              <h5>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm3 10.5a.75.75 0 000-1.5H9a.75.75 0 000 1.5h6z" clip-rule="evenodd" />
+                </svg>
+                Skills to Develop
+              </h5>
+              <div class="skill-tags">
+                @for (skill of selectedApplication()!.missing_skills; track skill) {
+                  <span class="skill-tag missing">{{ skill }}</span>
+                }
+              </div>
+            </div>
+          }
+
+          @if (selectedApplication()!.recommendations) {
+            <div class="recommendations-box">
+              <h5>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path fill-rule="evenodd" d="M9 4.5a.75.75 0 01.721.544l.813 2.846a3.75 3.75 0 002.576 2.576l2.846.813a.75.75 0 010 1.442l-2.846.813a3.75 3.75 0 00-2.576 2.576l-.813 2.846a.75.75 0 01-1.442 0l-.813-2.846a3.75 3.75 0 00-2.576-2.576l-2.846-.813a.75.75 0 010-1.442l2.846-.813A3.75 3.75 0 007.466 7.89l.813-2.846A.75.75 0 019 4.5z" clip-rule="evenodd" />
+                </svg>
+                AI Recommendations
+              </h5>
+              <p>{{ selectedApplication()!.recommendations }}</p>
+            </div>
+          }
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeDetail()">Close</button>
+      </div>
+    </div>
+  </div>
+}
