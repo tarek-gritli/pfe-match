@@ -9,7 +9,7 @@ import { PFEListing, DashboardStatistics } from '../common/interfaces/interface'
 })
 export class PFEService {
   private http = inject(HttpClient);
-  private readonly API_URL = 'http://localhost:3000/api'; // Changez selon votre backend
+  private readonly API_URL = 'http://localhost:8000/api';
 
   // BehaviorSubject pour garder l'état en mémoire (cache)
   private pfeListingsSubject = new BehaviorSubject<PFEListing[]>([]);

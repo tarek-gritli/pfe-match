@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.db.database import SessionLocal
-from app.pfe.models import PFEOffer
-from app.applications.models import Application
+from app.models import PFEOffer, Application
 
 router = APIRouter(prefix="/api/dashboard")
 

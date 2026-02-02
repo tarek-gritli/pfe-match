@@ -25,7 +25,7 @@ export interface ApplicantWithStatus {
 })
 export class ApplicantService {
   private http = inject(HttpClient);
-  private readonly API_URL = 'http://localhost:3000/api';
+  private readonly API_URL = 'http://localhost:8000/api';
 
   // Cache pour les applicants
   private applicantsSubject = new BehaviorSubject<ApplicantWithStatus[]>([]);

@@ -43,11 +43,11 @@ from typing import List, Optional
 
 
 class StudentProfileUpdate(BaseModel):
-    university: str | None
-    short_bio: str | None
-    desired_job_role: str | None
-    linkedin_url: str | None
-    github_url: str | None
-    portfolio_url: str | None
-    skills: list[str] | None
-    technologies: list[str] | None
+    university: Optional[str] = None
+    short_bio: Optional[str] = None
+    desired_job_role: Optional[str] = None
+    linkedin_url: Optional[str] = None
+    github_url: Optional[str] = None
+    portfolio_url: Optional[str] = None
+    skills: Optional[List[str]] = None
+    technologies: Optional[List[str]] = None
