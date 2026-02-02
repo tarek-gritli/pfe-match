@@ -11,8 +11,31 @@ router = APIRouter(prefix="/api/pfe", tags=["PFE Listings"])
 
 
 @router.get("/listings")
-def get_all_pfes(db: Session = Depends(get_db)):
-    pfes = db.query(PFEListing).all()
+def get_all_pfes(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Get all PFE listings for the logged-in enterprise.
+    Only enterprise users can access this endpoint.
+    """
+    # Check if user is an enterprise
+    if current_user.role != UserRole.ENTERPRISE:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only enterprise users can access this endpoint"
+        )
+
+    # Get enterprise profile
+    enterprise = db.query(Enterprise).filter(Enterprise.user_id == current_user.id).first()
+    if not enterprise:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Enterprise profile not found"
+        )
+
+    # Get only listings belonging to this enterprise
+    pfes = db.query(PFEListing).filter(PFEListing.enterprise_id == enterprise.id).all()
     return [
         {
             "id": p.id,
@@ -47,11 +70,41 @@ def get_pfe_by_id(id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/listings/{id}/applicants")
-def get_applicants_for_pfe(id: int, db: Session = Depends(get_db)):
-    # Get PFE listing
+def get_applicants_for_pfe(
+    id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Get applicants for a specific PFE listing.
+    Only the enterprise that posted the listing can access this endpoint.
+    """
+    # Check if user is an enterprise
+    if current_user.role != UserRole.ENTERPRISE:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only enterprise users can access this endpoint"
+        )
+
+    # Get enterprise profile
+    enterprise = db.query(Enterprise).filter(Enterprise.user_id == current_user.id).first()
+    if not enterprise:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Enterprise profile not found"
+        )
+
+    # Get PFE listing and verify ownership
     pfe = db.query(PFEListing).filter(PFEListing.id == id).first()
     if not pfe:
         raise HTTPException(status_code=404, detail="PFE listing not found")
+
+    # Verify the listing belongs to this enterprise
+    if pfe.enterprise_id != enterprise.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have permission to view applicants for this listing"
+        )
 
     # Get applications for this PFE listing
     apps = db.query(Application).filter(Application.pfe_listing_id == id).all()
@@ -156,12 +209,21 @@ def create_pfe_listing(
 
 @router.get("/explore", response_model=List[PFEListingResponse])
 def get_pfe_listings_for_students(
-    db: Session = Depends(get_db), current_user=Depends(get_current_user)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Get all PFE listings for student explore page.
     Returns complete listing information including company details.
+    Only students can access this endpoint.
     """
+    # Check if user is a student
+    if current_user.role != UserRole.STUDENT:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only students can access this endpoint"
+        )
+
     # Query all PFE listings with their relationships
     pfe_listings = db.query(PFEListing).all()
 
