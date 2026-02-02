@@ -12,6 +12,8 @@ import { ProgressComponent } from '../../Common/progress/progress.component';
 import { Company, CompanyProfileUpdate } from '../../../models/company-profile.model';
 import { CompanyService} from '../../../services/company.service';
 import { inject } from '@angular/core';
+import { AuthService } from '../../../auth/services/auth.service';
+
 
 interface CompanyCreateFormData {
   logo: string;
@@ -54,6 +56,7 @@ interface Step {
 })
 export class CreateCompanyProfileComponent {
   private companyService = inject(CompanyService);
+  private authService = inject(AuthService);
   currentStep: number = 1;
   errors: Record<string, string> = {};
 
@@ -68,6 +71,12 @@ export class CreateCompanyProfileComponent {
     contactEmail: '',
     technologies: []
   };
+
+  isUploadingImage: any;
+  profileImageFile: any;
+
+  imagePreview: string | null = null;
+
 
   newTech: string = '';
 
@@ -143,16 +152,53 @@ export class CreateCompanyProfileComponent {
     this.currentStep = Math.max(this.currentStep - 1, 1);
   }
 
-  handleLogoUpload(event: Event): void {
+  handleProfileImageUpload(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
+    
     if (file && file.type.startsWith('image/')) {
+      // Clear any previous errors
+      delete this.errors['profileImage'];
+      
+      this.profileImageFile = file;
+
+      // Show preview immediately
       const reader = new FileReader();
       reader.onloadend = () => {
-        this.formData.logo = reader.result as string;
+        this.imagePreview = reader.result as string;
+        console.log('Preview set:', this.imagePreview?.substring(0, 50)); // Debug
+      };
+      reader.onerror = () => {
+        this.errors['profileImage'] = 'Failed to read image file';
+        console.error('FileReader error'); // Debug
       };
       reader.readAsDataURL(file);
-      // TODO: Upload to server via service
+
+      // Upload to server
+      this.isUploadingImage = true;
+      this.authService.uploadStudentProfilePicture(file).subscribe({
+        next: (response) => {
+          this.isUploadingImage = false;
+          console.log('Upload successful:', response); // Debug
+          // Update with server URL
+          this.formData.logo = response.profile_picture_url;
+          // Keep preview until server image loads, then clear
+          //setTimeout(() => {
+          //  this.imagePreview = null;
+          //}, 100);
+        },
+        error: (error) => {
+          this.isUploadingImage = false;
+          this.errors['profileImage'] = error.message || 'Failed to upload image';
+          // Clear preview on error
+          this.imagePreview = null;
+          this.profileImageFile = null;
+          // Reset input
+          input.value = '';
+        }
+      });
+    } else if (file) {
+      this.errors['profileImage'] = 'Please select a valid image file';
     }
   }
 
