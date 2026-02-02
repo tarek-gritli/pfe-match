@@ -3,9 +3,10 @@ from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime
 from app.pfe.schemas import PFEListingResponse, PFECreate
-from app.models import PFEListing, Application, User, UserRole, Enterprise
+from app.models import PFEListing, Application, User, UserRole, Enterprise, Student
 from app.core.dependencies import get_current_user
 from app.db.database import get_db
+from app.services.matching_service import calculate_match_score
 
 router = APIRouter(prefix="/api/pfe", tags=["PFE Listings"])
 
@@ -309,3 +310,163 @@ def get_pfe_listings_for_students(
         result.append(listing_data)
 
     return result
+
+
+@router.post("/listings/{id}/apply", status_code=status.HTTP_201_CREATED)
+async def apply_to_pfe(
+    id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Apply to a PFE listing as a student.
+    The match score is calculated using AI to understand semantic relationships
+    between the student's skills and the PFE requirements.
+    """
+    # Check if user is a student
+    if current_user.role != UserRole.STUDENT:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only students can apply to PFE listings"
+        )
+
+    # Get student profile
+    student = db.query(Student).filter(Student.user_id == current_user.id).first()
+    if not student:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Student profile not found. Please complete your profile first."
+        )
+
+    # Get PFE listing
+    pfe = db.query(PFEListing).filter(PFEListing.id == id).first()
+    if not pfe:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="PFE listing not found"
+        )
+
+    # Check if already applied
+    existing_application = db.query(Application).filter(
+        Application.student_id == student.id,
+        Application.pfe_listing_id == id
+    ).first()
+    
+    if existing_application:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You have already applied to this PFE listing"
+        )
+
+    # Calculate match score using AI
+    match_result = await calculate_match_score(
+        student_skills=student.skills or [],
+        student_technologies=student.technologies or [],
+        pfe_required_skills=pfe.skills or [],
+        pfe_title=pfe.title,
+        pfe_description=pfe.description,
+        student_desired_role=student.desired_job_role
+    )
+
+    # Create application with calculated match score and LLM details
+    application = Application(
+        student_id=student.id,
+        pfe_listing_id=id,
+        match_rate=match_result["score"],
+        match_explanation=match_result.get("explanation", ""),
+        matched_skills=match_result.get("matched_skills", []),
+        missing_skills=match_result.get("missing_skills", []),
+        recommendations=match_result.get("recommendations", "")
+    )
+
+    db.add(application)
+    db.commit()
+    db.refresh(application)
+
+    return {
+        "id": application.id,
+        "pfe_listing_id": id,
+        "pfe_title": pfe.title,
+        "match_score": match_result["score"],
+        "match_details": {
+            "explanation": match_result.get("explanation", ""),
+            "matched_skills": match_result.get("matched_skills", []),
+            "missing_skills": match_result.get("missing_skills", []),
+            "recommendations": match_result.get("recommendations", "")
+        },
+        "status": "pending",
+        "created_at": application.created_at,
+        "message": f"Successfully applied to {pfe.title}. Your match score is {match_result['score']}%"
+    }
+
+
+@router.get("/listings/{id}/match-preview")
+async def preview_match_score(
+    id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Preview the match score for a PFE listing without applying.
+    Useful for students to see how well they match before applying.
+    """
+    # Check if user is a student
+    if current_user.role != UserRole.STUDENT:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only students can preview match scores"
+        )
+
+    # Get student profile
+    student = db.query(Student).filter(Student.user_id == current_user.id).first()
+    if not student:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Student profile not found"
+        )
+
+    # Get PFE listing
+    pfe = db.query(PFEListing).filter(PFEListing.id == id).first()
+    if not pfe:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="PFE listing not found"
+        )
+
+    # Check if already applied
+    existing_application = db.query(Application).filter(
+        Application.student_id == student.id,
+        Application.pfe_listing_id == id
+    ).first()
+
+    # Calculate match score using AI
+    match_result = await calculate_match_score(
+        student_skills=student.skills or [],
+        student_technologies=student.technologies or [],
+        pfe_required_skills=pfe.skills or [],
+        pfe_title=pfe.title,
+        pfe_description=pfe.description,
+        student_desired_role=student.desired_job_role
+    )
+
+    return {
+        "pfe_listing_id": id,
+        "pfe_title": pfe.title,
+        "match_score": match_result["score"],
+        "already_applied": existing_application is not None,
+        "match_details": {
+            "explanation": match_result.get("explanation", ""),
+            "matched_skills": match_result.get("matched_skills", []),
+            "missing_skills": match_result.get("missing_skills", []),
+            "recommendations": match_result.get("recommendations", "")
+        },
+        "student_profile": {
+            "skills": student.skills or [],
+            "technologies": student.technologies or [],
+            "desired_role": student.desired_job_role
+        },
+        "pfe_requirements": {
+            "skills": pfe.skills or [],
+            "title": pfe.title
+        }
+    }

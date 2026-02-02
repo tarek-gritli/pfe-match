@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, ForeignKey, DateTime, Text, Enum, func
+from sqlalchemy import Column, Integer, ForeignKey, DateTime, Text, Enum, JSON, func
 from sqlalchemy.orm import relationship
 from app.db.database import Base
 import enum
@@ -22,6 +22,10 @@ class Application(Base):
 
     # Application data
     match_rate = Column(Integer, default=0)
+    match_explanation = Column(Text, nullable=True)
+    matched_skills = Column(JSON, nullable=True, default=list)
+    missing_skills = Column(JSON, nullable=True, default=list)
+    recommendations = Column(Text, nullable=True)
     status = Column(Enum(ApplicationStatus), default=ApplicationStatus.PENDING, nullable=False)
     cover_letter = Column(Text, nullable=True)
     reviewer_notes = Column(Text, nullable=True)
