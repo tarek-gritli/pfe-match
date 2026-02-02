@@ -22,6 +22,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   private authSubscription?: Subscription;
   private profileSubscription?: Subscription;
+  private profileUpdatedSubscription?: Subscription;
 
   constructor(
     private authService: AuthService,
@@ -35,11 +36,17 @@ export class NavbarComponent implements OnInit, OnDestroy {
         this.loadProfile();
       }
     });
+
+    // Subscribe to profile updates to refresh navbar when profile picture changes
+    this.profileUpdatedSubscription = this.authService.profileUpdated$.subscribe(() => {
+      this.loadProfile();
+    });
   }
 
   ngOnDestroy(): void {
     this.authSubscription?.unsubscribe();
     this.profileSubscription?.unsubscribe();
+    this.profileUpdatedSubscription?.unsubscribe();
   }
 
   private loadProfile(): void {
@@ -48,7 +55,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
         next: (profile: StudentProfile) => {
           this.userName = `${profile.firstName} ${profile.lastName}`;
           if (profile.profileImage) {
-            this.profilePicture = `${API_CONFIG.BASE_URL}${profile.profileImage}`;
+            // Handle both absolute paths and relative paths, normalize backslashes
+            const imagePath = profile.profileImage.replace(/\\/g, '/');
+            this.profilePicture = imagePath.startsWith('/') 
+              ? `${API_CONFIG.BASE_URL}${imagePath}`
+              : `${API_CONFIG.BASE_URL}/${imagePath}`;
           }
         },
         error: () => {
@@ -59,10 +70,15 @@ export class NavbarComponent implements OnInit, OnDestroy {
       });
     } else if (this.authState?.userType === 'enterprise') {
       this.profileSubscription = this.authService.getEnterpriseProfile().subscribe({
-        next: (profile: EnterpriseProfile) => {
-          this.userName = profile.company_name;
-          if (profile.company_logo) {
-            this.profilePicture = `${API_CONFIG.BASE_URL}${profile.company_logo}`;
+        next: (profile: any) => {
+          this.userName = profile.name || profile.company_name;
+          const logo = profile.logo || profile.company_logo;
+          if (logo) {
+            // Handle both absolute paths and relative paths, normalize backslashes
+            const logoPath = logo.replace(/\\/g, '/');
+            this.profilePicture = logoPath.startsWith('/') 
+              ? `${API_CONFIG.BASE_URL}${logoPath}`
+              : `${API_CONFIG.BASE_URL}/${logoPath}`;
           }
         },
         error: () => {

@@ -176,6 +176,8 @@ export class CreateCompanyProfileComponent {
       next: (response) => {
         this.isUploadingLogo = false;
         this.formData.logo = response.profile_picture_url;
+        // Notify navbar to refresh profile picture
+        this.authService.notifyProfileUpdated();
         //this.logoPreview = null; // server URL is now set, preview no longer needed
       },
       error: (error) => {

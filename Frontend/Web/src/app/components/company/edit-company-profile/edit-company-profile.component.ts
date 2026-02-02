@@ -163,6 +163,8 @@ handleLogoUpload(event: Event): void {
       next: (response) => {
         this.isUploadingLogo = false;
         this.logoPreview = this.getProfileImageUrl(response.profile_picture_url); // adjust key to match your API response
+        // Notify navbar to refresh profile picture
+        this.authService.notifyProfileUpdated();
       },
       error: (error) => {
         this.isUploadingLogo = false;

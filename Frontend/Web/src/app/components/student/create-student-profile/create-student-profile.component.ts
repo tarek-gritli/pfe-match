@@ -265,6 +265,8 @@ export class CreateStudentProfileComponent {
           console.log('Upload successful:', response); // Debug
           // Update with server URL
           this.formData.profileImage = response.profile_picture_url;
+          // Notify navbar to refresh profile picture
+          this.authService.notifyProfileUpdated();
           // Keep preview until server image loads, then clear
           //setTimeout(() => {
           //  this.imagePreview = null;

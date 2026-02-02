@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, tap, catchError, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, tap, catchError, throwError, Subject } from 'rxjs';
 import { Router } from '@angular/router';
 import { ApiService, ENDPOINTS } from '../../api';
 import {
@@ -37,11 +37,22 @@ export class AuthService {
 
     authState$ = this.authState.asObservable();
 
+    // Subject to notify components when profile is updated
+    private profileUpdated = new Subject<void>();
+    profileUpdated$ = this.profileUpdated.asObservable();
+
     constructor(
         private api: ApiService,
         private router: Router
     ) {
         this.loadStoredAuth();
+    }
+
+    /**
+     * Notify components that profile has been updated
+     */
+    notifyProfileUpdated(): void {
+        this.profileUpdated.next();
     }
 
     /**
