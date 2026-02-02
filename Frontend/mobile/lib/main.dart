@@ -1,148 +1,67 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import 'Screens/Main_screen.dart';
 import 'package:provider/provider.dart';
-import 'app_state_provider.dart';
+import 'core/constants/app_colors.dart';
+import 'core/config/routes.dart';
+import 'providers/auth_provider.dart';
+import 'screens/auth/login_screen.dart';
+import 'screens/auth/register_screen.dart';
+import 'screens/home/home_screen.dart';
+import 'screens/student/create_profile_screen.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Use path URL strategy for web (removes # from URLs)
+  if (kIsWeb) {
+    usePathUrlStrategy();
+  }
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => AppStateProvider(),
-      child : const MyApp(),
-      ),
-    );
+    ChangeNotifierProvider(create: (_) => AuthProvider(), child: const MyApp()),
+  );
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return Consumer<AppStateProvider>(
-      builder: (context, appState, child) {
-        return MaterialApp(
-          title: 'Nexus PFE',
-          debugShowCheckedModeBanner: false,
-          
-          // Use the theme mode from provider
-          themeMode: appState.themeMode,
-          
-          // Define light theme
-          theme: ThemeData(
-            brightness: Brightness.light,
-            primaryColor: const Color(0xFF1B8D98),
-            scaffoldBackgroundColor: const Color(0xFFF9FAFA),
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color(0xFF1B8D98),
-              brightness: Brightness.light,
-            ),
-            useMaterial3: true,
-          ),
-          
-          // Define dark theme
-          darkTheme: ThemeData(
-            brightness: Brightness.dark,
-            primaryColor: const Color(0xFF1B8D98),
-            scaffoldBackgroundColor: const Color(0xFF121212),
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color(0xFF1B8D98),
-              brightness: Brightness.dark,
-            ),
-            useMaterial3: true,
-          ),
-          
-          // Use provider to determine initial route
-          home: appState.isSignedIn 
-              ? const MainScreen() 
-              : const MainScreen(),  // change to loginscreen when created
-        );
-      },
+    return MaterialApp(
+      title: 'PFE Match',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primaryColor: AppColors.primary,
+        scaffoldBackgroundColor: AppColors.background,
+        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
+        useMaterial3: true,
+      ),
+      initialRoute: AppRoutes.login,
+      onGenerateRoute: _generateRoute,
     );
   }
-}
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  Route<dynamic>? _generateRoute(RouteSettings settings) {
+    Widget page;
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
+    switch (settings.name) {
+      case '/':
+      case '/login':
+        page = const LoginScreen();
+        break;
+      case '/register':
+        page = const RegisterScreen();
+        break;
+      case '/home':
+        page = const HomeScreen();
+        break;
+      case '/create-student-profile':
+        page = const CreateStudentProfileScreen();
+        break;
+      default:
+        page = const LoginScreen();
+    }
 
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: .center,
-          children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
-    );
+    return MaterialPageRoute(builder: (_) => page, settings: settings);
   }
 }
