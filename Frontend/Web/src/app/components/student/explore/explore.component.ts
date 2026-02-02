@@ -2,7 +2,6 @@ import {
   Component,
   computed,
   signal,
-  ChangeDetectionStrategy,
   inject,
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
@@ -19,7 +18,6 @@ import { ENDPOINTS } from '../../../api/api.config';
   imports: [CommonModule, FormsModule, PfeCardComponent],
   templateUrl: './explore.component.html',
   styleUrls: ['./explore.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExploreComponent {
   private api = inject(ApiService);
