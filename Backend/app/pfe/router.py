@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
-from app.db.database import SessionLocal
-from app.pfe.schemas import PFEListingResponse
-from app.models import PFEListing, Application
+from datetime import datetime
+from app.pfe.schemas import PFEListingResponse, PFECreate
+from app.models import PFEListing, Application, User, UserRole, Enterprise
 from app.core.dependencies import get_current_user
 from app.db.database import get_db
 
@@ -20,7 +20,7 @@ def get_all_pfes(db: Session = Depends(get_db)):
             "category": p.category,
             "duration": p.duration,
             "status": p.status.value if hasattr(p.status, "value") else p.status,
-            "skills": [s.name for s in p.skills] if p.skills else [],
+            "skills": p.skills if p.skills else [],
             "applicantCount": len(p.applications) if p.applications else 0,
         }
         for p in pfes
@@ -38,7 +38,7 @@ def get_pfe_by_id(id: int, db: Session = Depends(get_db)):
         "category": p.category,
         "duration": p.duration,
         "status": p.status.value if hasattr(p.status, "value") else p.status,
-        "skills": [s.name for s in p.skills] if p.skills else [],
+        "skills": p.skills if p.skills else [],
         "applicantCount": len(p.applications) if p.applications else 0,
         "description": p.description,
         "department": p.department,
@@ -87,9 +87,71 @@ def get_applicants_for_pfe(id: int, db: Session = Depends(get_db)):
             )
     return result
 
-@router.post("/listings")
-def create_pfe_listing():
-    return {"message": "Create PFE listing endpoint - to be implemented"}
+
+@router.post("/listings", status_code=status.HTTP_201_CREATED)
+def create_pfe_listing(
+    pfe_data: PFECreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Create a new PFE listing.
+    Only enterprise users can create PFE listings.
+    """
+    # Check if user is an enterprise
+    if current_user.role != UserRole.ENTERPRISE:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only enterprise users can create PFE listings",
+        )
+
+    # Verify enterprise profile exists
+    enterprise = (
+        db.query(Enterprise).filter(Enterprise.user_id == current_user.id).first()
+    )
+    if not enterprise:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Enterprise profile not found. Please complete your profile first.",
+        )
+
+    # Create the PFE listing
+    new_pfe = PFEListing(
+        title=pfe_data.title,
+        category=pfe_data.category,
+        duration=pfe_data.duration,
+        description=pfe_data.description,
+        department=pfe_data.department,
+        location=pfe_data.location,
+        status=pfe_data.status,
+        skills=pfe_data.skills if pfe_data.skills else [],
+        enterprise_id=enterprise.id,
+        deadline=pfe_data.deadline,
+        posted_date=datetime.now(),
+    )
+
+    db.add(new_pfe)
+    db.commit()
+    db.refresh(new_pfe)
+
+    # Return the created PFE listing
+    return {
+        "id": new_pfe.id,
+        "title": new_pfe.title,
+        "category": new_pfe.category,
+        "duration": new_pfe.duration,
+        "status": (
+            new_pfe.status.value if hasattr(new_pfe.status, "value") else new_pfe.status
+        ),
+        "skills": new_pfe.skills if new_pfe.skills else [],
+        "applicantCount": 0,
+        "description": new_pfe.description,
+        "department": new_pfe.department,
+        "location": new_pfe.location,
+        "deadline": new_pfe.deadline,
+        "posted_date": new_pfe.posted_date,
+        "enterprise_id": new_pfe.enterprise_id,
+    }
 
 
 @router.get("/explore", response_model=List[PFEListingResponse])
@@ -101,15 +163,15 @@ def get_pfe_listings_for_students(
     Returns complete listing information including company details.
     """
     # Query all PFE listings with their relationships
-    pfe_listings = db.query(PFEListing).filter(PFEListing.status == "open").all()
+    pfe_listings = db.query(PFEListing).all()
 
     result = []
     for listing in pfe_listings:
         # Get applicant count
-        applicant_count = len(listing.applicants) if listing.applicants else 0
+        applicant_count = len(listing.applications) if listing.applications else 0
 
         # Get skills as list of strings
-        skills = [skill.name for skill in listing.skills] if listing.skills else []
+        skills = listing.skills if listing.skills else []
 
         # Prepare company info (from enterprise)
         company_info = None
@@ -131,7 +193,7 @@ def get_pfe_listings_for_students(
 
         # Build the response
         listing_data = {
-            "id": listing.id,
+            "id": str(listing.id),
             "title": listing.title,
             "status": (
                 listing.status.value

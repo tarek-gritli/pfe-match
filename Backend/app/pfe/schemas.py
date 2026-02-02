@@ -37,7 +37,6 @@ class PFECreate(BaseModel):
     department: Optional[str] = None
     location: Optional[str] = None
     status: str
-    company_id: str
     skills: List[str]
     deadline: Optional[datetime] = None
 
