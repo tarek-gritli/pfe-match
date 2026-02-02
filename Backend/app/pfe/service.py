@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
-from app.pfe.models import PFEOffer
-from app.skills.models import Skill
+from ..models import PFEOffer, Skill
 
 def create_pfe(db: Session, data):
     skills = []

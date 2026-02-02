@@ -1,6 +1,8 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, Text, JSON
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, Text, JSON, DateTime, Enum, func
 from sqlalchemy.orm import relationship
+import enum
 from app.db.database import Base
+from .skill import pfe_listing_skills
 
 class PFEStatus(str, enum.Enum):
     OPEN = "open"
@@ -24,5 +26,5 @@ class PFEListing(Base):
 
     # Relations
     company = relationship("Company", back_populates="pfe_listings")
-    skills = relationship("Skill", secondary=pfe_skills, back_populates="pfe_listings")
-    applicants = relationship("Applicant", back_populates="pfe_listing")
+    skills = relationship("Skill", secondary=pfe_listing_skills, back_populates="pfe_listings")
+    applicants = relationship("Applicant", back_populates="pfe_listing", cascade="all, delete-orphan", passive_deletes=True)

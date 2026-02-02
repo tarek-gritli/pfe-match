@@ -16,6 +16,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Register routers so the API endpoints are actually available
+app.include_router(pfe_router)
+app.include_router(applicant_router)
+app.include_router(dashboard_router)
+
 """
 # Create mock student instance on server start
 mock_student = Student(
