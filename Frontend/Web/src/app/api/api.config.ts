@@ -27,5 +27,11 @@ export const ENDPOINTS = {
         PROFILE: '/enterprises/me',
         UPDATE_PROFILE: '/enterprises/me/profile',
         UPLOAD_LOGO: '/enterprises/me/logo',
+    },
+
+    // PFE Listings
+    PFE: {
+        EXPLORE: '/api/pfe/explore',
+        LISTINGS: '/api/pfe/listings',
     }
 };
