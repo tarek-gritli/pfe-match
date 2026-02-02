@@ -27,22 +27,3 @@ class Enterprise(Base):
         
     # Relationship
     user = relationship("User", back_populates="enterprise")
-
-
-from typing import List, Optional
-from pydantic import BaseModel, HttpUrl, Field
-
-class EnterpriseProfileUpdate(BaseModel):
-    company_name: Optional[str] = Field(None, max_length=200)
-    industry: Optional[str] = Field(None, max_length=100)
-    location: Optional[str] = Field(None, max_length=200)
-    employee_count: Optional[str] = Field(None, max_length=50)
-    company_description: Optional[str] = None
-    technologies_used: Optional[List[str]] = []
-    website: Optional[HttpUrl] = None
-    founded_year: Optional[int] = None
-    # Optional frontend-only field
-    linkedin_url: Optional[HttpUrl] = None
-
-    class Config:
-        orm_mode = True

@@ -97,7 +97,7 @@ export class LoginComponent {
             this.router.navigate([
               response.user_type === 'student'
                 ? '/create-profile'
-                : '/enterprise/create-profile'
+                : '/create-profile'
             ]);
           } else {
             this.router.navigate([

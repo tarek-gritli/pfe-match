@@ -103,11 +103,10 @@ class EnterpriseProfileUpdate(BaseModel):
     location: Optional[str] = Field(None, max_length=200)
     employee_count: Optional[str] = Field(None, max_length=50)
     company_description: Optional[str] = None
-    technologies_used: Optional[List[str]] = []
-    website: Optional[HttpUrl] = None
+    technologies_used: Optional[List[str]] = Field(default=None)  # Changed this line
+    website: Optional[str] = None
     founded_year: Optional[int] = None
-    # Optional frontend-only field
-    linkedin_url: Optional[HttpUrl] = None
+    linkedin_url: Optional[str] = None
 
     class Config:
         orm_mode = True
@@ -148,22 +147,21 @@ class StudentProfileResponse(BaseModel):
         from_attributes = True
 
 class EnterpriseProfileResponse(BaseModel):
-    """Enterprise profile response"""
-    id: int
-    user_id: int
-    company_name: str
+    """Enterprise profile response mapped to frontend"""
+    name: str
+    logo: Optional[str] = None
     industry: str
     location: Optional[str] = None
-    employee_count: Optional[str] = None
-    company_description: Optional[str] = None
-    technologies_used: Optional[List[str]] = None
+    size: Optional[str] = None
+    description: Optional[str] = None
+    technologies: Optional[List[str]] = None
     website: Optional[str] = None
-    founded_year: Optional[int] = None
-    company_logo: Optional[str] = None
+    foundedYear: Optional[int] = None
+    linkedinUrl: Optional[str] = None
+    contactEmail: Optional[str] = None
     
     class Config:
         from_attributes = True
-
 
 # ==================== FILE UPLOAD SCHEMAS ====================
 
