@@ -196,10 +196,6 @@ class _CreateStudentProfileScreenState
         'resumeSize': _resumeSize,
       };
 
-      // TODO: Send to backend API
-      // Example:
-      // await ProfileService().createProfile(profileData, _resumeBytes);
-
       // Simulate API call
       await Future.delayed(const Duration(seconds: 2));
 

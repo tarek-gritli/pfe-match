@@ -9,6 +9,10 @@
   padding: 2rem 1rem;
 }
 
+.hidden-input {
+  display: none;
+}
+
 .edit-profile-content {
   max-width: 768px;
   margin: 0 auto;
