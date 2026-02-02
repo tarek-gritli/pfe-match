@@ -129,6 +129,15 @@ export class StudentProfileComponent implements OnInit {
       .toUpperCase();
   }
 
+  /**
+   * Extract just the filename from a full path for display
+   */
+  getResumeDisplayName(): string {
+    if (!this.currentStudent.resumeName) return '';
+    const pathParts = this.currentStudent.resumeName.replace(/\\/g, '/').split('/');
+    return pathParts[pathParts.length - 1];
+  }
+
   navigateToEdit(): void {
     this.router.navigate(['/edit-profile']);
   }

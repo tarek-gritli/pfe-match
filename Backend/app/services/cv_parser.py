@@ -16,19 +16,15 @@ async def extract_with_llm(text: str) -> dict:
     
     prompt = """Analyze the following CV/resume text and extract the information in JSON format.
 Extract:
-1. "skills": List of technical and soft skills (programming languages, frameworks, tools, methodologies, soft skills)
-2. "technologies": List of specific technologies, frameworks, and tools mentioned
+1. "skills": List of SOFT SKILLS and general competencies (e.g., Leadership, Communication, Problem-solving, Project Management, Teamwork, Critical Thinking, Time Management, Analytical Skills, Public Speaking, Negotiation, Adaptability, Creativity)
+2. "technologies": List of TECHNICAL skills including programming languages, frameworks, tools, databases, and platforms (e.g., Python, JavaScript, React, Angular, Docker, AWS, PostgreSQL, Git, etc.)
 3. "experience_years": Estimated years of professional experience (number or null)
 4. "education_level": Highest education level (e.g., "Bachelor's", "Master's", "PhD", or null)
 5. "languages": List of spoken/written languages mentioned
 
-Be thorough and extract ALL skills mentioned, including:
-- Programming languages (Python, JavaScript, Java, etc.)
-- Frameworks (React, Angular, Django, Spring, etc.)
-- Databases (PostgreSQL, MongoDB, MySQL, etc.)
-- Cloud platforms (AWS, Azure, GCP, etc.)
-- DevOps tools (Docker, Kubernetes, Jenkins, etc.)
-- Soft skills (Leadership, Communication, Problem-solving, etc.)
+IMPORTANT DISTINCTION:
+- "skills" = Soft skills, interpersonal abilities, methodologies (Agile, Scrum), and non-technical competencies
+- "technologies" = Programming languages, frameworks, libraries, databases, cloud platforms, DevOps tools, and all technical tools
 
 Return ONLY valid JSON, no additional text.
 
@@ -128,24 +124,33 @@ def extract_linkedin_url(text: str) -> Optional[str]:
 
 
 # Fallback: Common skills and technologies for regex-based extraction
+# SKILLS = Soft skills, methodologies, and non-technical competencies
 COMMON_SKILLS = [
-    "python", "javascript", "typescript", "java", "c++", "c#", "ruby", "go", "rust",
-    "php", "swift", "kotlin", "scala", "r", "matlab", "sql", "html", "css",
-    "react", "angular", "vue", "node.js", "express", "django", "flask", "fastapi",
-    "spring", "spring boot", ".net", "rails", "laravel", "next.js", "nuxt.js",
-    "machine learning", "deep learning", "data science", "data analysis",
-    "tensorflow", "pytorch", "keras", "scikit-learn", "pandas", "numpy",
-    "docker", "kubernetes", "aws", "azure", "gcp", "git", "jenkins", "ci/cd",
-    "mongodb", "postgresql", "mysql", "redis", "elasticsearch", "graphql",
-    "rest api", "microservices", "agile", "scrum", "jira", "linux", "bash"
+    "leadership", "communication", "problem solving", "problem-solving", "teamwork",
+    "team work", "analytical", "critical thinking", "time management", "project management",
+    "public speaking", "negotiation", "adaptability", "creativity", "collaboration",
+    "decision making", "conflict resolution", "mentoring", "coaching", "presentation",
+    "strategic thinking", "organization", "planning", "multitasking", "attention to detail",
+    "agile", "scrum", "kanban", "waterfall", "devops", "ci/cd", "tdd", "bdd",
+    "design thinking", "ux design", "ui design", "product management", "data analysis",
+    "machine learning", "deep learning", "data science", "artificial intelligence",
+    "research", "writing", "documentation", "testing", "debugging", "optimization"
 ]
 
+# TECHNOLOGIES = Programming languages, frameworks, tools, databases, platforms
 COMMON_TECHNOLOGIES = [
-    "react", "angular", "vue.js", "node.js", "express.js", "django", "flask",
-    "fastapi", "spring boot", "docker", "kubernetes", "aws", "azure", "gcp",
-    "mongodb", "postgresql", "mysql", "redis", "elasticsearch", "kafka",
-    "rabbitmq", "nginx", "jenkins", "github actions", "gitlab ci", "terraform",
-    "ansible", "prometheus", "grafana", "tensorflow", "pytorch", "jupyter"
+    "python", "javascript", "typescript", "java", "c++", "c#", "ruby", "go", "rust",
+    "php", "swift", "kotlin", "scala", "r", "matlab", "sql", "html", "css",
+    "react", "angular", "vue", "vue.js", "node.js", "express", "express.js",
+    "django", "flask", "fastapi", "spring", "spring boot", ".net", "rails", "laravel",
+    "next.js", "nuxt.js", "svelte", "ember", "backbone",
+    "tensorflow", "pytorch", "keras", "scikit-learn", "pandas", "numpy", "opencv",
+    "docker", "kubernetes", "aws", "azure", "gcp", "git", "github", "gitlab",
+    "jenkins", "travis ci", "circle ci", "github actions",
+    "mongodb", "postgresql", "mysql", "redis", "elasticsearch", "graphql",
+    "rest api", "microservices", "linux", "bash", "powershell",
+    "nginx", "apache", "kafka", "rabbitmq", "terraform", "ansible",
+    "prometheus", "grafana", "jupyter", "hadoop", "spark"
 ]
 
 

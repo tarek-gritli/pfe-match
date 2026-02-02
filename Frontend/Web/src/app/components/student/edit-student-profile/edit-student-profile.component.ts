@@ -98,6 +98,15 @@ export class EditStudentProfileComponent implements OnInit {
 
   isLoading = true;
 
+  /**
+   * Extract just the filename from a full path for display
+   */
+  getResumeDisplayName(): string {
+    if (!this.resumeName) return '';
+    const pathParts = this.resumeName.replace(/\\/g, '/').split('/');
+    return pathParts[pathParts.length - 1];
+  }
+
   constructor(private router: Router) {}
 
   ngOnInit(): void {
@@ -110,16 +119,19 @@ export class EditStudentProfileComponent implements OnInit {
         email: localStorage.getItem('pfe_match_email') || '',
         university: this.currentStudent.university,
         fieldOfStudy: this.currentStudent.fieldOfStudy,
-        title: 'Software Engineering Student',
+        title: this.currentStudent.title || '',
         bio: this.currentStudent.bio,
-        linkedinUrl: 'https://linkedin.com/in/johndoe',
-        githubUrl: 'https://github.com/johndoe',
-        customLinkLabel: 'Portfolio',
-        customLinkUrl: 'https://johndoe.com'
+        linkedinUrl: this.currentStudent.linkedinUrl || '',
+        githubUrl: this.currentStudent.githubUrl || '',
+        customLinkLabel: this.currentStudent.customLinkLabel || 'Portfolio',
+        customLinkUrl: this.currentStudent.customLinkUrl || ''
       };
 
-    this.skills = ['JavaScript', 'TypeScript', 'Angular', 'React', 'Node.js'];
-    this.technologies = ['Git', 'Docker', 'AWS', 'MongoDB', 'PostgreSQL'];
+    // Use actual student data, not hardcoded values
+    this.skills = this.currentStudent.skills || [];
+    this.technologies = this.currentStudent.technologies || [];
+    this.resumeName = this.currentStudent.resumeName || null;
+    this.isLoading = false;
       },
       error: () => {
         this.isLoading = false;
@@ -196,19 +208,22 @@ export class EditStudentProfileComponent implements OnInit {
             if (response.extracted_data) {
               this.extractedData = response.extracted_data as ResumeExtractedData;
   
-              // Pre-fill extracted data if fields are empty
-              if (this.extractedData.github_url && !this.formData.githubUrl) {
+              // Always update with extracted data from new resume
+              if (this.extractedData.github_url) {
                 this.formData.githubUrl = this.extractedData.github_url;
               }
-              if (this.extractedData.linkedin_url && !this.formData.linkedinUrl) {
+              if (this.extractedData.linkedin_url) {
                 this.formData.linkedinUrl = this.extractedData.linkedin_url;
               }
-              if (this.extractedData.skills?.length && this.skills.length === 0) {
+              // Always replace skills and technologies with new extracted data
+              if (this.extractedData.skills?.length) {
                 this.skills = [...this.extractedData.skills];
               }
-              if (this.extractedData.technologies?.length && this.technologies.length === 0) {
+              if (this.extractedData.technologies?.length) {
                 this.technologies = [...this.extractedData.technologies];
               }
+              
+              alert('Resume uploaded! Skills and technologies have been updated from your CV.');
             }
           },
           error: (error) => {

@@ -72,7 +72,7 @@ def get_my_profile(
         "githubUrl": student.github_url,
         "customLinkUrl": student.portfolio_url,
         "customLinkLabel": "Portfolio",
-        "resumeName": student.resume_url.split("/")[-1] if student.resume_url else None,
+        "resumeName": student.resume_url if student.resume_url else None,
     }
 
 
@@ -254,14 +254,14 @@ async def upload_resume(
             student.resume_url = file_path
             student.resume_parsed = True
             
-            # Only update if data was extracted and fields are empty
-            if extracted_data.github_url and not student.github_url:
+            # Always update with extracted data from new resume
+            if extracted_data.github_url:
                 student.github_url = extracted_data.github_url
-            if extracted_data.linkedin_url and not student.linkedin_url:
+            if extracted_data.linkedin_url:
                 student.linkedin_url = extracted_data.linkedin_url
-            if extracted_data.skills and not student.skills:
+            if extracted_data.skills:
                 student.skills = extracted_data.skills
-            if extracted_data.technologies and not student.technologies:
+            if extracted_data.technologies:
                 student.technologies = extracted_data.technologies
             
             db.commit()

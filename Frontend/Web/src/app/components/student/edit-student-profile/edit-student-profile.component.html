@@ -229,7 +229,7 @@
   </app-card-header>
   <app-card-content>
     <div class="resume-content">
-      @if (currentStudent.resumeName) {
+      @if (resumeName) {
         <div class="resume-existing">
           <div class="resume-info">
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="resume-icon">
@@ -237,8 +237,8 @@
               <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
             </svg>
             <div class="resume-details">
-              <p class="resume-name">{{ currentStudent.resumeName }}</p>
-              <p class="resume-date">Uploaded {{ currentStudent.resumeUploadDate }}</p>
+              <p class="resume-name">{{ getResumeDisplayName() }}</p>
+              <p class="resume-status">Uploaded</p>
             </div>
           </div>
           <app-button variant="outline" (buttonClick)="triggerFileInput()">
