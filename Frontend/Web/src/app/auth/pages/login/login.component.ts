@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
@@ -47,18 +47,22 @@ export class LoginComponent {
   errorMessage = '';
   successMessage = '';
   showPassword = false;
+  private returnUrl: string = '';
 
   private authService = inject(AuthService);
 
   constructor(
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
       rememberMe: [false]
     });
+
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '';
   }
 
   /**
@@ -93,7 +97,9 @@ export class LoginComponent {
         this.successMessage = 'Login successful! Redirecting...';
 
         setTimeout(() => {
-          if (!response.profile_completed) {
+          if (this.returnUrl) {
+            this.router.navigateByUrl(this.returnUrl);
+          } else if (!response.profile_completed) {
             this.router.navigate([
               response.user_type === 'student'
                 ? '/create-profile'
@@ -102,7 +108,7 @@ export class LoginComponent {
           } else {
             this.router.navigate([
               response.user_type === 'student'
-                ? '/profile'
+                ? '/explore'
                 : '/enterprise/dashboard'
             ]);
           }
