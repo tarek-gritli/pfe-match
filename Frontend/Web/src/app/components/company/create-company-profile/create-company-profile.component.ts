@@ -152,7 +152,7 @@ export class CreateCompanyProfileComponent {
     this.currentStep = Math.max(this.currentStep - 1, 1);
   }
 
-  handleProfileImageUpload(event: Event): void {
+  handleLogoUpload(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     

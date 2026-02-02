@@ -143,7 +143,7 @@ export class EditCompanyProfileComponent implements OnInit {
 
   handleLogoUpload(): void {
     // TODO: Implement actual file upload
-    alert('Logo upload functionality coming soon!');
+    console.log('Logo upload functionality coming soon!');
   }
 
   removeLogo(): void {
