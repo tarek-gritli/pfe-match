@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime
 from app.pfe.schemas import PFEListingResponse, PFECreate
-from app.models import PFEListing, Application, User, UserRole, Enterprise, Student
+from app.models import PFEListing, Application, User, UserRole, Enterprise, Student, MatchPreview
 from app.core.dependencies import get_current_user
 from app.db.database import get_db
 from app.services.matching_service import calculate_match_score
@@ -408,7 +408,7 @@ async def preview_match_score(
 ):
     """
     Preview the match score for a PFE listing without applying.
-    Useful for students to see how well they match before applying.
+    The score is calculated once and cached in the database.
     """
     # Check if user is a student
     if current_user.role != UserRole.STUDENT:
@@ -433,13 +433,67 @@ async def preview_match_score(
             detail="PFE listing not found"
         )
 
-    # Check if already applied
+    # Check if already applied - if so, return data from application
     existing_application = db.query(Application).filter(
         Application.student_id == student.id,
         Application.pfe_listing_id == id
     ).first()
 
-    # Calculate match score using AI
+    if existing_application:
+        # Return cached data from the application
+        return {
+            "pfe_listing_id": id,
+            "pfe_title": pfe.title,
+            "match_score": existing_application.match_rate or 0,
+            "already_applied": True,
+            "match_details": {
+                "explanation": existing_application.match_explanation or "",
+                "matched_skills": existing_application.matched_skills or [],
+                "missing_skills": existing_application.missing_skills or [],
+                "recommendations": existing_application.recommendations or ""
+            },
+            "student_profile": {
+                "skills": student.skills or [],
+                "technologies": student.technologies or [],
+                "desired_role": student.desired_job_role
+            },
+            "pfe_requirements": {
+                "skills": pfe.skills or [],
+                "title": pfe.title
+            }
+        }
+
+    # Check if we have a cached match preview
+    cached_preview = db.query(MatchPreview).filter(
+        MatchPreview.student_id == student.id,
+        MatchPreview.pfe_listing_id == id
+    ).first()
+
+    if cached_preview:
+        # Return cached data
+        return {
+            "pfe_listing_id": id,
+            "pfe_title": pfe.title,
+            "match_score": cached_preview.match_score,
+            "already_applied": False,
+            "match_details": {
+                "explanation": cached_preview.explanation or "",
+                "matched_skills": cached_preview.matched_skills or [],
+                "missing_skills": cached_preview.missing_skills or [],
+                "recommendations": cached_preview.recommendations or ""
+            },
+            "student_profile": {
+                "skills": student.skills or [],
+                "technologies": student.technologies or [],
+                "desired_role": student.desired_job_role
+            },
+            "pfe_requirements": {
+                "skills": pfe.skills or [],
+                "title": pfe.title
+            }
+        }
+
+    # No cache found - calculate match score using AI
     match_result = await calculate_match_score(
         student_skills=student.skills or [],
         student_technologies=student.technologies or [],
@@ -449,11 +503,24 @@ async def preview_match_score(
         student_desired_role=student.desired_job_role
     )
 
+    # Save to cache
+    new_preview = MatchPreview(
+        student_id=student.id,
+        pfe_listing_id=id,
+        match_score=match_result["score"],
+        explanation=match_result.get("explanation", ""),
+        matched_skills=match_result.get("matched_skills", []),
+        missing_skills=match_result.get("missing_skills", []),
+        recommendations=match_result.get("recommendations", "")
+    )
+    db.add(new_preview)
+    db.commit()
+
     return {
         "pfe_listing_id": id,
         "pfe_title": pfe.title,
         "match_score": match_result["score"],
-        "already_applied": existing_application is not None,
+        "already_applied": False,
         "match_details": {
             "explanation": match_result.get("explanation", ""),
             "matched_skills": match_result.get("matched_skills", []),
@@ -470,3 +537,89 @@ async def preview_match_score(
             "title": pfe.title
         }
     }
+
+
+@router.get("/applications/me")
+def get_my_applications(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Get all applications for the current student with full details.
+    """
+    # Check if user is a student
+    if current_user.role != UserRole.STUDENT:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only students can view their applications"
+        )
+
+    # Get student profile
+    student = db.query(Student).filter(Student.user_id == current_user.id).first()
+    if not student:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Student profile not found"
+        )
+
+    # Get all applications for this student
+    applications = db.query(Application).filter(
+        Application.student_id == student.id
+    ).order_by(Application.created_at.desc()).all()
+
+    result = []
+    for app in applications:
+        # Get PFE listing details
+        pfe = app.pfe_listing
+        
+        # Prepare company info
+        company_info = None
+        if pfe and pfe.enterprise:
+            company_info = {
+                "id": str(pfe.enterprise.id),
+                "name": pfe.enterprise.company_name,
+                "logoUrl": pfe.enterprise.company_logo,
+                "industry": pfe.enterprise.industry,
+            }
+        else:
+            company_info = {
+                "id": "unknown",
+                "name": "Unknown Company",
+                "logoUrl": None,
+                "industry": None,
+            }
+
+        # Build PFE listing data
+        pfe_data = None
+        if pfe:
+            pfe_data = {
+                "id": str(pfe.id),
+                "title": pfe.title,
+                "status": pfe.status.value if hasattr(pfe.status, "value") else pfe.status,
+                "category": pfe.category,
+                "duration": pfe.duration,
+                "skills": pfe.skills or [],
+                "applicantCount": len(pfe.applications) if pfe.applications else 0,
+                "description": pfe.description,
+                "department": pfe.department,
+                "postedDate": pfe.posted_date,
+                "deadline": pfe.deadline,
+                "location": pfe.location,
+                "company": company_info,
+            }
+
+        result.append({
+            "id": app.id,
+            "pfe_listing_id": app.pfe_listing_id,
+            "student_id": app.student_id,
+            "status": app.status.value if hasattr(app.status, "value") else app.status,
+            "match_score": app.match_rate or 0,
+            "match_explanation": app.match_explanation or "",
+            "matched_skills": app.matched_skills or [],
+            "missing_skills": app.missing_skills or [],
+            "recommendations": app.recommendations or "",
+            "applied_at": app.created_at.isoformat() if app.created_at else None,
+            "pfe_listing": pfe_data,
+        })
+
+    return result
