@@ -51,10 +51,42 @@ def get_all_pfes(
 
 
 @router.get("/listings/{id}")
-def get_pfe_by_id(id: int, db: Session = Depends(get_db)):
+def get_pfe_by_id(
+    id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Get a specific PFE listing by ID.
+    Only the enterprise that owns the listing can access it.
+    """
+    # Check if user is an enterprise
+    if current_user.role != UserRole.ENTERPRISE:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only enterprise users can access this endpoint"
+        )
+
+    # Get enterprise profile
+    enterprise = db.query(Enterprise).filter(Enterprise.user_id == current_user.id).first()
+    if not enterprise:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Enterprise profile not found"
+        )
+
+    # Get PFE listing
     p = db.query(PFEListing).filter(PFEListing.id == id).first()
     if not p:
         raise HTTPException(status_code=404, detail="PFE listing not found")
+
+    # Verify ownership
+    if p.enterprise_id != enterprise.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have permission to view this listing"
+        )
+
     return {
         "id": p.id,
         "title": p.title,
