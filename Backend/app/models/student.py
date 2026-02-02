@@ -35,3 +35,19 @@ class Student(Base):
     
     # Relationship
     user = relationship("User", back_populates="student")
+
+
+from pydantic import BaseModel
+from typing import List, Optional
+
+
+
+class StudentProfileUpdate(BaseModel):
+    university: Optional[str] = None
+    short_bio: Optional[str] = None
+    desired_job_role: Optional[str] = None
+    linkedin_url: Optional[str] = None
+    github_url: Optional[str] = None
+    portfolio_url: Optional[str] = None
+    skills: Optional[List[str]] = None
+    technologies: Optional[List[str]] = None

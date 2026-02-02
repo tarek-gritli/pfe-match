@@ -1,0 +1,241 @@
+.profile-container {
+  min-height: 100vh;
+  background-color: hsl(var(--background));
+}
+
+.profile-main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.profile-content {
+  max-width: 1024px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Header */
+.profile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.profile-title {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Grid Layout */
+.profile-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .profile-grid {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+.profile-left-column,
+.profile-right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Profile Overview */
+.profile-overview {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  padding-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.profile-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.profile-name {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Company Meta (location, size, founded) */
+.company-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Bio / Description */
+.profile-bio {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid hsl(var(--border));
+}
+
+.profile-bio p {
+  color: hsl(var(--muted-foreground));
+  margin: 0;
+}
+
+/* Card Title with Icon */
+.card-title-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Technologies */
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.gradient-badge ::ng-deep .badge {
+  background-image: var(--gradient-primary);
+  color: hsl(var(--primary-foreground));
+}
+
+.empty-message {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  margin: 0;
+}
+
+/* Links */
+.links-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.link-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  background-color: hsl(var(--secondary));
+  transition: background-color 0.2s;
+  text-decoration: none;
+  color: hsl(var(--foreground));
+}
+
+.link-item:hover {
+  background-color: hsl(var(--secondary) / 0.8);
+}
+
+.link-icon {
+  flex-shrink: 0;
+}
+
+.linkedin-icon {
+  color: #0077B5;
+}
+
+.primary-icon {
+  color: hsl(var(--primary));
+}
+
+/* PFE Stats */
+.pfe-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: hsl(var(--secondary));
+}
+
+.stat-number {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.stat-number.primary {
+  color: hsl(var(--primary));
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: hsl(var(--muted-foreground));
+  margin: 0.25rem 0 0 0;
+}
+
+.manage-pfes-button {
+    padding-top: 4%;
+  display: block;
+  width: 100%;
+}
+.manage-pfes-button ::ng-deep button {
+  width: 100%;
+}
+
+/* Company Details List */
+.details-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.detail-label {
+  color: hsl(var(--muted-foreground));
+}
+
+.detail-value {
+  font-weight: 500;
+}
+
+/* Avatar size override for profile */
+:host ::ng-deep .avatar-root.avatar-xl {
+  height: 6rem;
+  width: 6rem;
+  font-size: 1.5rem;
+}
+
+:host ::ng-deep .avatar-root.avatar-xl .avatar-fallback {
+  background-image: var(--gradient-primary);
+  color: hsl(var(--primary-foreground));
+}

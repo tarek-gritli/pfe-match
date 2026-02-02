@@ -60,12 +60,32 @@
 
             <!-- Full Name -->
             <div class="form-field">
-              <app-label htmlFor="student-name">Full Name</app-label>
+              <app-label htmlFor="student-name">First Name</app-label>
               <app-input
                 type="text"
-                placeholder="Enter your full name"
-                formControlName="name"
-                name="studentName"
+                placeholder="Enter your first name"
+                formControlName="firstName"
+                name="studentFirstName"
+                [hasLeftIcon]="true"
+              >
+                <svg leftIcon xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+              </app-input>
+              @if (studentForm.get('name')?.touched && studentForm.get('name')?.invalid) {
+                <p class="error-message">Please enter your full name</p>
+              }
+            </div>
+
+            <!-- Full Name -->
+            <div class="form-field">
+              <app-label htmlFor="student-name">Last Name</app-label>
+              <app-input
+                type="text"
+                placeholder="Enter your last name"
+                formControlName="lastName"
+                name="studentLastName"
                 [hasLeftIcon]="true"
               >
                 <svg leftIcon xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -99,26 +119,6 @@
               }
             </div>
 
-            <!-- University -->
-            <div class="form-field">
-              <app-label htmlFor="university">University / School</app-label>
-              <app-input
-                type="text"
-                placeholder="Enter your university name"
-                formControlName="university"
-                name="university"
-                [hasLeftIcon]="true"
-              >
-                <svg leftIcon xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
-                  <path d="M6 12v5c3 3 9 3 12 0v-5"/>
-                </svg>
-              </app-input>
-              @if (studentForm.get('university')?.touched && studentForm.get('university')?.invalid) {
-                <p class="error-message">Please enter your university name</p>
-              }
-            </div>
-
             <!-- Password -->
             <div class="form-field">
               <app-label htmlFor="student-password">Password</app-label>
@@ -128,7 +128,7 @@
                 formControlName="password"
                 name="studentPassword"
                 [hasLeftIcon]="true"
-                [hasRightIcon]="true"
+                [hasRightIcon]="false"
               >
                 <svg leftIcon xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>

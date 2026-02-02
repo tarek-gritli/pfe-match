@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
@@ -24,6 +24,7 @@ import { LoginRequest } from '../../model/auth.model';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    RouterLink,
     ButtonComponent,
     InputComponent,
     LabelComponent,
@@ -58,22 +59,6 @@ export class LoginComponent {
       password: ['', Validators.required],
       rememberMe: [false]
     });
-  }
-
-  /**
-   * Returns true if the email field has been touched and is invalid
-   */
-  get emailHasError(): boolean {
-    const email = this.loginForm.get('email');
-    return !!(email?.touched && email?.invalid);
-  }
-
-  /**
-   * Returns true if the password field has been touched and is invalid
-   */
-  get passwordHasError(): boolean {
-    const password = this.loginForm.get('password');
-    return !!(password?.touched && password?.invalid);
   }
 
   /**
@@ -112,7 +97,7 @@ export class LoginComponent {
             this.router.navigate([
               response.user_type === 'student'
                 ? '/create-profile'
-                : '/enterprise/create-profile'
+                : '/create-profile'
             ]);
           } else {
             this.router.navigate([

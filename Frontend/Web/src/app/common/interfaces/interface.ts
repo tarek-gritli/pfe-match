@@ -12,6 +12,13 @@ export interface PFEListing {
   department?: string;
   postedDate?: Date;
   deadline?: Date;
+  location?: string;
+  company: {
+    id: string;
+    name: string;
+    logoUrl?: string;
+    industry?: string;
+  }
 }
 export interface Applicant {
   id: string;

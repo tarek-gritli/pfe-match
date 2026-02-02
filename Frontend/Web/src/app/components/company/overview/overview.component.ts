@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PfeFormDialogComponent } from '../pfe-form-dialog/pfe-form-dialog.component';
+import { PFEService } from '../../../services/pfe.service';
+import { ApplicantService } from '../../../services/applicant.service';
 
 interface PFEListing {
   id: string;
@@ -35,66 +37,76 @@ export class OverviewComponent implements OnInit {
   companyDescription = 'Artificial Intelligence';
   companyLogo = 'assets/company-logo.png';
 
-  // Statistics
-  activePFEs = 2;
-  totalApplicants = 1;
-  topApplicants = 1;
-  avgMatchRate = 78;
+  // Statistics (initialized to defaults, populated from backend)
+  activePFEs = 0;
+  totalApplicants = 0;
+  topApplicants = 0;
+  avgMatchRate = 0;
 
-  // PFE Listings
-  pfeListings: PFEListing[] = [
-    {
-      id: '1',
-      title: 'AI-Powered Image Recognition System',
-      status: 'open',
-      category: 'Artificial Intelligence',
-      duration: '6 months',
-      skills: ['Python', 'TensorFlow', 'Computer Vision', 'Deep Learning'],
-      applicantCount: 1
-    },
-    {
-      id: '2',
-      title: 'NLP Chatbot for Customer Support',
-      status: 'open',
-      category: 'Artificial Intelligence',
-      duration: '4 months',
-      skills: ['Python', 'NLP', 'Machine Learning', 'API Development'],
-      applicantCount: 0
-    }
-  ];
+  // PFE Listings - start empty and load from backend
+  pfeListings: PFEListing[] = [];
 
-  // Recent Applicants
-  recentApplicants: Applicant[] = [
-    {
-      id: '1',
-      name: 'Marie Dupont',
-      initials: 'M',
-      appliedTo: 'AI-Powered Image Recognition System',
-      matchRate: 92,
-      avatarColor: '#6366F1'
-    }
-  ];
+  // Recent Applicants - will be populated from backend
+  recentApplicants: Applicant[] = [];
 
   constructor(
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private pfeService: PFEService,
+    private applicantService: ApplicantService
   ) {}
 
   ngOnInit(): void {
-    // Initialize component
+    // Load listings and statistics from backend
+    this.pfeService.getPFEListings().subscribe({
+      next: (listings) => {
+        this.pfeListings = listings;
+      },
+      error: (err) => {
+        console.error('Failed to load PFE listings:', err);
+      }
+    });
+
+    this.pfeService.getStatistics().subscribe({
+      next: (stats) => {
+        this.activePFEs = stats.activePFEs;
+        this.totalApplicants = stats.totalApplicants;
+        this.topApplicants = stats.topApplicants;
+        this.avgMatchRate = stats.avgMatchRate;
+      },
+      error: (err) => console.error('Failed to load dashboard statistics:', err)
+    });
+
+    // Load recent applicants (take latest 5)
+    this.applicantService.getAllApplicants().subscribe({
+      next: (apps) => {
+        // Sort by applicationDate descending and take first 5
+        const sorted = apps.slice().sort((a, b) => new Date(b.applicationDate).getTime() - new Date(a.applicationDate).getTime());
+        this.recentApplicants = sorted.slice(0, 5).map(a => ({
+          id: a.id,
+          name: a.name,
+          initials: a.initials || (a.name ? a.name.split(' ')[0][0].toUpperCase() : ''),
+          appliedTo: a.appliedTo || '',
+          matchRate: a.matchRate,
+          avatarColor: a.avatarColor || '#6366F1'
+        }));
+      },
+      error: (err) => console.error('Failed to load applicants:', err)
+    });
   }
 
   navigateToListing(listingId: string): void {
     console.log('Navigate to listing:', listingId);
     // Navigate to applicants page filtered by this PFE
-    this.router.navigate(['//companies/applicants'], {
+    this.router.navigate(['/companies/applicants'], {
       queryParams: { pfeId: listingId }
     });
   }
 
   navigateToApplicant(applicantId: string): void {
     console.log('Navigate to applicant:', applicantId);
-    // Implement navigation logic
+    // Implement navigation logic - assume route exists
+    this.router.navigate(['/companies/applicants', applicantId]);
   }
 
   postNewPFE(): void {
@@ -108,16 +120,17 @@ export class OverviewComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         console.log('New PFE created:', result);
-        // Here you would typically call your service to create the PFE
-        // this.pfeService.createPFEListing(result).subscribe(...)
-
-        // For now, just add it to the list (in real app, refresh from API)
-        const newPFE: PFEListing = {
-          id: (this.pfeListings.length + 1).toString(),
-          ...result
-        };
-        this.pfeListings.unshift(newPFE);
-        this.activePFEs++;
+        // Use backend to create PFE and update cache/list
+        this.pfeService.createPFE(result).subscribe({
+          next: (newPFE) => {
+            console.log('PFE created:', newPFE);
+            // refresh local list (service already updates cache)
+            // but also ensure local view is in sync
+            this.pfeListings.unshift(newPFE);
+            this.activePFEs++;
+          },
+          error: (err) => console.error('Error:', err)
+        });
       }
     });
   }

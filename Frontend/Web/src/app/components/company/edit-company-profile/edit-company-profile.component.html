@@ -1,0 +1,226 @@
+<div class="edit-profile-container">
+  <main class="edit-profile-main">
+    <div class="edit-profile-content">
+      <!-- Header -->
+      <div class="header">
+        <div class="header-left">
+          <app-button variant="ghost" size="icon" (buttonClick)="navigateBack()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m12 19-7-7 7-7"/>
+              <path d="M19 12H5"/>
+            </svg>
+          </app-button>
+          <h1>Edit Company Profile</h1>
+        </div>
+        <app-button variant="default" (buttonClick)="handleSave()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>
+            <path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/>
+            <path d="M7 3v4a1 1 0 0 0 1 1h7"/>
+          </svg>
+          Save Changes
+        </app-button>
+      </div>
+
+      <!-- Logo -->
+      <app-card>
+        <app-card-header>
+          <app-card-title>Company Logo</app-card-title>
+        </app-card-header>
+        <app-card-content>
+          <div class="logo-content">
+            <div class="logo-preview-wrapper">
+              @if (logoPreview) {
+                <img [src]="logoPreview" alt="Company logo" class="logo-preview" />
+              } @else {
+                <div class="logo-placeholder">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="20" height="20" x="2" y="2" rx="2"/>
+                    <circle cx="8" cy="8" r="2"/>
+                    <path d="m21 15-5-5L5 21"/>
+                  </svg>
+                </div>
+              }
+            </div>
+            <div class="logo-actions">
+              <app-button variant="outline" (buttonClick)="handleLogoUpload()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" x2="12" y1="3" y2="15"/>
+                </svg>
+                {{ logoPreview ? 'Replace Logo' : 'Upload Logo' }}
+              </app-button>
+            </div>
+          </div>
+        </app-card-content>
+      </app-card>
+
+      <!-- Basic Information -->
+      <app-card>
+        <app-card-header>
+          <app-card-title>Basic Information</app-card-title>
+        </app-card-header>
+        <app-card-content>
+          <div class="form-content">
+            <div class="form-grid">
+              <div class="form-field">
+                <app-label htmlFor="name">Company Name</app-label>
+                <app-input
+                  type="text"
+                  [(ngModel)]="formData.name"
+                ></app-input>
+              </div>
+              <div class="form-field">
+                <app-label htmlFor="industry">Industry</app-label>
+                <select
+                  class="native-select"
+                  [(ngModel)]="formData.industry"
+                >
+                  <option value="" disabled>Select an industry</option>
+                  @for (option of industryOptions; track option) {
+                    <option [value]="option">{{ option }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-field">
+                <app-label htmlFor="location">Location</app-label>
+                <app-input
+                  type="text"
+                  placeholder="e.g., Tunis, Tunisia"
+                  [(ngModel)]="formData.location"
+                ></app-input>
+              </div>
+              <div class="form-field">
+                <app-label htmlFor="size">Company Size</app-label>
+                <select
+                  class="native-select"
+                  [(ngModel)]="formData.size"
+                >
+                  <option value="" disabled>Select a size</option>
+                  @for (option of sizeOptions; track option) {
+                    <option [value]="option">{{ option }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-field">
+                <app-label htmlFor="foundedYear">Founded Year</app-label>
+                <app-input
+                  type="number"
+                  placeholder="e.g., 2018"
+                  [(ngModel)]="formData.foundedYear"
+                ></app-input>
+              </div>
+              <div class="form-field">
+                <app-label htmlFor="contactEmail">Contact Email</app-label>
+                <app-input
+                  type="email"
+                  placeholder="contact@company.com"
+                  [(ngModel)]="formData.contactEmail"
+                ></app-input>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <app-label htmlFor="description">Description</app-label>
+              <app-textarea
+                placeholder="Tell us about your company..."
+                [(ngModel)]="formData.description"
+                [rows]="4"
+              ></app-textarea>
+            </div>
+          </div>
+        </app-card-content>
+      </app-card>
+
+      <!-- Technologies -->
+      <app-card>
+        <app-card-header>
+          <app-card-title>Technologies & Stack</app-card-title>
+        </app-card-header>
+        <app-card-content>
+          <div class="skills-content">
+            <div class="skills-list">
+              @for (tech of technologies; track tech) {
+                <app-badge variant="default" class="skill-badge">
+                  {{ tech }}
+                  <button type="button" class="skill-remove" (click)="removeTechnology(tech)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M18 6 6 18"/>
+                      <path d="m6 6 12 12"/>
+                    </svg>
+                  </button>
+                </app-badge>
+              }
+            </div>
+
+            <div class="add-skill-container">
+              <app-input
+                type="text"
+                placeholder="Add a technology..."
+                [(ngModel)]="newTech"
+                (keypress)="onTechKeyPress($event)"
+                class="add-skill-input"
+              ></app-input>
+              <app-button variant="outline" size="icon" (buttonClick)="addTechnology()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14"/>
+                  <path d="M12 5v14"/>
+                </svg>
+              </app-button>
+            </div>
+          </div>
+        </app-card-content>
+      </app-card>
+
+      <!-- Links -->
+      <app-card>
+        <app-card-header>
+          <app-card-title>Links</app-card-title>
+        </app-card-header>
+        <app-card-content>
+          <div class="form-content">
+            <div class="form-field">
+              <app-label htmlFor="website">Company Website</app-label>
+              <app-input
+                type="text"
+                placeholder="https://yourcompany.com"
+                [(ngModel)]="formData.website"
+              ></app-input>
+            </div>
+
+            <div class="form-field">
+              <app-label htmlFor="linkedinUrl">LinkedIn URL</app-label>
+              <app-input
+                type="text"
+                placeholder="https://linkedin.com/company/yourcompany"
+                [(ngModel)]="formData.linkedinUrl"
+              ></app-input>
+            </div>
+          </div>
+        </app-card-content>
+      </app-card>
+
+      <!-- Bottom Actions -->
+      <div class="bottom-actions">
+        <app-button variant="outline" (buttonClick)="handleCancel()">
+          Cancel
+        </app-button>
+        <app-button variant="default" (buttonClick)="handleSave()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>
+            <path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/>
+            <path d="M7 3v4a1 1 0 0 0 1 1h7"/>
+          </svg>
+          Save Changes
+        </app-button>
+      </div>
+    </div>
+  </main>
+</div>
