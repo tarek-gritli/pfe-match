@@ -9,6 +9,9 @@ import { TextareaComponent } from '../../Common/textarea/textarea.component';
 import { LabelComponent } from '../../Common/label/label.component';
 import { BadgeComponent } from '../../Common/badge/badge.component';
 import { ProgressComponent } from '../../Common/progress/progress.component';
+import { Company, CompanyProfileUpdate } from '../../../models/company-profile.model';
+import { CompanyService} from '../../../services/company.service';
+import { inject } from '@angular/core';
 
 interface CompanyCreateFormData {
   logo: string;
@@ -50,6 +53,7 @@ interface Step {
   styleUrls: ['./create-company-profile.component.css']
 })
 export class CreateCompanyProfileComponent {
+  private companyService = inject(CompanyService);
   currentStep: number = 1;
   errors: Record<string, string> = {};
 
@@ -182,11 +186,27 @@ export class CreateCompanyProfileComponent {
 
   handleCreateProfile(): void {
     if (!this.validateStep(2)) return;
+    const payload: CompanyProfileUpdate = {
+      location: this.formData.location,
+      employee_count: this.formData.size,
+      founded_year: this.formData.foundedYear || undefined,
+      company_description: this.formData.description,
+      website: this.formData.website || undefined,
+      linkedin_url: this.formData.linkedinUrl || undefined,
+      technologies_used: this.formData.technologies,
+    };
+    this.companyService.updateMyProfile(payload).subscribe({
+      next: () => {
+        alert('Profile updated successfully!');
+        this.router.navigate(['/profile']);
+      },
+      error: (err : any) => {
+        console.error(err);
+        alert('Failed to create profile');
+      }
+    });
 
-    // TODO: Replace with actual service call
     console.log('Creating company profile:', this.formData);
-
-    this.router.navigate(['/profile']);
   }
 
   handleCancel(): void {

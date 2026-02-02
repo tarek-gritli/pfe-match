@@ -9,19 +9,19 @@ import {ApplicantsComponent} from './components/company/applicants/applicants.co
 import { CompanyProfileComponent } from './components/company/company-profile/company-profile.component';
 import { EditCompanyProfileComponent } from './components/company/edit-company-profile/edit-company-profile.component';
 import { CreateCompanyProfileComponent } from './components/company/create-company-profile/create-company-profile.component';
+import { ProfileComponent } from './components/profile/profile.component';
+import { CreateProfileComponent } from './components/create-profile/create-profile.component';
+import { EditProfileComponent } from './components/edit-profile/edit-profile.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: 'profile', component: StudentProfileComponent },
-  { path: 'create-profile', component: CreateStudentProfileComponent },
-  { path: 'edit-profile', component: EditStudentProfileComponent },
+  { path: 'profile', component: ProfileComponent },
+  { path: 'create-profile', component: CreateProfileComponent },
+  { path: 'edit-profile', component: EditProfileComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'login', component: LoginComponent },
   // Enterprise routes (placeholder for now)
-  { path: 'enterprise/create-profile', component: CreateCompanyProfileComponent }, // TODO: Create EnterpriseProfileComponent
   { path: 'enterprise/dashboard', component: StudentProfileComponent }, // TODO: Create EnterpriseDashboardComponent
-  { path: 'enterprise/profile', component: CompanyProfileComponent},
-  { path: 'enterprise/edit-profile', component: EditCompanyProfileComponent}
 ];
   //{path: 'login', component: LoginComponent },
   //{path: 'companies/overview-pfe', component: OverviewComponent},

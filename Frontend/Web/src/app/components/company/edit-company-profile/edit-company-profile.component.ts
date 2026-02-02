@@ -8,7 +8,7 @@ import { InputComponent } from '../../Common/input/input.component';
 import { TextareaComponent } from '../../Common/textarea/textarea.component';
 import { LabelComponent } from '../../Common/label/label.component';
 import { BadgeComponent } from '../../Common/badge/badge.component';
-import { Company } from '../../../models/company-profile.model';
+import { Company, CompanyProfileUpdate } from '../../../models/company-profile.model';
 import { CompanyService} from '../../../services/company.service';
 import { inject } from '@angular/core';
 
@@ -152,15 +152,27 @@ export class EditCompanyProfileComponent implements OnInit {
   }
 
   handleSave(): void {
-    // TODO: Replace with actual service call
-    const updatedProfile = {
-      ...this.formData,
-      technologies: this.technologies,
-      logo: this.logoPreview
+    const payload: CompanyProfileUpdate = {
+      company_name: this.formData.name,
+      industry: this.formData.industry,
+      location: this.formData.location,
+      employee_count: this.formData.size,
+      founded_year: this.formData.foundedYear || undefined,
+      company_description: this.formData.description,
+      website: this.formData.website || undefined,
+      linkedin_url: this.formData.linkedinUrl || undefined,
+      technologies_used: this.technologies,
     };
-
-    console.log('Saving company profile:', updatedProfile);
-
+    this.companyService.updateMyProfile(payload).subscribe({
+      next: () => {
+        alert('Profile updated successfully!');
+        this.router.navigate(['/profile']);
+      },
+      error: (err : any) => {
+        console.error(err);
+        alert('Failed to update profile');
+      }
+    });
     // Show success message (you can integrate a toast service here)
     alert('Company profile updated successfully!');
 
