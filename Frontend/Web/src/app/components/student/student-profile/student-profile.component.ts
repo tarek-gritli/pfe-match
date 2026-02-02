@@ -57,12 +57,17 @@ export class StudentProfileComponent implements OnInit {
     this.studentService.getProfile().subscribe({
       next: (student) => {
         this.currentStudent = student;
+        console.log(this.currentStudent.profileImage);
         this.profileCompleteness = this.calculateProfileCompleteness(this.currentStudent);
       },
       error: () => {
         this.isLoading = false;
       }
     })
+  }
+
+  getProfileImageUrl(path: string | undefined): string {
+    return this.studentService.getProfileImageUrl(path);
   }
 
   calculateProfileCompleteness(student: Student): ProfileCompleteness {

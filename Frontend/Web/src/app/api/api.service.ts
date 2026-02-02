@@ -146,4 +146,21 @@ export class ApiService {
             headers: new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' })
         }).pipe(catchError(this.handleError));
     }
+
+    /**
+ * Convert relative path to full URL for assets/uploads
+ */
+getAssetUrl(path: string | undefined | null): string {
+    if (!path) return '';
+    
+    // If it's already a full URL, return as-is
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+        return path;
+    }
+    
+    // Remove leading slash if present to avoid double slashes
+    const cleanPath = path.startsWith('/') ? path.substring(1) : path;
+    
+    return `${this.baseUrl}/${cleanPath}`;
+}
 }

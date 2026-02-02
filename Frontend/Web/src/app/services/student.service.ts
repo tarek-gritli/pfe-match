@@ -23,4 +23,8 @@ export class StudentService {
       payload
     );
   }
+
+  getProfileImageUrl(path: string | undefined): string {
+    return this.api.getAssetUrl(path);
+}
 }

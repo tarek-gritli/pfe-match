@@ -153,61 +153,74 @@
           <div class="form-content">
             <!-- Profile Picture -->
             <div class="profile-picture-section">
-              <div class="profile-picture-wrapper">
-                <div class="profile-picture-container">
-                  @if (formData.profileImage) {
-                    <img
-                      [src]="formData.profileImage"
-                      alt="Profile"
-                      class="profile-picture-image"
-                    />
-                  } @else {
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="40"
-                      height="40"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      class="profile-picture-placeholder"
-                    >
-                      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-                      <circle cx="12" cy="7" r="4" />
-                    </svg>
-                  }
-                </div>
-                <label for="profile-image" class="profile-picture-upload-btn">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="17 8 12 3 7 8" />
-                    <line x1="12" x2="12" y1="3" y2="15" />
-                  </svg>
-                </label>
-                <input
-                  id="profile-image"
-                  type="file"
-                  accept="image/*"
-                  class="hidden-input"
-                  (change)="handleProfileImageUpload($event)"
-                />
-              </div>
-              <span class="profile-picture-hint"
-                >Upload profile picture (optional)</span
-              >
-            </div>
+  <div class="profile-picture-wrapper">
+    <div class="profile-picture-container">
+      @if (imagePreview || formData.profileImage) {
+        <img
+          [src]="imagePreview || formData.profileImage"
+          alt="Profile"
+          class="profile-picture-image"
+        />
+        @if (isUploadingImage) {
+          <div class="upload-overlay">
+            <div class="spinner"></div>
+          </div>
+        }
+      } @else {
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="40"
+          height="40"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="profile-picture-placeholder"
+        >
+          <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      }
+    </div>
+    <label for="profile-image" class="profile-picture-upload-btn" [class.disabled]="isUploadingImage">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="17 8 12 3 7 8" />
+        <line x1="12" x2="12" y1="3" y2="15" />
+      </svg>
+    </label>
+    <input
+      id="profile-image"
+      type="file"
+      accept="image/*"
+      class="hidden-input"
+      [disabled]="isUploadingImage"
+      (change)="handleProfileImageUpload($event)"
+    />
+  </div>
+  <span class="profile-picture-hint">
+    @if (isUploadingImage) {
+      Uploading...
+    } @else {
+      Upload profile picture (optional)
+    }
+  </span>
+  @if (errors['profileImage']) {
+    <span class="error-message">{{ errors['profileImage'] }}</span>
+  }
+</div>
 
             <!-- Desired Job Role -->
             <div class="form-field">

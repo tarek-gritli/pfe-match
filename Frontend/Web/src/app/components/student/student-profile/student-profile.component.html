@@ -21,10 +21,10 @@
             <app-card-content>
               <div class="profile-overview">
                 <app-avatar 
-                  [src]="currentStudent.profileImage || ''" 
-                  [fallback]="getInitials(currentStudent.firstName)"
-                  size="xl">
-                </app-avatar>
+  [src]="getProfileImageUrl(currentStudent.profileImage)" 
+  [fallback]="getInitials(currentStudent.firstName)"
+  size="xl">
+</app-avatar>
                 
                 <div class="profile-info">
                   <h2 class="profile-name">{{ currentStudent.firstName}} {{ currentStudent.lastName}}</h2>
