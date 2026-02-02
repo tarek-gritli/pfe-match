@@ -21,7 +21,9 @@ export const routes: Routes = [
   { path: 'enterprise/create-profile', component: CreateCompanyProfileComponent }, // TODO: Create EnterpriseProfileComponent
   { path: 'enterprise/dashboard', component: StudentProfileComponent }, // TODO: Create EnterpriseDashboardComponent
   { path: 'enterprise/profile', component: CompanyProfileComponent},
-  { path: 'enterprise/edit-profile', component: EditCompanyProfileComponent}
+  { path: 'enterprise/edit-profile', component: EditCompanyProfileComponent},
+  {path: 'companies/overview-pfe', component: OverviewComponent},
+  {path: 'companies/applicants', component: ApplicantsComponent}
 ];
   //{path: 'login', component: LoginComponent },
   //{path: 'companies/overview-pfe', component: OverviewComponent},

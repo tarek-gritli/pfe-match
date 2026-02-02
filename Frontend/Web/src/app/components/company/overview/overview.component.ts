@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PfeFormDialogComponent } from '../pfe-form-dialog/pfe-form-dialog.component';
+import {PFEService} from '../../../services/pfe.service';
 
 interface PFEListing {
   id: string;
@@ -77,7 +78,8 @@ export class OverviewComponent implements OnInit {
 
   constructor(
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private pfeService: PFEService
   ) {}
 
   ngOnInit(): void {
@@ -108,15 +110,20 @@ export class OverviewComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         console.log('New PFE created:', result);
-        // Here you would typically call your service to create the PFE
-        // this.pfeService.createPFEListing(result).subscribe(...)
+        this.pfeService.createPFE(result).subscribe({
+          next: (newPFE) => {
+            console.log('PFE created:', newPFE);
+            // Rafraîchir la liste
+          },
+          error: (err) => console.error('Error:', err)
+        });
 
         // For now, just add it to the list (in real app, refresh from API)
-        const newPFE: PFEListing = {
+        const newpfe: PFEListing = {
           id: (this.pfeListings.length + 1).toString(),
           ...result
         };
-        this.pfeListings.unshift(newPFE);
+        this.pfeListings.unshift(newpfe);
         this.activePFEs++;
       }
     });
