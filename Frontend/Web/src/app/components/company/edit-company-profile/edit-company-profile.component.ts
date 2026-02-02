@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -11,6 +11,8 @@ import { BadgeComponent } from '../../Common/badge/badge.component';
 import { Company, CompanyProfileUpdate } from '../../../models/company-profile.model';
 import { CompanyService} from '../../../services/company.service';
 import { inject } from '@angular/core';
+import { AuthService } from '../../../auth/services/auth.service';
+
 
 
 interface CompanyFormData {
@@ -46,6 +48,8 @@ interface CompanyFormData {
 })
 export class EditCompanyProfileComponent implements OnInit {
   private companyService = inject(CompanyService);
+  private authService = inject(AuthService);
+  @ViewChild('logoInput') logoInput!: ElementRef;
   formData: CompanyFormData = {
     name: '',
     industry: '',
@@ -94,34 +98,83 @@ export class EditCompanyProfileComponent implements OnInit {
   ];
 
   isLoading = false;
+  errors: Record<string, string> = {};
 
   constructor(private router: Router) {}
 
   ngOnInit(): void {
     this.companyService.getProfile().subscribe({
       next: (company) => {
-        this.currentEnterprise = company;
-        this.formData = {
-          name: this.currentEnterprise.name,
-          industry: this.currentEnterprise.industry,
-          location: this.currentEnterprise.location,
-          size: this.currentEnterprise.size,
-          foundedYear: this.currentEnterprise.foundedYear || 0,
-          description: this.currentEnterprise.description || '',
-          website: this.currentEnterprise.website || '',
-          linkedinUrl: this.currentEnterprise.linkedinUrl || '',
-          contactEmail: this.currentEnterprise.contactEmail
-        };
-        this.technologies = this.currentEnterprise.technologies;
-        this.currentLogo = 'https://github.com/shadcn.png';
-        this.logoPreview = this.currentLogo;
-      },
+  this.currentEnterprise = company;
+  this.formData = {
+    name: this.currentEnterprise.name,
+    industry: this.currentEnterprise.industry,
+    location: this.currentEnterprise.location,
+    size: this.currentEnterprise.size,
+    foundedYear: this.currentEnterprise.foundedYear || 0,
+    description: this.currentEnterprise.description || '',
+    website: this.currentEnterprise.website || '',
+    linkedinUrl: this.currentEnterprise.linkedinUrl || '',
+    contactEmail: this.currentEnterprise.contactEmail
+  };
+  this.technologies = this.currentEnterprise.technologies;
+  this.currentLogo = this.currentEnterprise.logo!;
+
+  // This is the only line you need to add:
+  this.logoPreview = this.getProfileImageUrl(this.currentEnterprise.logo);
+},
       error: () => {
         this.isLoading = false;
       }
     })
   }
 
+    getProfileImageUrl(path: string | undefined): string {
+      return this.companyService.getProfileImageUrl(path);
+    }
+    isUploadingLogo = false;
+
+
+
+triggerLogoUpload(): void {
+  this.logoInput.nativeElement.click();
+}
+
+handleLogoUpload(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+
+  if (file && file.type.startsWith('image/')) {
+    delete this.errors['logo'];
+
+    // Show preview immediately
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      this.logoPreview = reader.result as string;
+    };
+    reader.onerror = () => {
+      this.errors['logo'] = 'Failed to read image file';
+    };
+    reader.readAsDataURL(file);
+
+    // Upload to server
+    this.isUploadingLogo = true;
+    this.authService.uploadCompanyLogo(file).subscribe({
+      next: (response) => {
+        this.isUploadingLogo = false;
+        this.logoPreview = this.getProfileImageUrl(response.profile_picture_url); // adjust key to match your API response
+      },
+      error: (error) => {
+        this.isUploadingLogo = false;
+        this.errors['logo'] = error.message || 'Failed to upload logo';
+        this.logoPreview = this.getProfileImageUrl(this.currentEnterprise.logo); // revert to existing
+        input.value = '';
+      }
+    });
+  } else if (file) {
+    this.errors['logo'] = 'Please select a valid image file';
+  }
+}
   addTechnology(): void {
     const tech = this.newTech.trim();
     if (tech && !this.technologies.includes(tech)) {
@@ -139,11 +192,6 @@ export class EditCompanyProfileComponent implements OnInit {
       event.preventDefault();
       this.addTechnology();
     }
-  }
-
-  handleLogoUpload(): void {
-    // TODO: Implement actual file upload
-    console.log('Logo upload functionality coming soon!');
   }
 
   removeLogo(): void {

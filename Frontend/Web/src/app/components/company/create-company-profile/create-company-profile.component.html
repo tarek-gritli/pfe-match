@@ -153,8 +153,13 @@
             <div class="logo-section">
               <div class="logo-preview-wrapper">
                 <div class="logo-container">
-                  @if (formData.logo) {
+                  @if (logoPreview || formData.logo) {
                     <img [src]="formData.logo" alt="Company logo" class="logo-image" />
+                    @if (isUploadingLogo) {
+                      <div class="upload-overlay">
+        <div class="spinner"></div>
+      </div>
+                    }
                   } @else {
                     <svg
                       xmlns="http://www.w3.org/2000/svg"

@@ -72,10 +72,11 @@ export class CreateCompanyProfileComponent {
     technologies: []
   };
 
-  isUploadingImage: any;
+  isUploadingLogo: any;
   profileImageFile: any;
 
   imagePreview: string | null = null;
+  logoPreview: string | null = null;
 
 
   newTech: string = '';
@@ -153,54 +154,41 @@ export class CreateCompanyProfileComponent {
   }
 
   handleLogoUpload(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    
-    if (file && file.type.startsWith('image/')) {
-      // Clear any previous errors
-      delete this.errors['profileImage'];
-      
-      this.profileImageFile = file;
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
 
-      // Show preview immediately
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        this.imagePreview = reader.result as string;
-        console.log('Preview set:', this.imagePreview?.substring(0, 50)); // Debug
-      };
-      reader.onerror = () => {
-        this.errors['profileImage'] = 'Failed to read image file';
-        console.error('FileReader error'); // Debug
-      };
-      reader.readAsDataURL(file);
+  if (file && file.type.startsWith('image/')) {
+    delete this.errors['logo'];
 
-      // Upload to server
-      this.isUploadingImage = true;
-      this.authService.uploadStudentProfilePicture(file).subscribe({
-        next: (response) => {
-          this.isUploadingImage = false;
-          console.log('Upload successful:', response); // Debug
-          // Update with server URL
-          this.formData.logo = response.profile_picture_url;
-          // Keep preview until server image loads, then clear
-          //setTimeout(() => {
-          //  this.imagePreview = null;
-          //}, 100);
-        },
-        error: (error) => {
-          this.isUploadingImage = false;
-          this.errors['profileImage'] = error.message || 'Failed to upload image';
-          // Clear preview on error
-          this.imagePreview = null;
-          this.profileImageFile = null;
-          // Reset input
-          input.value = '';
-        }
-      });
-    } else if (file) {
-      this.errors['profileImage'] = 'Please select a valid image file';
-    }
+    // Show preview immediately via FileReader
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      this.logoPreview = reader.result as string;
+    };
+    reader.onerror = () => {
+      this.errors['logo'] = 'Failed to read image file';
+    };
+    reader.readAsDataURL(file);
+
+    // Upload to server
+    this.isUploadingLogo = true;
+    this.authService.uploadCompanyLogo(file).subscribe({  // adjust method name as needed
+      next: (response) => {
+        this.isUploadingLogo = false;
+        this.formData.logo = response.profile_picture_url;
+        //this.logoPreview = null; // server URL is now set, preview no longer needed
+      },
+      error: (error) => {
+        this.isUploadingLogo = false;
+        this.errors['logo'] = error.message || 'Failed to upload logo';
+        this.logoPreview = null;
+        input.value = '';
+      }
+    });
+  } else if (file) {
+    this.errors['logo'] = 'Please select a valid image file';
   }
+}
 
   removeLogo(): void {
     this.formData.logo = '';
