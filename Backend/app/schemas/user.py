@@ -121,26 +121,25 @@ class UserResponse(BaseModel):
 
 
 class StudentProfileResponse(BaseModel):
-    """Student profile response"""
-    id: int
-    user_id: int
-    first_name: str
-    last_name: str
-    university: Optional[str] = None
-    short_bio: Optional[str] = None
-    profile_picture: Optional[str] = None
-    desired_job_role: Optional[str] = None
-    linkedin_url: Optional[str] = None
-    github_url: Optional[str] = None
-    portfolio_url: Optional[str] = None
-    skills: Optional[List[str]] = None
-    technologies: Optional[List[str]] = None
-    resume_url: Optional[str] = None
-    resume_parsed: bool = False
-    
+    firstName: str
+    lastName: str
+    profileImage: Optional[str]
+    title: Optional[str]
+    university: Optional[str]
+    bio: Optional[str]
+
+    skills: List[str]
+    technologies: List[str]
+
+    linkedinUrl: Optional[str]
+    githubUrl: Optional[str]
+    customLinkUrl: Optional[str]
+    customLinkLabel: Optional[str]
+
+    resumeName: Optional[str]
+
     class Config:
         from_attributes = True
-
 
 class EnterpriseProfileResponse(BaseModel):
     """Enterprise profile response"""

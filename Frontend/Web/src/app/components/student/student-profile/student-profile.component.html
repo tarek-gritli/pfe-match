@@ -22,12 +22,12 @@
               <div class="profile-overview">
                 <app-avatar 
                   [src]="currentStudent.profileImage || ''" 
-                  [fallback]="getInitials(currentStudent.fullName)"
+                  [fallback]="getInitials(currentStudent.firstName)"
                   size="xl">
                 </app-avatar>
                 
                 <div class="profile-info">
-                  <h2 class="profile-name">{{ currentStudent.fullName }}</h2>
+                  <h2 class="profile-name">{{ currentStudent.firstName}} {{ currentStudent.lastName}}</h2>
                   @if (currentStudent.title) {
                     <p class="profile-subtitle">
                       {{ currentStudent.title }}

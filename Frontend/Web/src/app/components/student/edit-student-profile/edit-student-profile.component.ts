@@ -8,9 +8,13 @@ import { InputComponent } from '../../Common/input/input.component';
 import { TextareaComponent } from '../../Common/textarea/textarea.component';
 import { LabelComponent } from '../../Common/label/label.component';
 import { BadgeComponent } from '../../Common/badge/badge.component';
+import { StudentService } from '../../../services/student.service';
+import { inject } from '@angular/core';
+import { Student } from '../../../models/student-profile.model';
 
 interface FormData {
-  fullName: string;
+  firstName: string;
+  lastName: string;
   email: string;
   university: string;
   fieldOfStudy: string;
@@ -42,8 +46,20 @@ interface FormData {
   styleUrls: ['./edit-student-profile.component.css']
 })
 export class EditStudentProfileComponent implements OnInit {
+  private studentService = inject(StudentService);
+  currentStudent: Student = {
+    firstName: '',
+    lastName: '',
+    university: '',
+    skills: [],
+    technologies: [],
+    fieldOfStudy: '',
+    bio: '',
+  };
+
   formData: FormData = {
-    fullName: '',
+    firstName: '',
+    lastName: '',
     email: '',
     university: '',
     fieldOfStudy: '',
@@ -60,12 +76,6 @@ export class EditStudentProfileComponent implements OnInit {
   newSkill: string = '';
   newTech: string = '';
 
-  // Mock data for current student
-  currentStudent = {
-    resumeName: '',
-    resumeUploadDate: ''
-  };
-
   // Mock data for all skills (for autocomplete)
   allSkills: string[] = [
     'JavaScript', 'TypeScript', 'Python', 'Java', 'C++', 'React', 'Angular',
@@ -73,35 +83,36 @@ export class EditStudentProfileComponent implements OnInit {
     'Data Science', 'SQL', 'MongoDB', 'PostgreSQL', 'AWS', 'Docker', 'Kubernetes'
   ];
 
+  isLoading = true;
+
   constructor(private router: Router) {}
 
   ngOnInit(): void {
-    // TODO: Load current student data from service
-    this.loadStudentData();
-  }
-
-  loadStudentData(): void {
-    // TODO: Replace with actual service call
-    this.formData = {
-      fullName: 'John Doe',
-      email: 'john.doe@university.fr',
-      university: 'Example University',
-      fieldOfStudy: 'Computer Science',
-      title: 'Software Engineering Student',
-      bio: 'Passionate about building innovative software solutions and learning new technologies.',
-      linkedinUrl: 'https://linkedin.com/in/johndoe',
-      githubUrl: 'https://github.com/johndoe',
-      customLinkLabel: 'Portfolio',
-      customLinkUrl: 'https://johndoe.com'
-    };
+    this.studentService.getProfile().subscribe({
+      next: (student) => {
+        this.currentStudent = student;
+        this.formData = {
+        firstName: this.currentStudent.firstName,
+        lastName: this.currentStudent.lastName,
+        email: 'john.doe@university.fr',
+        university: this.currentStudent.university,
+        fieldOfStudy: this.currentStudent.fieldOfStudy,
+        title: 'Software Engineering Student',
+        bio: this.currentStudent.bio,
+        linkedinUrl: 'https://linkedin.com/in/johndoe',
+        githubUrl: 'https://github.com/johndoe',
+        customLinkLabel: 'Portfolio',
+        customLinkUrl: 'https://johndoe.com'
+      };
 
     this.skills = ['JavaScript', 'TypeScript', 'Angular', 'React', 'Node.js'];
     this.technologies = ['Git', 'Docker', 'AWS', 'MongoDB', 'PostgreSQL'];
+      },
+      error: () => {
+        this.isLoading = false;
+      }
+    })
     
-    this.currentStudent = {
-      resumeName: 'John_Doe_Resume.pdf',
-      resumeUploadDate: '2024-01-15'
-    };
   }
 
   addSkill(): void {
@@ -129,20 +140,28 @@ export class EditStudentProfileComponent implements OnInit {
   }
 
   handleSave(): void {
-    // TODO: Replace with actual service call
-    const updatedProfile = {
-      ...this.formData,
-      skills: this.skills,
-      technologies: this.technologies
-    };
-    
-    console.log('Saving profile:', updatedProfile);
-    
-    // Show success message (you can integrate a toast service here)
-    alert('Profile updated successfully!');
-    
-    this.router.navigate(['/profile']);
-  }
+  const payload = {
+    university: this.formData.university,
+    short_bio: this.formData.bio,
+    desired_job_role: this.formData.title,
+    linkedin_url: this.formData.linkedinUrl,
+    github_url: this.formData.githubUrl,
+    portfolio_url: this.formData.customLinkUrl,
+    skills: this.skills,
+    technologies: this.technologies
+  };
+
+  this.studentService.updateMyProfile(payload).subscribe({
+    next: () => {
+      alert('Profile updated successfully!');
+      this.router.navigate(['/profile']);
+    },
+    error: (err : any) => {
+      console.error(err);
+      alert('Failed to update profile');
+    }
+  });
+}
 
   handleResumeUpload(): void {
     // TODO: Implement actual file upload

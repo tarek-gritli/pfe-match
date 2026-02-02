@@ -31,10 +31,17 @@
           <div class="form-content">
             <div class="form-grid">
               <div class="form-field">
-                <app-label htmlFor="fullName">Full Name</app-label>
+                <app-label htmlFor="firstname">First Name</app-label>
                 <app-input
                   type="text"
-                  [(ngModel)]="formData.fullName"
+                  [(ngModel)]="formData.firstName"
+                ></app-input>
+              </div>
+              <div class="form-field">
+                <app-label htmlFor="lastName">Last Name</app-label>
+                <app-input
+                  type="text"
+                  [(ngModel)]="formData.lastName"
                 ></app-input>
               </div>
               <div class="form-field">

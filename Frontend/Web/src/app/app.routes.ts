@@ -8,6 +8,7 @@ import {OverviewComponent} from './components/company/overview/overview.componen
 import {ApplicantsComponent} from './components/company/applicants/applicants.component';
 import { CompanyProfileComponent } from './components/company/company-profile/company-profile.component';
 import { EditCompanyProfileComponent } from './components/company/edit-company-profile/edit-company-profile.component';
+import { CreateCompanyProfileComponent } from './components/company/create-company-profile/create-company-profile.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -17,7 +18,7 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'login', component: LoginComponent },
   // Enterprise routes (placeholder for now)
-  { path: 'enterprise/create-profile', component: CreateStudentProfileComponent }, // TODO: Create EnterpriseProfileComponent
+  { path: 'enterprise/create-profile', component: CreateCompanyProfileComponent }, // TODO: Create EnterpriseProfileComponent
   { path: 'enterprise/dashboard', component: StudentProfileComponent }, // TODO: Create EnterpriseDashboardComponent
   { path: 'enterprise/profile', component: CompanyProfileComponent},
   { path: 'enterprise/edit-profile', component: EditCompanyProfileComponent}
