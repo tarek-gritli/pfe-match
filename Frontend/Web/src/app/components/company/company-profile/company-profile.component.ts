@@ -5,20 +5,9 @@ import { CardComponent, CardContentComponent, CardHeaderComponent, CardTitleComp
 import { ButtonComponent } from '../../Common/button/button.component';
 import { BadgeComponent } from '../../Common/badge/badge.component';
 import { AvatarComponent } from '../../Common/avatar/avatar.component';
-
-interface Enterprise {
-  name: string;
-  logo?: string;
-  industry: string;
-  location: string;
-  size: string;
-  description?: string;
-  foundedYear?: number;
-  technologies: string[];
-  website?: string;
-  linkedinUrl?: string;
-  contactEmail?: string;
-}
+import { Company } from '../../../models/company-profile.model';
+import { CompanyService} from '../../../services/company.service';
+import { inject } from '@angular/core';
 
 interface Pfe {
   id: string;
@@ -43,23 +32,31 @@ interface Pfe {
   styleUrls: ['./company-profile.component.css']
 })
 export class CompanyProfileComponent implements OnInit {
-  currentEnterprise: Enterprise = {
+  private companyService = inject(CompanyService);
+  currentEnterprise: Company = {
     name: '',
     industry: '',
     location: '',
     size: '',
-    technologies: []
+    technologies: [],
+    contactEmail: '',
   };
 
   enterprisePfes: Pfe[] = [];
   openPfes: Pfe[] = [];
+  isLoading = true;
 
   constructor(private router: Router) {}
 
   ngOnInit(): void {
-    // TODO: Load enterprise and PFE data from your service
-    this.loadEnterpriseData();
-    this.loadPfes();
+    this.companyService.getProfile().subscribe({
+      next: (company) => {
+        this.currentEnterprise = company;
+      },
+      error: () => {
+        this.isLoading = false;
+      }
+    })
   }
 
   loadEnterpriseData(): void {

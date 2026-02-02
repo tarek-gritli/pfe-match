@@ -95,16 +95,22 @@ class StudentProfileUpdate(BaseModel):
     technologies: Optional[List[str]] = Field(default=None)
 
 
+from pydantic import BaseModel, HttpUrl, Field
+
 class EnterpriseProfileUpdate(BaseModel):
-    """Update enterprise profile (profile completion step)"""
+    company_name: Optional[str] = Field(None, max_length=200)
+    industry: Optional[str] = Field(None, max_length=100)
     location: Optional[str] = Field(None, max_length=200)
     employee_count: Optional[str] = Field(None, max_length=50)
-    company_description: Optional[str] = Field(None, max_length=2000)
-    technologies_used: Optional[List[str]] = Field(default=None)
-    website: Optional[str] = None
-    founded_year: Optional[int] = Field(None, ge=1800, le=2030)
-    company_logo: Optional[str] = Field(None, max_length=500)
+    company_description: Optional[str] = None
+    technologies_used: Optional[List[str]] = []
+    website: Optional[HttpUrl] = None
+    founded_year: Optional[int] = None
+    # Optional frontend-only field
+    linkedin_url: Optional[HttpUrl] = None
 
+    class Config:
+        orm_mode = True
 
 # ==================== RESPONSE SCHEMAS ====================
 

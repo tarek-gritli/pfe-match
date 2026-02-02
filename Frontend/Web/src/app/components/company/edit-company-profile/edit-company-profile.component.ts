@@ -8,6 +8,10 @@ import { InputComponent } from '../../Common/input/input.component';
 import { TextareaComponent } from '../../Common/textarea/textarea.component';
 import { LabelComponent } from '../../Common/label/label.component';
 import { BadgeComponent } from '../../Common/badge/badge.component';
+import { Company } from '../../../models/company-profile.model';
+import { CompanyService} from '../../../services/company.service';
+import { inject } from '@angular/core';
+
 
 interface CompanyFormData {
   name: string;
@@ -41,6 +45,7 @@ interface CompanyFormData {
   styleUrls: ['./edit-company-profile.component.css']
 })
 export class EditCompanyProfileComponent implements OnInit {
+  private companyService = inject(CompanyService);
   formData: CompanyFormData = {
     name: '',
     industry: '',
@@ -71,6 +76,15 @@ export class EditCompanyProfileComponent implements OnInit {
     'Cybersecurity', 'Telecom', 'Education', 'Energy', 'Logistics', 'Other'
   ];
 
+  currentEnterprise: Company = {
+    name: '',
+    industry: '',
+    location: '',
+    size: '',
+    technologies: [],
+    contactEmail: '',
+  };
+
   sizeOptions: string[] = [
     '1-10 employees',
     '10-50 employees',
@@ -79,30 +93,33 @@ export class EditCompanyProfileComponent implements OnInit {
     '500+ employees'
   ];
 
+  isLoading = false;
+
   constructor(private router: Router) {}
 
   ngOnInit(): void {
-    // TODO: Load enterprise data from service
-    this.loadEnterpriseData();
-  }
-
-  loadEnterpriseData(): void {
-    // TODO: Replace with actual service call
-    this.formData = {
-      name: 'TechCorp Solutions',
-      industry: 'Software Development',
-      location: 'Tunis, Tunisia',
-      size: '50-200 employees',
-      foundedYear: 2018,
-      description: 'We build cutting-edge software solutions tailored to the needs of modern businesses. Passionate about innovation and technology-driven growth.',
-      website: 'https://techcorp.com',
-      linkedinUrl: 'https://linkedin.com/company/techcorp',
-      contactEmail: 'contact@techcorp.com'
-    };
-
-    this.technologies = ['Angular', 'React', 'Node.js', 'PostgreSQL', 'AWS', 'Docker'];
-    this.currentLogo = 'https://github.com/shadcn.png';
-    this.logoPreview = this.currentLogo;
+    this.companyService.getProfile().subscribe({
+      next: (company) => {
+        this.currentEnterprise = company;
+        this.formData = {
+          name: this.currentEnterprise.name,
+          industry: this.currentEnterprise.industry,
+          location: this.currentEnterprise.location,
+          size: this.currentEnterprise.size,
+          foundedYear: this.currentEnterprise.foundedYear || 0,
+          description: this.currentEnterprise.description || '',
+          website: this.currentEnterprise.website || '',
+          linkedinUrl: this.currentEnterprise.linkedinUrl || '',
+          contactEmail: this.currentEnterprise.contactEmail
+        };
+        this.technologies = this.currentEnterprise.technologies;
+        this.currentLogo = 'https://github.com/shadcn.png';
+        this.logoPreview = this.currentLogo;
+      },
+      error: () => {
+        this.isLoading = false;
+      }
+    })
   }
 
   addTechnology(): void {
