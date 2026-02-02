@@ -1,32 +1,45 @@
-class Student {
-  final int id;
-  final Profile profile;
-  final List<Skill> skills;
-  final List<Tool> tools;
-  final Resume? resume;
-  final int profileIntegrity;
+class StudentProfileForm {
+  String profileImage;
+  String title;
+  String university;
+  String bio;
+  List<String> skills;
+  List<String> technologies;
+  String resumeName;
+  String linkedinUrl;
+  String githubUrl;
+  String portfolioUrl;
+  String customLinkLabel;
+  String customLinkUrl;
 
-  Student({
-    required this.id,
-    required this.profile,
-    required this.skills,
-    required this.tools,
-    this.resume,
-    required this.profileIntegrity,
-  });
-
-  factory Student.fromJson(Map<String, dynamic> json) {
-    return Student(
-      id: json['id'] ?? 0,  // Add default value
-      profile: Profile.fromJson(json['profile']),
-      skills: (json['skills'] as List? ?? []).map((s) => Skill.fromJson(s)).toList(),  // Handle null list
-      tools: (json['tools'] as List? ?? []).map((t) => Tool.fromJson(t)).toList(),  // Handle null list
-      resume: json['resume'] != null ? Resume.fromJson(json['resume']) : null,
-      profileIntegrity: json['profileIntegrity'] ?? 0,  // Add default value
-    );
-  }
+  StudentProfileForm({
+    this.profileImage = '',
+    this.title = '',
+    this.university = '',
+    this.bio = '',
+    List<String>? skills,
+    List<String>? technologies,
+    this.resumeName = '',
+    this.linkedinUrl = '',
+    this.githubUrl = '',
+    this.portfolioUrl = '',
+    this.customLinkLabel = '',
+    this.customLinkUrl = '',
+  }) : skills = skills ?? [],
+       technologies = technologies ?? [];
 }
 
+class ProfileStep {
+  final int id;
+  final String title;
+  final String icon;
+
+  const ProfileStep({
+    required this.id,
+    required this.title,
+    required this.icon,
+  });
+}
 class Profile {
   final String name;
   final String title;
