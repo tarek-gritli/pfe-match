@@ -13,3 +13,4 @@ export * from './divider/divider.component';
 export * from './google-button/google-button.component';
 export * from './error-alert/error-alert.component';
 export * from './loading-button/loading-button.component';
+export * from './navbar/navbar.component';
