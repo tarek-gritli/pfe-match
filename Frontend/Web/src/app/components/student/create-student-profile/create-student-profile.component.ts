@@ -308,7 +308,7 @@ export class CreateStudentProfileComponent {
     this.studentService.updateMyProfile(payload).subscribe({
       next: () => {
         alert('Profile updated successfully!');
-        this.router.navigate(['/profile']);
+        this.router.navigate(['/login']);
       },
       error: (err : any) => {
         console.error(err);

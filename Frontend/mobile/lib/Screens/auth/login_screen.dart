@@ -37,7 +37,29 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     if (success && mounted) {
-      Navigator.pushReplacementNamed(context, AppRoutes.home);
+      if (auth.profileCompleted) {
+        if (auth.userType == 'student') {
+          Navigator.pushReplacementNamed(context, AppRoutes.studentProfile);
+        } else if (auth.userType == 'enterprise') {
+          Navigator.pushReplacementNamed(context, AppRoutes.enterpriseProfile);
+        } else {
+          Navigator.pushReplacementNamed(context, AppRoutes.home);
+        }
+      } else {
+        if (auth.userType == 'student') {
+          Navigator.pushReplacementNamed(
+            context,
+            AppRoutes.createStudentProfile,
+          );
+        } else if (auth.userType == 'enterprise') {
+          Navigator.pushReplacementNamed(
+            context,
+            AppRoutes.createEnterpriseProfile,
+          );
+        } else {
+          Navigator.pushReplacementNamed(context, AppRoutes.home);
+        }
+      }
     }
   }
 

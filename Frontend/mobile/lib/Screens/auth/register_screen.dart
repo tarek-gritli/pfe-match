@@ -88,7 +88,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     if (success && mounted) {
       setState(() => _successMessage = 'Account created successfully!');
-      // Navigate to profile setup or login
+      Navigator.of(context).pushReplacementNamed('/create-student-profile');
     }
   }
 

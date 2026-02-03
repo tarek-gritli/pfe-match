@@ -1,24 +1,21 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'core/constants/app_colors.dart';
-import 'core/config/routes.dart';
 import 'providers/auth_provider.dart';
-import 'screens/auth/login_screen.dart';
-import 'screens/auth/register_screen.dart';
-import 'screens/home/home_screen.dart';
-import 'screens/student/create_profile_screen.dart';
-import 'package:flutter_web_plugins/url_strategy.dart';
+import 'core/config/routes.dart';
+import 'Screens/auth/login_screen.dart';
+import 'Screens/auth/register_screen.dart';
+import 'Screens/Student/create_profile_screen.dart';
+import 'Screens/Student/profile_screen.dart';
+// import 'Screens/Student/edit_profile_screen.dart';
+// import 'Screens/Enterprise/create_profile_screen.dart';
+// import 'Screens/Enterprise/profile_screen.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  // Use path URL strategy for web (removes # from URLs)
-  if (kIsWeb) {
-    usePathUrlStrategy();
-  }
   runApp(
-    ChangeNotifierProvider(create: (_) => AuthProvider(), child: const MyApp()),
+    MultiProvider(
+      providers: [ChangeNotifierProvider(create: (_) => AuthProvider())],
+      child: const MyApp(),
+    ),
   );
 }
 
@@ -31,37 +28,20 @@ class MyApp extends StatelessWidget {
       title: 'PFE Match',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primaryColor: AppColors.primary,
-        scaffoldBackgroundColor: AppColors.background,
-        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF4F46E5)),
         useMaterial3: true,
       ),
       initialRoute: AppRoutes.login,
-      onGenerateRoute: _generateRoute,
+      routes: {
+        AppRoutes.login: (context) => const LoginScreen(),
+        AppRoutes.register: (context) => const RegisterScreen(),
+        AppRoutes.createStudentProfile: (context) =>
+            const CreateProfileScreen(),
+        AppRoutes.studentProfile: (context) => const StudentProfileScreen(),
+        // AppRoutes.editStudentProfile: (context) => const EditProfileScreen(),
+        // AppRoutes.createEnterpriseProfile: (context) => const CreateEnterpriseProfileScreen(),
+        // AppRoutes.enterpriseProfile: (context) => const EnterpriseProfileScreen(),
+      },
     );
-  }
-
-  Route<dynamic>? _generateRoute(RouteSettings settings) {
-    Widget page;
-
-    switch (settings.name) {
-      case '/':
-      case '/login':
-        page = const LoginScreen();
-        break;
-      case '/register':
-        page = const RegisterScreen();
-        break;
-      case '/home':
-        page = const HomeScreen();
-        break;
-      case '/create-student-profile':
-        page = const CreateStudentProfileScreen();
-        break;
-      default:
-        page = const LoginScreen();
-    }
-
-    return MaterialPageRoute(builder: (_) => page, settings: settings);
   }
 }
