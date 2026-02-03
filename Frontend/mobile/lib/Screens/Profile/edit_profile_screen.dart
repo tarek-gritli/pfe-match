@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Student/edit_profile_screen.dart';
-import '../Company/edit_profile_screen.dart';
+import '../Enterprise/edit_profile_screen.dart';
 
 Future<bool> checkType() async {
   final prefs = await SharedPreferences.getInstance();

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/Screens/Enterprise/edit_profile_screen.dart';
+import 'Screens/Enterprise/profile_screen.dart';
 import 'Screens/Student/edit_profile_screen.dart';
 import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
@@ -8,10 +10,15 @@ import 'Screens/auth/register_screen.dart';
 import 'Screens/Student/create_profile_screen.dart';
 import 'Screens/Student/profile_screen.dart';
 // import 'Screens/Student/edit_profile_screen.dart';
-// import 'Screens/Enterprise/create_profile_screen.dart';
+import 'Screens/Enterprise/create_profile_screen.dart';
 // import 'Screens/Enterprise/profile_screen.dart';
 
 void main() {
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.presentError(details);
+    debugPrint(details.exceptionAsString());
+    debugPrintStack(stackTrace: details.stack);
+  };
   runApp(
     MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => AuthProvider())],
@@ -39,9 +46,10 @@ class MyApp extends StatelessWidget {
         AppRoutes.createStudentProfile: (context) =>
             const CreateProfileScreen(),
         AppRoutes.studentProfile: (context) => const StudentProfileScreen(),
-         AppRoutes.editStudentProfile: (context) => const EditStudentProfileScreen(),
-        // AppRoutes.createEnterpriseProfile: (context) => const CreateEnterpriseProfileScreen(),
-        // AppRoutes.enterpriseProfile: (context) => const EnterpriseProfileScreen(),
+        AppRoutes.editStudentProfile: (context) => const EditStudentProfileScreen(),
+        AppRoutes.createEnterpriseProfile: (context) => const CreateEnterpriseProfileScreen(),
+        AppRoutes.enterpriseProfile: (context) => const EnterpriseProfileScreen(),
+        AppRoutes.editEnterpriseProfile: (context) => const EditEnterpriseProfileScreen()
       },
     );
   }

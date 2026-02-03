@@ -86,10 +86,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
       password: _studentPasswordController.text,
     );
 
-    if (success && mounted) {
-      setState(() => _successMessage = 'Account created successfully!');
-      Navigator.of(context).pushReplacementNamed('/create-student-profile');
-    }
+    if (success) {
+  setState(() => _successMessage = 'Account created successfully!');
+
+  try {
+  if (_accountType == AccountType.enterprise) {
+    print('navigating');
+    Navigator.of(context).pushReplacementNamed(AppRoutes.createEnterpriseProfile);
+    print('finished navigation');
+  }
+  if (_accountType == AccountType.student) {
+    Navigator.of(context).pushReplacementNamed(AppRoutes.createStudentProfile);
+  }
+} catch (e, st) {
+  print('Navigation failed: $e\n$st');
+}
+}
   }
 
   void _navigateToLogin() {
@@ -98,20 +110,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _handleEnterpriseSubmit() async {
-    if (!_formKey.currentState!.validate()) return;
+  if (!_formKey.currentState!.validate()) return;
 
-    final authProvider = context.read<AuthProvider>();
-    final success = await authProvider.registerEnterprise(
-      companyName: _companyNameController.text,
-      email: _businessEmailController.text,
-      industry: _industryController.text,
-      password: _enterprisePasswordController.text,
-    );
+  final authProvider = context.read<AuthProvider>();
+  final success = await authProvider.registerEnterprise(
+    companyName: _companyNameController.text,
+    email: _businessEmailController.text,
+    industry: _industryController.text,
+    password: _enterprisePasswordController.text,
+  );
 
-    if (success && mounted) {
-      setState(() => _successMessage = 'Company account created successfully!');
-    }
-  }
+  if (!success) return;
+
+  Navigator.of(context).pushReplacementNamed(
+    AppRoutes.createEnterpriseProfile,
+  );
+}
 
   @override
   Widget build(BuildContext context) {

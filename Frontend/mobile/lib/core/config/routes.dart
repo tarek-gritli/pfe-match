@@ -7,4 +7,5 @@ class AppRoutes {
   static const String studentProfile = '/student-profile';
   static const String editStudentProfile = '/edit-student-profile';
   static const String enterpriseProfile = '/enterprise-profile';
+  static const String editEnterpriseProfile = '/edit-enterprise-profile';
 }
