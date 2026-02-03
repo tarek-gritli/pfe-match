@@ -1,6 +1,9 @@
 class ApiConfig {
   // Base URL - Change this for different environments
-  static const String baseUrl = 'http://localhost:8000';
+  // For Android Emulator: use 10.0.2.2 instead of localhost
+  // For iOS Simulator: use localhost or 127.0.0.1
+  // For physical device: use your machine's IP address (e.g., http://192.168.1.x:8000)
+  static const String baseUrl = 'http://10.0.2.2:8000';
 
   // Auth endpoints
 

@@ -10,6 +10,10 @@ class AppRoutes {
   static const String applicationsStudent = '/applications-student';
   static const String enterpriseProfile = '/enterprise-profile';
   static const String editEnterpriseProfile = '/edit-enterprise-profile';
+  static const String enterpriseOverview = '/enterprise-overview';
+  static const String enterpriseApplicants = '/enterprise-applicants';
+  static const String studentHelpSupport = '/student-help-support';
+  static const String enterpriseHelpSupport = '/enterprise-help-support';
   static const String profile = '/profile';
   static const String editProfile = '/edit-profile';
   static const String createProfile = '/create-profile';

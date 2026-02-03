@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../core/config/api_config.dart';
 import '../models/pfe_listing.dart';
+import '../models/applicant.dart';
 import 'token_service.dart';
 
 class MatchResult {
@@ -197,6 +198,106 @@ class PFEService {
       }
     } catch (e) {
       throw Exception('Error creating PFE: $e');
+    }
+  }
+
+  /// Get applicants for a specific PFE listing (for enterprise)
+  Future<List<Applicant>> getApplicantsForPFE(int pfeId) async {
+    try {
+      final headers = await _getHeaders();
+      final response = await http.get(
+        Uri.parse('${ApiConfig.baseUrl}/api/pfe/listings/$pfeId/applicants'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        return data.map((json) => Applicant.fromJson(json)).toList();
+      } else if (response.statusCode == 401) {
+        throw Exception('Unauthorized. Please login again.');
+      } else if (response.statusCode == 403) {
+        throw Exception('You don\'t have permission to view these applicants');
+      } else if (response.statusCode == 404) {
+        throw Exception('PFE listing not found');
+      } else {
+        throw Exception('Failed to load applicants: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching applicants: $e');
+    }
+  }
+
+  /// Get applicant detail by application ID
+  Future<Applicant> getApplicantDetail(int applicationId) async {
+    try {
+      final headers = await _getHeaders();
+      final response = await http.get(
+        Uri.parse('${ApiConfig.baseUrl}/api/applicants/$applicationId'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        return Applicant.fromJson(json.decode(response.body));
+      } else if (response.statusCode == 404) {
+        throw Exception('Applicant not found');
+      } else if (response.statusCode == 401) {
+        throw Exception('Unauthorized. Please login again.');
+      } else {
+        throw Exception('Failed to load applicant: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching applicant detail: $e');
+    }
+  }
+
+  /// Update application status
+  Future<Applicant> updateApplicationStatus(int applicationId, String status) async {
+    try {
+      final headers = await _getHeaders();
+      final response = await http.patch(
+        Uri.parse('${ApiConfig.baseUrl}/api/applicants/$applicationId/status'),
+        headers: headers,
+        body: json.encode({'status': status}),
+      );
+
+      if (response.statusCode == 200) {
+        return Applicant.fromJson(json.decode(response.body));
+      } else if (response.statusCode == 400) {
+        final error = json.decode(response.body);
+        throw Exception(error['detail'] ?? 'Invalid status');
+      } else if (response.statusCode == 404) {
+        throw Exception('Application not found');
+      } else if (response.statusCode == 401) {
+        throw Exception('Unauthorized. Please login again.');
+      } else {
+        throw Exception('Failed to update status: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error updating status: $e');
+    }
+  }
+
+  /// Get all applicants across all PFE listings for the enterprise
+  Future<List<Applicant>> getAllApplicants() async {
+    try {
+      final headers = await _getHeaders();
+      final response = await http.get(
+        Uri.parse('${ApiConfig.baseUrl}/api/applicants'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        return data.map((json) => Applicant.fromJson(json)).toList();
+      } else if (response.statusCode == 401) {
+        throw Exception('Unauthorized. Please login again.');
+      } else if (response.statusCode == 403) {
+        throw Exception('You don\'t have permission to view applicants');
+      } else {
+        throw Exception('Failed to load applicants: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching all applicants: $e');
     }
   }
 }

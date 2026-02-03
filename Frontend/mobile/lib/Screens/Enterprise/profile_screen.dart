@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../models/enterprise.dart';
+import '../../models/pfe_listing.dart';
 import '../../Services/enterprise_service.dart';
+import '../../Services/pfe_service.dart';
 import '../../core/config/routes.dart';
 import '../../providers/auth_provider.dart';
+import '../../widgets/enterprise/enterprise_drawer.dart';
 import 'edit_profile_screen.dart';
 import '../Enterprise_main_screen.dart';
 
@@ -17,10 +20,11 @@ class EnterpriseProfileScreen extends StatefulWidget {
 
 class _CompanyProfileScreenState extends State<EnterpriseProfileScreen> {
   final EnterpriseService _enterpriseService = EnterpriseService();
+  final PFEService _pfeService = PFEService();
   Enterprise? _enterprise;
   bool _isLoading = true;
   String? _error;
-  List<dynamic> _enterprisePfes = [];
+  List<PFEListing> _enterprisePfes = [];
   int _openPfesCount = 0;
 
   @override
@@ -37,12 +41,12 @@ class _CompanyProfileScreenState extends State<EnterpriseProfileScreen> {
 
     try {
       final enterprise = await _enterpriseService.getMyProfile();
-      //final pfes = await _enterpriseService.getMyPfes();
-      final pfes = []; // TODO
+      final pfes = await _pfeService.getAllPFEListings();
+
       setState(() {
         _enterprise = enterprise;
         _enterprisePfes = pfes;
-        _openPfesCount = pfes.where((pfe) => pfe.isOpen == true).length;
+        _openPfesCount = pfes.where((pfe) => pfe.status == 'open').length;
         _isLoading = false;
       });
     } catch (e) {
@@ -136,6 +140,7 @@ class _CompanyProfileScreenState extends State<EnterpriseProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const EnterpriseDrawer(currentRoute: AppRoutes.enterpriseProfile),
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         backgroundColor: Colors.white,

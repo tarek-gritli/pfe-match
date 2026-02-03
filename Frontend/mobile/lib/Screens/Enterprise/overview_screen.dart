@@ -4,8 +4,11 @@ import '../../Services/enterprise_service.dart';
 import '../../Services/notification_service.dart';
 import '../../models/pfe_listing.dart';
 import '../../models/enterprise.dart';
+import '../../widgets/enterprise/enterprise_drawer.dart';
+import '../../core/config/routes.dart';
 import 'pfe_form_dialog.dart';
 import 'notifications_screen.dart';
+import 'applicants_screen.dart';
 
 class CompanyOverviewScreen extends StatefulWidget {
   const CompanyOverviewScreen({Key? key}) : super(key: key);
@@ -118,6 +121,7 @@ class _CompanyOverviewScreenState extends State<CompanyOverviewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const EnterpriseDrawer(currentRoute: AppRoutes.enterpriseOverview),
       appBar: AppBar(
         title: const Text('Company Overview'),
         backgroundColor: Theme.of(context).colorScheme.onPrimary,
@@ -277,7 +281,16 @@ class _CompanyOverviewScreenState extends State<CompanyOverviewScreen> {
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: ListTile(
         onTap: () {
-          // navigate to applicants filtered by PFE id - placeholder
+          // Navigate to applicants screen for this PFE
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ApplicantsScreen(
+                pfeId: int.parse(p.id),
+                pfeTitle: p.title,
+              ),
+            ),
+          );
         },
         title: Text(p.title),
         subtitle: Text('${p.category} • ${p.duration}'),

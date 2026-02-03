@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'Enterprise/profile_screen.dart';
 import 'Enterprise/overview_screen.dart';
+import 'Enterprise/all_applicants_screen.dart';
 
 // InheritedWidget to provide tab navigation callback for enterprise
 class EnterpriseTabNavigator extends InheritedWidget {
@@ -34,19 +35,8 @@ class _EnterpriseMainScreenState extends State<EnterpriseMainScreen> {
 
   // Global keys for each tab's navigator to control navigation stacks
   final GlobalKey<NavigatorState> _overviewNavigatorKey = GlobalKey<NavigatorState>();
+  final GlobalKey<NavigatorState> _applicantsNavigatorKey = GlobalKey<NavigatorState>();
   final GlobalKey<NavigatorState> _profileNavigatorKey = GlobalKey<NavigatorState>();
-
-  // List of navigators for each tab
-  late final List<Widget> _tabNavigators;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabNavigators = [
-      _buildNavigator(_overviewNavigatorKey, const CompanyOverviewScreen()),
-      _buildNavigator(_profileNavigatorKey, const EnterpriseProfileScreen()),
-    ];
-  }
 
   // Helper to create a Navigator for a tab with an initial widget
   Widget _buildNavigator(GlobalKey<NavigatorState> key, Widget initialWidget) {
@@ -61,6 +51,13 @@ class _EnterpriseMainScreenState extends State<EnterpriseMainScreen> {
     );
   }
 
+  // Build tab navigators
+  List<Widget> get _tabNavigators => [
+        _buildNavigator(_overviewNavigatorKey, const CompanyOverviewScreen()),
+        _buildNavigator(_applicantsNavigatorKey, const AllApplicantsScreen()),
+        _buildNavigator(_profileNavigatorKey, const EnterpriseProfileScreen()),
+      ];
+
   // Handle tab tap: pop to root if same tab, otherwise switch
   void _onTabTapped(int index) {
     if (_currentIndex == index) {
@@ -70,6 +67,9 @@ class _EnterpriseMainScreenState extends State<EnterpriseMainScreen> {
           _overviewNavigatorKey.currentState?.popUntil((route) => route.isFirst);
           break;
         case 1:
+          _applicantsNavigatorKey.currentState?.popUntil((route) => route.isFirst);
+          break;
+        case 2:
           _profileNavigatorKey.currentState?.popUntil((route) => route.isFirst);
           break;
       }
@@ -109,7 +109,8 @@ class _EnterpriseMainScreenState extends State<EnterpriseMainScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildNavItem(Icons.dashboard, 'Overview', 0),
-              _buildNavItem(Icons.account_circle, 'Profile', 1),
+              _buildNavItem(Icons.people, 'Applicants', 1),
+              _buildNavItem(Icons.account_circle, 'Profile', 2),
             ],
           ),
         ),

@@ -2,23 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../core/config/routes.dart';
-import '../../Screens/Main_screen.dart';
-import '../../Screens/Student/help_support_screen.dart';
-import '../../Services/student_service.dart';
-import '../../models/student.dart';
+import '../../Screens/Enterprise_main_screen.dart';
+import '../../Screens/Enterprise/help_support_screen.dart';
+import '../../Services/enterprise_service.dart';
+import '../../models/enterprise.dart';
 
-class StudentDrawer extends StatefulWidget {
+class EnterpriseDrawer extends StatefulWidget {
   final String currentRoute;
 
-  const StudentDrawer({super.key, required this.currentRoute});
+  const EnterpriseDrawer({super.key, required this.currentRoute});
 
   @override
-  State<StudentDrawer> createState() => _StudentDrawerState();
+  State<EnterpriseDrawer> createState() => _EnterpriseDrawerState();
 }
 
-class _StudentDrawerState extends State<StudentDrawer> {
-  final StudentService _studentService = StudentService();
-  Student? _student;
+class _EnterpriseDrawerState extends State<EnterpriseDrawer> {
+  final EnterpriseService _enterpriseService = EnterpriseService();
+  Enterprise? _enterprise;
   bool _isLoading = true;
 
   @override
@@ -29,10 +29,10 @@ class _StudentDrawerState extends State<StudentDrawer> {
 
   Future<void> _loadProfile() async {
     try {
-      final student = await _studentService.getMyProfile();
+      final enterprise = await _enterpriseService.getMyProfile();
       if (mounted) {
         setState(() {
-          _student = student;
+          _enterprise = enterprise;
           _isLoading = false;
         });
       }
@@ -49,8 +49,8 @@ class _StudentDrawerState extends State<StudentDrawer> {
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
     final userEmail = authProvider.user?['email'] ?? '';
-    final profileImageUrl = _student?.profileImage != null
-        ? _studentService.getProfileImageUrl(_student!.profileImage)
+    final logoUrl = _enterprise?.logo != null
+        ? _enterpriseService.getLogoUrl(_enterprise!.logo)
         : null;
 
     return Drawer(
@@ -64,7 +64,7 @@ class _StudentDrawerState extends State<StudentDrawer> {
               padding: const EdgeInsets.fromLTRB(24, 48, 24, 24),
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Color(0xFF818CF8), Color(0xFF4F46E5)],
+                  colors: [Color(0xFF0891B2), Color(0xFF0E7490)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -91,41 +91,35 @@ class _StudentDrawerState extends State<StudentDrawer> {
                               ),
                             ),
                           )
-                        : profileImageUrl != null && profileImageUrl.isNotEmpty
+                        : logoUrl != null && logoUrl.isNotEmpty
                             ? ClipOval(
                                 child: Image.network(
-                                  profileImageUrl,
+                                  logoUrl,
                                   width: 64,
                                   height: 64,
                                   fit: BoxFit.cover,
                                   errorBuilder: (context, error, stackTrace) {
                                     return Center(
-                                      child: Text(
-                                        _getInitials(userEmail),
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                      child: Icon(
+                                        Icons.business,
+                                        color: Colors.white,
+                                        size: 32,
                                       ),
                                     );
                                   },
                                 ),
                               )
-                            : Center(
-                                child: Text(
-                                  _getInitials(userEmail),
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                            : const Center(
+                                child: Icon(
+                                  Icons.business,
+                                  color: Colors.white,
+                                  size: 32,
                                 ),
                               ),
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    _student?.fullName ?? userEmail,
+                    _enterprise?.name ?? userEmail,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -136,7 +130,7 @@ class _StudentDrawerState extends State<StudentDrawer> {
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'Student',
+                    'Enterprise',
                     style: TextStyle(
                       color: Colors.white70,
                       fontSize: 14,
@@ -151,36 +145,51 @@ class _StudentDrawerState extends State<StudentDrawer> {
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 children: [
                   _DrawerItem(
-                    icon: Icons.explore,
-                    title: 'Explore',
-                    route: AppRoutes.exploreStudent,
+                    icon: Icons.dashboard,
+                    title: 'Overview',
+                    route: AppRoutes.enterpriseOverview,
                     currentRoute: widget.currentRoute,
                     onTap: () {
                       Navigator.pop(context); // Close drawer
-                      TabNavigator.of(context)?.onNavigateToTab(0);
+                      EnterpriseTabNavigator.of(context)?.onNavigateToTab(0);
                     },
                   ),
                   _DrawerItem(
-                    icon: Icons.description,
-                    title: 'My Applications',
-                    route: AppRoutes.applicationsStudent,
+                    icon: Icons.people,
+                    title: 'All Applicants',
+                    route: AppRoutes.enterpriseApplicants,
                     currentRoute: widget.currentRoute,
                     onTap: () {
                       Navigator.pop(context); // Close drawer
-                      TabNavigator.of(context)?.onNavigateToTab(1);
+                      EnterpriseTabNavigator.of(context)?.onNavigateToTab(1);
                     },
                   ),
                   _DrawerItem(
-                    icon: Icons.person,
+                    icon: Icons.account_circle,
                     title: 'My Profile',
-                    route: AppRoutes.studentProfile,
+                    route: AppRoutes.enterpriseProfile,
                     currentRoute: widget.currentRoute,
                     onTap: () {
                       Navigator.pop(context); // Close drawer
-                      TabNavigator.of(context)?.onNavigateToTab(2);
+                      EnterpriseTabNavigator.of(context)?.onNavigateToTab(2);
                     },
                   ),
                   const Divider(height: 32, indent: 16, endIndent: 16),
+                  ListTile(
+                    leading: const Icon(Icons.notifications_outlined, color: Color(0xFF6B7280)),
+                    title: const Text(
+                      'Notifications',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Color(0xFF374151),
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      // Navigate to notifications - will be handled by the overview screen
+                      EnterpriseTabNavigator.of(context)?.onNavigateToTab(0);
+                    },
+                  ),
                   ListTile(
                     leading: const Icon(Icons.help_outline, color: Color(0xFF6B7280)),
                     title: const Text(
@@ -195,7 +204,7 @@ class _StudentDrawerState extends State<StudentDrawer> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const StudentHelpSupportScreen(),
+                          builder: (context) => const EnterpriseHelpSupportScreen(),
                         ),
                       );
                     },
@@ -240,15 +249,6 @@ class _StudentDrawerState extends State<StudentDrawer> {
       ),
     );
   }
-
-  String _getInitials(String name) {
-    if (name.isEmpty) return 'U';
-    final parts = name.split('@')[0].split('.');
-    if (parts.length >= 2) {
-      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
-    }
-    return name[0].toUpperCase();
-  }
 }
 
 class _DrawerItem extends StatelessWidget {
@@ -273,19 +273,19 @@ class _DrawerItem extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: isActive ? const Color(0xFF4F46E5).withOpacity(0.1) : Colors.transparent,
+        color: isActive ? const Color(0xFF0891B2).withOpacity(0.1) : Colors.transparent,
         borderRadius: BorderRadius.circular(8),
       ),
       child: ListTile(
         leading: Icon(
           icon,
-          color: isActive ? const Color(0xFF4F46E5) : const Color(0xFF6B7280),
+          color: isActive ? const Color(0xFF0891B2) : const Color(0xFF6B7280),
         ),
         title: Text(
           title,
           style: TextStyle(
             fontSize: 16,
-            color: isActive ? const Color(0xFF4F46E5) : const Color(0xFF374151),
+            color: isActive ? const Color(0xFF0891B2) : const Color(0xFF374151),
             fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
           ),
         ),
