@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
 from app.models import User, Notification, NotificationType
@@ -16,8 +16,8 @@ class NotificationResponse(BaseModel):
     message: str
     type: str
     is_read: bool
-    pfe_listing_id: int | None
-    application_id: int | None
+    pfe_listing_id: Optional[int]
+    application_id: Optional[int]
     created_at: datetime
 
     class Config:
@@ -126,8 +126,8 @@ def create_notification(
     title: str,
     message: str,
     notification_type: NotificationType = NotificationType.SYSTEM,
-    pfe_listing_id: int | None = None,
-    application_id: int | None = None
+    pfe_listing_id: Optional[int] = None,
+    application_id: Optional[int] = None
 ) -> Notification:
     """
     Helper function to create a notification.

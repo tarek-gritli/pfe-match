@@ -59,10 +59,10 @@
       @for (application of applications(); track application.id) {
         <div class="application-card" (click)="openDetail(application)">
           <div class="card-main">
-            <img [src]="getCompanyLogo(application)" [alt]="application.pfe_listing?.company?.name" class="company-logo" />
+            <img [src]="getCompanyLogo(application)" [alt]="application.pfe_listing.company.name" class="company-logo" />
             <div class="card-info">
-              <h3 class="pfe-title">{{ application.pfe_listing?.title || 'PFE Offer' }}</h3>
-              <p class="company-name">{{ application.pfe_listing?.company?.name || 'Company' }}</p>
+              <h3 class="pfe-title">{{ application.pfe_listing.title || 'PFE Offer' }}</h3>
+              <p class="company-name">{{ application.pfe_listing.company.name || 'Company' }}</p>
               <div class="meta-row">
                 <span class="meta-item">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -111,10 +111,10 @@
       <div class="modal-body">
         <!-- PFE Info -->
         <div class="pfe-info-section">
-          <img [src]="getCompanyLogo(selectedApplication()!)" [alt]="selectedApplication()!.pfe_listing?.company?.name" class="modal-logo" />
+          <img [src]="getCompanyLogo(selectedApplication()!)" [alt]="selectedApplication()!.pfe_listing.company.name" class="modal-logo" />
           <div>
-            <h3>{{ selectedApplication()!.pfe_listing?.title }}</h3>
-            <p>{{ selectedApplication()!.pfe_listing?.company?.name }}</p>
+            <h3>{{ selectedApplication()!.pfe_listing.title }}</h3>
+            <p>{{ selectedApplication()!.pfe_listing.company.name }}</p>
           </div>
         </div>
 

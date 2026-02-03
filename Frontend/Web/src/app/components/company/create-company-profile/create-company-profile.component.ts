@@ -233,8 +233,8 @@ export class CreateCompanyProfileComponent {
     };
     this.companyService.updateMyProfile(payload).subscribe({
       next: () => {
-        alert('Profile updated successfully!');
-        this.router.navigate(['/profile']);
+        alert('Profile created successfully!');
+        this.router.navigate(['/explore']);
       },
       error: (err : any) => {
         console.error(err);
