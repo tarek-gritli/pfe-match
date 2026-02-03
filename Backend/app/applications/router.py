@@ -132,12 +132,17 @@ def get_applicant_by_id(id: int, db: Session = Depends(get_db)):
 @router.patch("/{id}/status")
 def update_status(id: int, payload: dict, db: Session = Depends(get_db)):
     from app.models.application import ApplicationStatus
+    from app.notifications.router import create_notification
+    from app.models import NotificationType
 
     app_obj = db.query(Application).filter(Application.id == id).first()
     if not app_obj:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Application not found"
         )
+
+    # Get old status for comparison
+    old_status = app_obj.status.value if hasattr(app_obj.status, "value") else app_obj.status
 
     # Update status
     new_status = payload.get("status")
@@ -152,6 +157,26 @@ def update_status(id: int, payload: dict, db: Session = Depends(get_db)):
 
     db.commit()
     db.refresh(app_obj)
+
+    # Send notification to applicant if shortlisted
+    if new_status == "shortlisted" and old_status != "shortlisted":
+        student = app_obj.student
+        if student and student.user_id:
+            # Get PFE listing and enterprise info
+            pfe_title = app_obj.pfe_listing.title if app_obj.pfe_listing else "a PFE"
+            enterprise_name = ""
+            if app_obj.pfe_listing and app_obj.pfe_listing.enterprise:
+                enterprise_name = app_obj.pfe_listing.enterprise.company_name or ""
+            
+            create_notification(
+                db=db,
+                user_id=student.user_id,
+                title="You've been shortlisted!",
+                message=f"Great news! {enterprise_name} has shortlisted you for '{pfe_title}'.",
+                notification_type=NotificationType.APPLICATION_STATUS,
+                pfe_listing_id=app_obj.pfe_listing_id,
+                application_id=app_obj.id
+            )
 
     result = _format_application(app_obj, db)
     if not result:
