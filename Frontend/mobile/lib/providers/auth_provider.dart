@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../services/auth_service.dart';
+import '../Services/auth_service.dart';
+import '../Services/token_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -28,14 +29,25 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _authService.registerStudent(
+      final response = await _authService.registerStudent(
         firstName: firstName,
         lastName: lastName,
         email: email,
         university: university,
         password: password,
       );
+
+      // Save tokens if returned
+      if (response['access_token'] != null) {
+        await TokenService.saveToken(response['access_token']);
+      }
+      if (response['refresh_token'] != null) {
+        await TokenService.saveRefreshToken(response['refresh_token']);
+      }
+
       _isAuthenticated = true;
+      _userType = 'student';
+      _profileCompleted = false;
       _isLoading = false;
       notifyListeners();
       return true;
@@ -58,13 +70,24 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _authService.registerEnterprise(
+      final response = await _authService.registerEnterprise(
         companyName: companyName,
         email: email,
         industry: industry,
         password: password,
       );
+
+      // Save tokens if returned
+      if (response['access_token'] != null) {
+        await TokenService.saveToken(response['access_token']);
+      }
+      if (response['refresh_token'] != null) {
+        await TokenService.saveRefreshToken(response['refresh_token']);
+      }
+
       _isAuthenticated = true;
+      _userType = 'enterprise';
+      _profileCompleted = false;
       _isLoading = false;
       notifyListeners();
       return true;
@@ -86,6 +109,14 @@ class AuthProvider extends ChangeNotifier {
         email: email,
         password: password,
       );
+
+      // Save tokens
+      if (response['access_token'] != null) {
+        await TokenService.saveToken(response['access_token']);      }
+      if (response['refresh_token'] != null) {
+        await TokenService.saveRefreshToken(response['refresh_token']);
+      }
+
       _userType = response['user_type'];
       _profileCompleted = response['profile_completed'] ?? false;
       _isAuthenticated = true;
@@ -98,6 +129,21 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
       return false;
     }
+  }
+
+  Future<void> logout() async {
+    await TokenService.clearTokens();
+    _isAuthenticated = false;
+    _userType = null;
+    _error = null;
+    notifyListeners();
+  }
+
+  Future<bool> checkAuthStatus() async {
+    final isLoggedIn = await TokenService.isLoggedIn();
+    _isAuthenticated = isLoggedIn;
+    notifyListeners();
+    return isLoggedIn;
   }
 
   void clearError() {
