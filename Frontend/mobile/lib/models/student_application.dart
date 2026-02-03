@@ -22,13 +22,17 @@ class StudentApplication {
     return StudentApplication(
       id: json['id']?.toString() ?? '',
       status: json['status'] ?? 'pending',
-      matchScore: (json['matchScore'] ?? 0).toDouble(),
-      appliedAt: json['appliedAt'] != null
-          ? DateTime.parse(json['appliedAt'])
-          : DateTime.now(),
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'])
-          : null,
+      matchScore: (json['match_score'] ?? json['matchScore'] ?? 0).toDouble(),
+      appliedAt: json['applied_at'] != null
+          ? DateTime.parse(json['applied_at'])
+          : (json['appliedAt'] != null
+              ? DateTime.parse(json['appliedAt'])
+              : DateTime.now()),
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'])
+          : (json['updatedAt'] != null
+              ? DateTime.parse(json['updatedAt'])
+              : null),
       pfeListing: json['pfe_listing'] != null
           ? PFEListing.fromJson(json['pfe_listing'])
           : null,
