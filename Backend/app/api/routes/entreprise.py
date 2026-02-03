@@ -97,6 +97,9 @@ def complete_enterprise_profile(
         "linkedin_url": "linkedin_url",
     }
 
+    # Check if this is first time completing profile
+    was_profile_completed = current_user.profile_completed
+
     for field, value in update_data.items():
         backend_field = field_mapping.get(field)
         if backend_field and value is not None:
@@ -106,6 +109,18 @@ def complete_enterprise_profile(
     current_user.profile_completed = True
 
     db.commit()
+
+    # Send welcome notification if first time completing profile
+    if not was_profile_completed:
+        from app.notifications.router import create_notification
+        from app.models import NotificationType
+        create_notification(
+            db=db,
+            user_id=current_user.id,
+            title="Welcome to PFE Match!",
+            message="Your company profile is complete! You can now create PFE listings and find talented students.",
+            notification_type=NotificationType.SYSTEM
+        )
 
     return MessageResponse(message="Profile updated successfully")
 
