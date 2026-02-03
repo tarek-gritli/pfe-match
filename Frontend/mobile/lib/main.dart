@@ -5,11 +5,11 @@ import 'core/constants/app_colors.dart';
 import 'core/config/routes.dart';
 import 'providers/auth_provider.dart';
 import 'app_state_provider.dart';
-import 'screens/auth/login_screen.dart';
-import 'screens/auth/register_screen.dart';
-import 'screens/home/home_screen.dart';
-import 'screens/student/create_profile_screen.dart';
-import 'screens/main_screen.dart';
+import 'Screens/auth/login_screen.dart';
+import 'Screens/auth/register_screen.dart';
+import 'Screens/home/home_screen.dart';
+import 'Screens/Student/create_profile_screen.dart';
+import 'Screens/Main_screen.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 
 void main() {
@@ -39,9 +39,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AppStateProvider>(
-      builder: (context, appState, child) {
-        // On mobile (Android/iOS) show the native mobile MainScreen directly.
+    return Consumer2<AppStateProvider, AuthProvider>(
+      builder: (context, appState, authProvider, child) {
+        // On mobile (Android/iOS) check authentication and show appropriate screen
         if (!kIsWeb) {
           return MaterialApp(
             title: 'PFE Match',
@@ -52,7 +52,10 @@ class MyApp extends StatelessWidget {
               colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
               useMaterial3: true,
             ),
-            home: const MainScreen(),
+            home: authProvider.isAuthenticated
+                ? const MainScreen()
+                : const LoginScreen(),
+            onGenerateRoute: _generateRoute,
           );
         }
 
@@ -88,7 +91,7 @@ class MyApp extends StatelessWidget {
         page = const HomeScreen();
         break;
       case '/create-student-profile':
-        page = const CreateStudentProfileScreen();
+        page = const CreateProfileScreen();
         break;
       default:
         page = const LoginScreen();

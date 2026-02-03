@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
@@ -37,29 +38,34 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     if (success && mounted) {
-      if (auth.profileCompleted) {
-        if (auth.userType == 'student') {
-          Navigator.pushReplacementNamed(context, AppRoutes.studentProfile);
-        } else if (auth.userType == 'enterprise') {
-          Navigator.pushReplacementNamed(context, AppRoutes.enterpriseProfile);
+      // On web, navigate to specific routes
+      if (kIsWeb) {
+        if (auth.profileCompleted) {
+          if (auth.userType == 'student') {
+            Navigator.pushReplacementNamed(context, AppRoutes.studentProfile);
+          } else if (auth.userType == 'enterprise') {
+            Navigator.pushReplacementNamed(context, AppRoutes.enterpriseProfile);
+          } else {
+            Navigator.pushReplacementNamed(context, AppRoutes.home);
+          }
         } else {
-          Navigator.pushReplacementNamed(context, AppRoutes.home);
-        }
-      } else {
-        if (auth.userType == 'student') {
-          Navigator.pushReplacementNamed(
-            context,
-            AppRoutes.createStudentProfile,
-          );
-        } else if (auth.userType == 'enterprise') {
-          Navigator.pushReplacementNamed(
-            context,
-            AppRoutes.createEnterpriseProfile,
-          );
-        } else {
-          Navigator.pushReplacementNamed(context, AppRoutes.home);
+          if (auth.userType == 'student') {
+            Navigator.pushReplacementNamed(
+              context,
+              AppRoutes.createStudentProfile,
+            );
+          } else if (auth.userType == 'enterprise') {
+            Navigator.pushReplacementNamed(
+              context,
+              AppRoutes.createEnterpriseProfile,
+            );
+          } else {
+            Navigator.pushReplacementNamed(context, AppRoutes.home);
+          }
         }
       }
+      // On mobile, the Consumer2 in main.dart will automatically show MainScreen
+      // when auth.isAuthenticated becomes true, so no navigation needed
     }
   }
 

@@ -39,7 +39,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   image_picker: ^1.2.1
   file_picker: ^10.3.10
-  syncfusion_flutter_pdfviewer: ^24.1.0
+  syncfusion_flutter_pdfviewer: ^32.1.25
   flutter_web_plugins:
     sdk: flutter
   url_launcher: ^6.3.2

@@ -10,12 +10,14 @@ class AuthProvider extends ChangeNotifier {
   bool _isAuthenticated = false;
   String? _userType;
   bool _profileCompleted = false;
+  Map<String, dynamic>? _user;
 
   bool get isLoading => _isLoading;
   String? get error => _error;
   bool get isAuthenticated => _isAuthenticated;
   String? get userType => _userType;
   bool get profileCompleted => _profileCompleted;
+  Map<String, dynamic>? get user => _user;
 
   Future<bool> registerStudent({
     required String firstName,
@@ -119,6 +121,7 @@ class AuthProvider extends ChangeNotifier {
 
       _userType = response['user_type'];
       _profileCompleted = response['profile_completed'] ?? false;
+      _user = {'email': email, 'user_type': response['user_type']};
       _isAuthenticated = true;
       _isLoading = false;
       notifyListeners();
@@ -135,6 +138,7 @@ class AuthProvider extends ChangeNotifier {
     await TokenService.clearTokens();
     _isAuthenticated = false;
     _userType = null;
+    _user = null;
     _error = null;
     notifyListeners();
   }

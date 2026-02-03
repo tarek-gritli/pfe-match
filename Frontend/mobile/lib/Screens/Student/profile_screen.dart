@@ -11,6 +11,7 @@ import '../../Services/student_service.dart';
 import '../../core/config/routes.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/common/app_navbar.dart';
+import '../../widgets/student/student_drawer.dart';
 
 class ProfileCompleteness {
   final int percentage;
@@ -222,18 +223,35 @@ void _openPdfViewer() {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
+      drawer: const StudentDrawer(currentRoute: AppRoutes.studentProfile),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu, color: Color(0xFF1F2937)),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
+        title: const Text(
+          'My Profile',
+          style: TextStyle(
+            color: Color(0xFF1F2937),
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined, color: Color(0xFF6B7280)),
+            onPressed: _onNotificationTap,
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
       body: SafeArea(
         child: Column(
           children: [
-            // Reusable Navbar with dropdown menu
-            AppNavbar(
-              userInitials: _getInitials(fullName),
-              notificationCount: 3,
-              userType: UserType.student,
-              onNotificationTap: _onNotificationTap,
-              onProfileTap: _onProfileTap,
-              onLogoutTap: _onLogoutTap,
-            ),
             // Content
             Expanded(
               child: _isLoading

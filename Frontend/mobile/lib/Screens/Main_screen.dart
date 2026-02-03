@@ -1,5 +1,27 @@
 import 'package:flutter/material.dart';
 import 'Student/profile_screen.dart';
+import 'Student/explore_screen.dart';
+import 'Student/applications_screen.dart';
+
+// InheritedWidget to provide tab navigation callback
+class TabNavigator extends InheritedWidget {
+  final Function(int) onNavigateToTab;
+
+  const TabNavigator({
+    Key? key,
+    required this.onNavigateToTab,
+    required Widget child,
+  }) : super(key: key, child: child);
+
+  static TabNavigator? of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<TabNavigator>();
+  }
+
+  @override
+  bool updateShouldNotify(TabNavigator oldWidget) {
+    return false;
+  }
+}
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -9,13 +31,12 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _currentIndex = 2; // Start on Profile tab
+  int _currentIndex = 0; // Start on Explore tab
 
   // Global keys for each tab's navigator to control navigation stacks
-  final GlobalKey<NavigatorState> _discoverNavigatorKey = GlobalKey<NavigatorState>();
-  final GlobalKey<NavigatorState> _matchesNavigatorKey = GlobalKey<NavigatorState>();
+  final GlobalKey<NavigatorState> _exploreNavigatorKey = GlobalKey<NavigatorState>();
+  final GlobalKey<NavigatorState> _applicationsNavigatorKey = GlobalKey<NavigatorState>();
   final GlobalKey<NavigatorState> _profileNavigatorKey = GlobalKey<NavigatorState>();
-  final GlobalKey<NavigatorState> _messagesNavigatorKey = GlobalKey<NavigatorState>();
 
   // List of navigators for each tab
   late final List<Widget> _tabNavigators;
@@ -24,10 +45,9 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     super.initState();
     _tabNavigators = [
-      _buildNavigator(_discoverNavigatorKey, const DiscoverPage()),
-      _buildNavigator(_matchesNavigatorKey, const MatchesPage()),
+      _buildNavigator(_exploreNavigatorKey, const ExploreScreen()),
+      _buildNavigator(_applicationsNavigatorKey, const ApplicationsScreen()),
       _buildNavigator(_profileNavigatorKey, const StudentProfileScreen()),
-      _buildNavigator(_messagesNavigatorKey, const MessagesPage()),
     ];
   }
 
@@ -50,16 +70,13 @@ class _MainScreenState extends State<MainScreen> {
       // Pop to the root of the current tab's stack
       switch (index) {
         case 0:
-          _discoverNavigatorKey.currentState?.popUntil((route) => route.isFirst);
+          _exploreNavigatorKey.currentState?.popUntil((route) => route.isFirst);
           break;
         case 1:
-          _matchesNavigatorKey.currentState?.popUntil((route) => route.isFirst);
+          _applicationsNavigatorKey.currentState?.popUntil((route) => route.isFirst);
           break;
         case 2:
           _profileNavigatorKey.currentState?.popUntil((route) => route.isFirst);
-          break;
-        case 3:
-          _messagesNavigatorKey.currentState?.popUntil((route) => route.isFirst);
           break;
       }
     } else {
@@ -71,12 +88,15 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _tabNavigators,
+    return TabNavigator(
+      onNavigateToTab: _onTabTapped,
+      child: Scaffold(
+        body: IndexedStack(
+          index: _currentIndex,
+          children: _tabNavigators,
+        ),
+        bottomNavigationBar: _buildBottomNavBar(),
       ),
-      bottomNavigationBar: _buildBottomNavBar(),
     );
   }
 
@@ -92,12 +112,11 @@ class _MainScreenState extends State<MainScreen> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildNavItem(Icons.explore, 'Discover', 0),
-              _buildNavItem(Icons.auto_awesome_motion, 'Matches', 1),
+              _buildNavItem(Icons.explore, 'Explore', 0),
+              _buildNavItem(Icons.description, 'Applications', 1),
               _buildNavItem(Icons.account_circle, 'Profile', 2),
-              _buildNavItem(Icons.chat_bubble, 'Messages', 3),
             ],
           ),
         ),
@@ -137,80 +156,3 @@ class _MainScreenState extends State<MainScreen> {
   }
 }
 
-// Placeholder pages - replace with your actual implementations
-class DiscoverPage extends StatelessWidget {
-  const DiscoverPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFA),
-      body: SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Discover Page',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  // Example of nested navigation
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const Scaffold(
-                        body: Center(child: Text('Detail Page')),
-                      ),
-                    ),
-                  );
-                },
-                child: const Text('Go to Detail'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class MatchesPage extends StatelessWidget {
-  const MatchesPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFA),
-      body: SafeArea(
-        child: Center(
-          child: Text(
-            'Matches Page',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class MessagesPage extends StatelessWidget {
-  const MessagesPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFA),
-      body: SafeArea(
-        child: Center(
-          child: Text(
-            'Messages Page',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-        ),
-      ),
-    );
-  }
-}
