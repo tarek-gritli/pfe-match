@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'Screens/Student/edit_profile_screen.dart';
 import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
 import 'core/config/routes.dart';
@@ -38,7 +39,7 @@ class MyApp extends StatelessWidget {
         AppRoutes.createStudentProfile: (context) =>
             const CreateProfileScreen(),
         AppRoutes.studentProfile: (context) => const StudentProfileScreen(),
-        // AppRoutes.editStudentProfile: (context) => const EditProfileScreen(),
+         AppRoutes.editStudentProfile: (context) => const EditStudentProfileScreen(),
         // AppRoutes.createEnterpriseProfile: (context) => const CreateEnterpriseProfileScreen(),
         // AppRoutes.enterpriseProfile: (context) => const EnterpriseProfileScreen(),
       },

@@ -30,6 +30,7 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
     percentage: 0,
     tip: '',
   );
+  
 
   @override
   void initState() {
@@ -381,6 +382,9 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
   Widget _buildProfileCard() {
     final fullName = _student!.fullName;
     final email = _student!.email ?? '';
+    final imageUrl = _student!.profileImage != null
+    ? _studentService.getProfileImageUrl(_student!.profileImage)
+    : null;
 
     return Container(
       padding: const EdgeInsets.all(24),
@@ -406,17 +410,15 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                     end: Alignment.bottomRight,
                   ),
                   image:
-                      _student!.profileImage != null &&
-                          _student!.profileImage!.isNotEmpty
+                      imageUrl != null && imageUrl.isNotEmpty
                       ? DecorationImage(
-                          image: NetworkImage(_student!.profileImage!),
+                          image: NetworkImage(imageUrl),
                           fit: BoxFit.cover,
                         )
                       : null,
                 ),
                 child:
-                    _student!.profileImage == null ||
-                        _student!.profileImage!.isEmpty
+                    imageUrl == null || imageUrl.isEmpty
                     ? Center(
                         child: Text(
                           _getInitials(fullName).isNotEmpty

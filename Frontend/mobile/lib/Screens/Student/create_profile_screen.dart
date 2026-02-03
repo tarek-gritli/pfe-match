@@ -270,42 +270,46 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   }
 
   Future<void> _handleProfileImageUpload() async {
-    // Use file_picker for web compatibility
+  try {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.image,
-      withData: true, // Always get bytes for image preview
+      withData: true, // for web preview
     );
 
-    if (result != null && result.files.single.bytes != null) {
+    if (result == null || result.files.single.bytes == null) return;
+
+    final pickedFile = result.files.single;
+
+    setState(() {
+      _profileImageBytes = pickedFile.bytes; // preview
+      _profileImage = pickedFile.name;
+      _isUploadingImage = true;
+    });
+
+    // For mobile: create a File from path
+    if (!kIsWeb && pickedFile.path != null) {
+      _profileImageFile = File(pickedFile.path!);
+
+      // Upload immediately
+      final response =
+          await _studentService.uploadStudentProfilePicture(_profileImageFile!);
+
       setState(() {
-        _profileImageBytes = result.files.single.bytes;
-        _profileImage = result.files.single.name;
-        _isUploadingImage = true;
+        _profileImage = response['profile_picture_url'] ?? _profileImage;
+        _profileImageFile = null; // clear local file after upload
       });
-
-      // If not web, also create File for upload
-      if (!kIsWeb && result.files.single.path != null) {
-        _profileImageFile = File(result.files.single.path!);
-      }
-
-      try {
-        // Skip upload for now, just show preview
-        // If you need to upload on non-web:
-        // if (!kIsWeb && _profileImageFile != null) {
-        //   final response = await _studentService.uploadStudentProfilePicture(_profileImageFile!);
-        //   _profileImage = response['profile_picture_url'] ?? _profileImage;
-        // }
-        setState(() {
-          _isUploadingImage = false;
-        });
-      } catch (e) {
-        setState(() {
-          _isUploadingImage = false;
-          _errors['profileImage'] = 'Failed to upload image';
-        });
-      }
     }
+    setState(() {
+      _isUploadingImage = false;
+    });
+  } catch (e) {
+    setState(() {
+      _isUploadingImage = false;
+      _errors['profileImage'] = 'Failed to upload image';
+    });
   }
+}
+
 
   void _clearResume() {
     setState(() {

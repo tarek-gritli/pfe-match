@@ -93,33 +93,85 @@ class StudentService {
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
-      throw Exception('Failed to upload resume: ${response.statusCode}');
+  String errorMessage = 'Failed to upload profile picture: ${response.statusCode}';
+  try {
+    final errorData = json.decode(response.body);
+    if (errorData['detail'] != null) {
+      errorMessage = errorData['detail'].toString();
+    } else if (errorData['message'] != null) {
+      errorMessage = errorData['message'].toString();
     }
+  } catch (_) {}
+  throw Exception(errorMessage);
+}
   }
 
   Future<Map<String, dynamic>> uploadStudentProfilePicture(File file) async {
-    final token = await TokenService.getToken();
-    if (token == null || token.isEmpty) {
-      throw Exception('Not authenticated');
-    }
-
-    var request = http.MultipartRequest(
-      'POST',
-      Uri.parse(ApiConfig.uploadProfilePicture),
-    );
-
-    request.headers['Authorization'] = 'Bearer $token';
-    request.files.add(await http.MultipartFile.fromPath('file', file.path));
-
-    final streamedResponse = await request.send();
-    final response = await http.Response.fromStream(streamedResponse);
-
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception(
-        'Failed to upload profile picture: ${response.statusCode}',
-      );
-    }
+  final token = await TokenService.getToken();
+  if (token == null || token.isEmpty) {
+    throw Exception('Not authenticated');
   }
+
+  var request = http.MultipartRequest(
+    'POST',
+    Uri.parse(ApiConfig.uploadProfilePicture),
+  );
+
+  request.headers['Authorization'] = 'Bearer $token';
+
+  // Set proper content type
+  final fileName = file.path.split(Platform.pathSeparator).last;
+  final mimeType = fileName.endsWith('.png')
+      ? 'image/png'
+      : fileName.endsWith('.jpg') || fileName.endsWith('.jpeg')
+          ? 'image/jpeg'
+          : fileName.endsWith('.gif')
+              ? 'image/gif'
+              : fileName.endsWith('.webp')
+                  ? 'image/webp'
+                  : 'application/octet-stream';
+
+  request.files.add(
+    await http.MultipartFile.fromPath(
+      'file',
+      file.path,
+      filename: fileName,
+      contentType: http.MediaType(mimeType.split('/')[0], mimeType.split('/')[1]),
+    ),
+  );
+
+  final streamedResponse = await request.send();
+  final response = await http.Response.fromStream(streamedResponse);
+
+  if (response.statusCode == 200) {
+    return json.decode(response.body);
+  } else {
+    // try to parse backend error message
+    String errorMessage = 'Failed to upload profile picture: ${response.statusCode}';
+    try {
+      final errorData = json.decode(response.body);
+      if (errorData['detail'] != null) {
+        errorMessage = errorData['detail'].toString();
+      } else if (errorData['message'] != null) {
+        errorMessage = errorData['message'].toString();
+      }
+    } catch (_) {}
+    throw Exception(errorMessage);
+  }
+}
+
+String getProfileImageUrl(String? path) {
+    if (path == null || path.isEmpty) return '';
+
+    // If it's already a full URL, return as-is
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return path;
+    }
+
+    // Remove leading slash if present
+    final cleanPath = path.startsWith('/') ? path.substring(1) : path;
+    String baseUrl = ApiConfig.baseUrl;
+    return '$baseUrl/$cleanPath';
+  }
+
 }
