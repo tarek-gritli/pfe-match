@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../Services/pfe_service.dart';
+import '../../Services/enterprise_service.dart';
 import '../../models/pfe_listing.dart';
+import '../../models/enterprise.dart';
 import 'pfe_form_dialog.dart';
 
 class CompanyOverviewScreen extends StatefulWidget {
@@ -12,9 +14,11 @@ class CompanyOverviewScreen extends StatefulWidget {
 
 class _CompanyOverviewScreenState extends State<CompanyOverviewScreen> {
   final PFEService _pfeService = PFEService();
+  final EnterpriseService _enterpriseService = EnterpriseService();
 
   bool _loading = true;
   List<PFEListing> _pfes = [];
+  Enterprise? _enterprise;
   int activePFEs = 0;
   int totalApplicants = 0;
 
@@ -27,10 +31,17 @@ class _CompanyOverviewScreenState extends State<CompanyOverviewScreen> {
   Future<void> _loadData() async {
     setState(() => _loading = true);
     try {
-      final pfes = await _pfeService.getAllPFEListings();
+      final results = await Future.wait([
+        _pfeService.getAllPFEListings(),
+        _enterpriseService.getMyProfile(),
+      ]);
+
+      final pfes = results[0] as List<PFEListing>;
+      final enterprise = results[1] as Enterprise;
 
       setState(() {
         _pfes = pfes;
+        _enterprise = enterprise;
         activePFEs = pfes.where((p) => p.status == 'open').length;
         totalApplicants = pfes.fold(0, (sum, p) => sum + (p.applicantCount ?? 0));
       });
@@ -121,6 +132,12 @@ class _CompanyOverviewScreenState extends State<CompanyOverviewScreen> {
   }
 
   Widget _buildHeaderCard() {
+    final companyName = _enterprise?.name ?? 'Company';
+    final industry = _enterprise?.industry ?? 'Not specified';
+    final logoUrl = _enterprise?.logo != null
+        ? _enterpriseService.getLogoUrl(_enterprise!.logo)
+        : null;
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -132,17 +149,31 @@ class _CompanyOverviewScreenState extends State<CompanyOverviewScreen> {
               decoration: BoxDecoration(
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(8),
+                image: logoUrl != null && logoUrl.isNotEmpty
+                    ? DecorationImage(
+                        image: NetworkImage(logoUrl),
+                        fit: BoxFit.cover,
+                      )
+                    : null,
               ),
-              child: const Icon(Icons.business, size: 36, color: Colors.black54),
+              child: logoUrl == null || logoUrl.isEmpty
+                  ? const Icon(Icons.business, size: 36, color: Colors.black54)
+                  : null,
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text('TechVision AI', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  SizedBox(height: 6),
-                  Text('Artificial Intelligence', style: TextStyle(color: Colors.black54)),
+                children: [
+                  Text(
+                    companyName,
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    industry,
+                    style: const TextStyle(color: Colors.black54),
+                  ),
                 ],
               ),
             ),

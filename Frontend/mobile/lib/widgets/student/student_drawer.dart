@@ -221,8 +221,14 @@ class _StudentDrawerState extends State<StudentDrawer> {
                 onTap: () async {
                   Navigator.pop(context); // Close drawer
                   await authProvider.logout();
-                  // No need to navigate - the app will automatically show LoginScreen
-                  // when authProvider.isAuthenticated becomes false
+
+                  if (context.mounted) {
+                    // Use the root navigator to ensure we exit the nested tab navigator
+                    Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
+                      AppRoutes.login,
+                      (route) => false,
+                    );
+                  }
                 },
               ),
             ),

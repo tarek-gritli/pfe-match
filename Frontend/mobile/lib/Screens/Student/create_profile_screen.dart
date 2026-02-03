@@ -5,7 +5,9 @@ import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile/core/config/routes.dart';
+import 'package:provider/provider.dart';
 import '../../Services/student_service.dart';
+import '../../providers/auth_provider.dart';
 
 class CreateProfileScreen extends StatefulWidget {
   const CreateProfileScreen({super.key});
@@ -338,14 +340,23 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
 
     try {
       await _studentService.updateMyProfile(payload);
+
+      // Mark profile as completed in auth provider
+      if (mounted) {
+        context.read<AuthProvider>().setProfileCompleted(true);
+      }
+
       setState(() => _isSubmitting = false);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Profile created successfully!')),
         );
-        // Navigate to profile screen
-        Navigator.pushReplacementNamed(context, AppRoutes.studentProfile);
+        // Navigate to main screen (student home with tabs)
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          AppRoutes.home,
+          (route) => false,
+        );
       }
     } catch (e, stackTrace) {
       setState(() => _isSubmitting = false);

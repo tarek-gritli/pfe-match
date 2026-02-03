@@ -38,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     if (success && mounted) {
-      // On web, navigate to specific routes
+      // Navigate to the appropriate screen based on user type
       if (kIsWeb) {
         if (auth.profileCompleted) {
           if (auth.userType == 'student') {
@@ -63,9 +63,12 @@ class _LoginScreenState extends State<LoginScreen> {
             Navigator.pushReplacementNamed(context, AppRoutes.home);
           }
         }
+      } else {
+        // On mobile, navigate to home which will resolve to the correct main screen
+        Navigator.of(context, rootNavigator: true).pushReplacementNamed(
+          AppRoutes.home,
+        );
       }
-      // On mobile, the Consumer2 in main.dart will automatically show MainScreen
-      // when auth.isAuthenticated becomes true, so no navigation needed
     }
   }
 

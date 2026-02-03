@@ -154,4 +154,9 @@ class AuthProvider extends ChangeNotifier {
     _error = null;
     notifyListeners();
   }
+
+  void setProfileCompleted(bool completed) {
+    _profileCompleted = completed;
+    notifyListeners();
+  }
 }

@@ -9,9 +9,12 @@ import 'Screens/auth/login_screen.dart';
 import 'Screens/auth/register_screen.dart';
 import 'Screens/home/home_screen.dart';
 import 'Screens/Student/create_profile_screen.dart';
+import 'Screens/Enterprise/create_profile_screen.dart';
 import 'Screens/Main_screen.dart';
 import 'Screens/Enterprise_main_screen.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -57,6 +60,7 @@ class MyApp extends StatelessWidget {
           }
 
           return MaterialApp(
+            navigatorKey: navigatorKey,
             title: 'PFE Match',
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
@@ -72,6 +76,7 @@ class MyApp extends StatelessWidget {
 
         // For web, keep the routed app (auth + web flows)
         return MaterialApp(
+          navigatorKey: navigatorKey,
           title: 'PFE Match',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
@@ -99,10 +104,21 @@ class MyApp extends StatelessWidget {
         page = const RegisterScreen();
         break;
       case '/home':
-        page = const HomeScreen();
+        // Home route will determine which screen to show based on user type
+        page = Consumer<AuthProvider>(
+          builder: (context, authProvider, _) {
+            if (authProvider.userType == 'enterprise') {
+              return const EnterpriseMainScreen();
+            }
+            return const MainScreen();
+          },
+        );
         break;
       case '/create-student-profile':
         page = const CreateProfileScreen();
+        break;
+      case '/create-enterprise-profile':
+        page = const CreateEnterpriseProfileScreen();
         break;
       default:
         page = const LoginScreen();

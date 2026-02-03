@@ -4,7 +4,9 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:mobile/core/config/routes.dart';
+import 'package:provider/provider.dart';
 import '../../Services/enterprise_service.dart';
+import '../../providers/auth_provider.dart';
 
 class CreateEnterpriseProfileScreen extends StatefulWidget {
   const CreateEnterpriseProfileScreen({super.key});
@@ -333,13 +335,23 @@ class _CreateEnterpriseProfileScreenState
 
     try {
       await _enterpriseService.updateMyProfile(payload);
+
+      // Mark profile as completed in auth provider
+      if (mounted) {
+        context.read<AuthProvider>().setProfileCompleted(true);
+      }
+
       setState(() => _isSubmitting = false);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Company profile created successfully!')),
         );
-        Navigator.pushReplacementNamed(context, AppRoutes.enterpriseProfile);
+        // Navigate to main screen (enterprise home)
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          AppRoutes.home,
+          (route) => false,
+        );
       }
     } catch (e) {
       setState(() => _isSubmitting = false);

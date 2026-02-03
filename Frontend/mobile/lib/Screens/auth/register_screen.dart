@@ -86,22 +86,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       password: _studentPasswordController.text,
     );
 
-    if (success) {
-  setState(() => _successMessage = 'Account created successfully!');
-
-  try {
-  if (_accountType == AccountType.enterprise) {
-    print('navigating');
-    Navigator.of(context).pushReplacementNamed(AppRoutes.createEnterpriseProfile);
-    print('finished navigation');
-  }
-  if (_accountType == AccountType.student) {
-    Navigator.of(context).pushReplacementNamed(AppRoutes.createStudentProfile);
-  }
-} catch (e, st) {
-  print('Navigation failed: $e\n$st');
-}
-}
+    if (success && mounted) {
+      Navigator.of(context).pushReplacementNamed(AppRoutes.createStudentProfile);
+    }
   }
 
   void _navigateToLogin() {

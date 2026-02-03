@@ -119,8 +119,8 @@ class _CompanyProfileScreenState extends State<EnterpriseProfileScreen> {
     await authProvider.logout();
 
     if (mounted) {
-      Navigator.pushNamedAndRemoveUntil(
-        context,
+      // Use the root navigator to ensure we exit the nested tab navigator
+      Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
         AppRoutes.login,
         (route) => false,
       );
