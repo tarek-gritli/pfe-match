@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../Services/pfe_service.dart';
 import '../../Services/enterprise_service.dart';
+import '../../Services/notification_service.dart';
 import '../../models/pfe_listing.dart';
 import '../../models/enterprise.dart';
 import 'pfe_form_dialog.dart';
+import 'notifications_screen.dart';
 
 class CompanyOverviewScreen extends StatefulWidget {
   const CompanyOverviewScreen({Key? key}) : super(key: key);
@@ -15,17 +17,33 @@ class CompanyOverviewScreen extends StatefulWidget {
 class _CompanyOverviewScreenState extends State<CompanyOverviewScreen> {
   final PFEService _pfeService = PFEService();
   final EnterpriseService _enterpriseService = EnterpriseService();
+  final NotificationService _notificationService = NotificationService();
 
   bool _loading = true;
   List<PFEListing> _pfes = [];
   Enterprise? _enterprise;
   int activePFEs = 0;
   int totalApplicants = 0;
+  int _unreadNotificationCount = 0;
 
   @override
   void initState() {
     super.initState();
     _loadData();
+    _loadUnreadCount();
+  }
+
+  Future<void> _loadUnreadCount() async {
+    try {
+      final count = await _notificationService.getUnreadCount();
+      if (mounted) {
+        setState(() {
+          _unreadNotificationCount = count;
+        });
+      }
+    } catch (e) {
+      // Silently fail
+    }
   }
 
   Future<void> _loadData() async {
@@ -88,12 +106,57 @@ class _CompanyOverviewScreenState extends State<CompanyOverviewScreen> {
     }
   }
 
+  void _onNotificationTap() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const EnterpriseNotificationsScreen()),
+    );
+    // Reload unread count after returning from notifications screen
+    _loadUnreadCount();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Company Overview'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: Theme.of(context).colorScheme.onPrimary,
+        actions: [
+          Stack(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.notifications_outlined),
+                onPressed: _onNotificationTap,
+              ),
+              if (_unreadNotificationCount > 0)
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 16,
+                      minHeight: 16,
+                    ),
+                    child: Text(
+                      _unreadNotificationCount > 9 ? '9+' : _unreadNotificationCount.toString(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _openCreatePFE,

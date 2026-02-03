@@ -5,7 +5,8 @@ import '../../models/enterprise.dart';
 import '../../Services/enterprise_service.dart';
 import '../../core/config/routes.dart';
 import '../../providers/auth_provider.dart';
-import '../../widgets/common/app_navbar.dart';
+import 'edit_profile_screen.dart';
+import '../Enterprise_main_screen.dart';
 
 class EnterpriseProfileScreen extends StatefulWidget {
   const EnterpriseProfileScreen({super.key});
@@ -65,10 +66,11 @@ class _CompanyProfileScreenState extends State<EnterpriseProfileScreen> {
   Future<void> _navigateToEdit() async {
     if (_enterprise == null) return;
 
-    final result = await Navigator.pushNamed(
+    final result = await Navigator.push(
       context,
-      AppRoutes.editEnterpriseProfile,
-      arguments: _enterprise,
+      MaterialPageRoute(
+        builder: (context) => const EditEnterpriseProfileScreen(),
+      ),
     );
 
     if (result == true) {
@@ -77,7 +79,11 @@ class _CompanyProfileScreenState extends State<EnterpriseProfileScreen> {
   }
 
   void _navigateToManagePfes() {
-    //Navigator.pushNamed(context, AppRoutes.managePfes);
+    // Navigate to the overview tab (index 0) in the EnterpriseMainScreen
+    final tabNavigator = context.findAncestorWidgetOfExactType<EnterpriseTabNavigator>();
+    if (tabNavigator != null) {
+      tabNavigator.onNavigateToTab(0);
+    }
   }
 
   Future<void> _openLink(String url) async {
@@ -131,27 +137,45 @@ class _CompanyProfileScreenState extends State<EnterpriseProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      body: SafeArea(
-        child: Column(
-          children: [
-            AppNavbar(
-              userInitials: _getInitials(_enterprise?.name ?? ''),
-              notificationCount: 3,
-              userType: UserType.enterprise,
-              onNotificationTap: _onNotificationTap,
-              onProfileTap: _onProfileTap,
-              onLogoutTap: _onLogoutTap,
-            ),
-            Expanded(
-              child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : _error != null
-                  ? _buildErrorState()
-                  : _buildProfileContent(),
-            ),
-          ],
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: const Text(
+          'Company Profile',
+          style: TextStyle(
+            color: Color(0xFF1F2937),
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
         ),
+        actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert, color: Color(0xFF1F2937)),
+            onSelected: (value) {
+              if (value == 'logout') {
+                _onLogoutTap();
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'logout',
+                child: Row(
+                  children: [
+                    Icon(Icons.logout, size: 20),
+                    SizedBox(width: 12),
+                    Text('Logout'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _error != null
+              ? _buildErrorState()
+              : _buildProfileContent(),
     );
   }
 
@@ -238,16 +262,8 @@ class _CompanyProfileScreenState extends State<EnterpriseProfileScreen> {
   // ---------------------------------------------------------------------------
   Widget _buildPageHeader() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        const Text(
-          'Company Profile',
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF1F2937),
-          ),
-        ),
         ElevatedButton.icon(
           onPressed: _navigateToEdit,
           icon: const Icon(Icons.edit, size: 18),

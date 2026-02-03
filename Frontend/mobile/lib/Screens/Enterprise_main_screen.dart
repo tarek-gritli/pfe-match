@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'Enterprise/profile_screen.dart';
-import 'Company/overview_screen.dart';
+import 'Enterprise/overview_screen.dart';
 
 // InheritedWidget to provide tab navigation callback for enterprise
 class EnterpriseTabNavigator extends InheritedWidget {
