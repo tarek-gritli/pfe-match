@@ -38,6 +38,9 @@ class _MainScreenState extends State<MainScreen> {
   final GlobalKey<NavigatorState> _applicationsNavigatorKey = GlobalKey<NavigatorState>();
   final GlobalKey<NavigatorState> _profileNavigatorKey = GlobalKey<NavigatorState>();
 
+  // Notifier to trigger applications reload
+  final ValueNotifier<int> _applicationsReloadNotifier = ValueNotifier<int>(0);
+
   // List of navigators for each tab
   late final List<Widget> _tabNavigators;
 
@@ -46,9 +49,18 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
     _tabNavigators = [
       _buildNavigator(_exploreNavigatorKey, const ExploreScreen()),
-      _buildNavigator(_applicationsNavigatorKey, const ApplicationsScreen()),
+      _buildNavigator(
+        _applicationsNavigatorKey,
+        ApplicationsScreen(reloadNotifier: _applicationsReloadNotifier),
+      ),
       _buildNavigator(_profileNavigatorKey, const StudentProfileScreen()),
     ];
+  }
+
+  @override
+  void dispose() {
+    _applicationsReloadNotifier.dispose();
+    super.dispose();
   }
 
   // Helper to create a Navigator for a tab with an initial widget
@@ -83,6 +95,11 @@ class _MainScreenState extends State<MainScreen> {
       setState(() {
         _currentIndex = index;
       });
+
+      // Notify ApplicationsScreen to reload when navigating to it
+      if (index == 1) {
+        _applicationsReloadNotifier.value++;
+      }
     }
   }
 

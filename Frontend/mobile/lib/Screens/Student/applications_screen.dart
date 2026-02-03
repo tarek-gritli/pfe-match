@@ -9,7 +9,9 @@ import '../../widgets/common/app_navbar.dart';
 import '../../widgets/student/student_drawer.dart';
 
 class ApplicationsScreen extends StatefulWidget {
-  const ApplicationsScreen({super.key});
+  final ValueNotifier<int>? reloadNotifier;
+
+  const ApplicationsScreen({super.key, this.reloadNotifier});
 
   @override
   State<ApplicationsScreen> createState() => _ApplicationsScreenState();
@@ -25,9 +27,24 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
   void initState() {
     super.initState();
     _loadApplications();
+
+    // Listen to reload notifications from parent
+    widget.reloadNotifier?.addListener(_onReloadRequested);
+  }
+
+  @override
+  void dispose() {
+    widget.reloadNotifier?.removeListener(_onReloadRequested);
+    super.dispose();
+  }
+
+  void _onReloadRequested() {
+    _loadApplications();
   }
 
   Future<void> _loadApplications() async {
+    if (!mounted) return;
+
     setState(() {
       _isLoading = true;
       _error = null;
@@ -35,11 +52,15 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
 
     try {
       final applications = await _applicantService.getMyApplications();
+      if (!mounted) return;
+
       setState(() {
         _applications = applications;
         _isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
+
       setState(() {
         _error = e.toString().replaceFirst('Exception: ', '');
         _isLoading = false;
@@ -134,6 +155,11 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
           ),
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh, color: Color(0xFF6B7280)),
+            onPressed: _isLoading ? null : _loadApplications,
+            tooltip: 'Reload applications',
+          ),
           IconButton(
             icon: const Icon(Icons.notifications_outlined, color: Color(0xFF6B7280)),
             onPressed: _onNotificationTap,
