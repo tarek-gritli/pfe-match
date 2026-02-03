@@ -231,12 +231,20 @@ downloadResume(): void {
 
     this.isUploading = true;
     this.studentService.uploadResume(file).subscribe({
-      next: (response) => {
-        this.currentStudent.resumeName = response.resume_url;
-        this.profileCompleteness = this.calculateProfileCompleteness(this.currentStudent);
-        this.isUploading = false;
-        // Reset the input
-        input.value = '';
+      next: () => {
+        // Re-fetch the profile to sync all extracted data (skills, technologies, links)
+        this.studentService.getProfile().subscribe({
+          next: (student) => {
+            this.currentStudent = student;
+            this.profileCompleteness = this.calculateProfileCompleteness(this.currentStudent);
+            this.isUploading = false;
+            input.value = '';
+          },
+          error: () => {
+            this.isUploading = false;
+            input.value = '';
+          }
+        });
       },
       error: (error) => {
         console.error('Error uploading resume:', error);
