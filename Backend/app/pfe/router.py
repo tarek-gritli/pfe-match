@@ -431,7 +431,7 @@ async def preview_match_score(
 ):
     """
     Preview the match score for a PFE listing without applying.
-    The score is calculated once and cached in the database.
+    The score is recalculated every time for fresh results.
     """
     # Check if user is a student
     if current_user.role != UserRole.STUDENT:
@@ -456,67 +456,13 @@ async def preview_match_score(
             detail="PFE listing not found"
         )
 
-    # Check if already applied - if so, return data from application
+    # Check if already applied
     existing_application = db.query(Application).filter(
         Application.student_id == student.id,
         Application.pfe_listing_id == id
     ).first()
 
-    if existing_application:
-        # Return cached data from the application
-        return {
-            "pfe_listing_id": id,
-            "pfe_title": pfe.title,
-            "match_score": existing_application.match_rate or 0,
-            "already_applied": True,
-            "match_details": {
-                "explanation": existing_application.match_explanation or "",
-                "matched_skills": existing_application.matched_skills or [],
-                "missing_skills": existing_application.missing_skills or [],
-                "recommendations": existing_application.recommendations or ""
-            },
-            "student_profile": {
-                "skills": student.skills or [],
-                "technologies": student.technologies or [],
-                "desired_role": student.desired_job_role
-            },
-            "pfe_requirements": {
-                "skills": pfe.skills or [],
-                "title": pfe.title
-            }
-        }
-
-    # Check if we have a cached match preview
-    cached_preview = db.query(MatchPreview).filter(
-        MatchPreview.student_id == student.id,
-        MatchPreview.pfe_listing_id == id
-    ).first()
-
-    if cached_preview:
-        # Return cached data
-        return {
-            "pfe_listing_id": id,
-            "pfe_title": pfe.title,
-            "match_score": cached_preview.match_score,
-            "already_applied": False,
-            "match_details": {
-                "explanation": cached_preview.explanation or "",
-                "matched_skills": cached_preview.matched_skills or [],
-                "missing_skills": cached_preview.missing_skills or [],
-                "recommendations": cached_preview.recommendations or ""
-            },
-            "student_profile": {
-                "skills": student.skills or [],
-                "technologies": student.technologies or [],
-                "desired_role": student.desired_job_role
-            },
-            "pfe_requirements": {
-                "skills": pfe.skills or [],
-                "title": pfe.title
-            }
-        }
-
-    # No cache found - calculate match score using AI
+    # Always calculate fresh match score using AI
     match_result = await calculate_match_score(
         student_skills=student.skills or [],
         student_technologies=student.technologies or [],
@@ -526,21 +472,27 @@ async def preview_match_score(
         student_desired_role=student.desired_job_role
     )
 
-    # Save to cache
-    new_preview = MatchPreview(
-        student_id=student.id,
-        pfe_listing_id=id,
-        match_score=match_result["score"],
-        explanation=match_result.get("explanation", ""),
-        matched_skills=match_result.get("matched_skills", []),
-        missing_skills=match_result.get("missing_skills", []),
-        recommendations=match_result.get("recommendations", "")
-    )
-    db.add(new_preview)
-    db.commit()
-
     return {
         "pfe_listing_id": id,
+        "pfe_title": pfe.title,
+        "match_score": match_result["score"],
+        "already_applied": existing_application is not None,
+        "match_details": {
+            "explanation": match_result.get("explanation", ""),
+            "matched_skills": match_result.get("matched_skills", []),
+            "missing_skills": match_result.get("missing_skills", []),
+            "recommendations": match_result.get("recommendations", "")
+        },
+        "student_profile": {
+            "skills": student.skills or [],
+            "technologies": student.technologies or [],
+            "desired_role": student.desired_job_role
+        },
+        "pfe_requirements": {
+            "skills": pfe.skills or [],
+            "title": pfe.title
+        }
+    }
         "pfe_title": pfe.title,
         "match_score": match_result["score"],
         "already_applied": False,
