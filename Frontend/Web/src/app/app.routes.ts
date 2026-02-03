@@ -16,6 +16,8 @@ import { CreateProfileComponent } from './components/create-profile/create-profi
 import { EditProfileComponent } from './components/edit-profile/edit-profile.component';
 import { authGuard } from './auth/guards/auth.guard';
 import { guestGuard } from './auth/guards/guest.guard';
+import { enterpriseGuard } from './auth/guards/enterprise.guard';
+import { studentGuard } from './auth/guards/student.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -26,11 +28,11 @@ export const routes: Routes = [
   { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
   { path: 'create-profile', component: CreateProfileComponent, canActivate: [authGuard] },
   { path: 'edit-profile', component: EditProfileComponent, canActivate: [authGuard] },
-  { path: 'explore', component: ExploreComponent, canActivate: [authGuard] },
-  { path: 'my-applications', component: MyApplicationsComponent, canActivate: [authGuard] },
+  { path: 'explore', component: ExploreComponent, canActivate: [studentGuard] },
+  { path: 'my-applications', component: MyApplicationsComponent, canActivate: [studentGuard] },
 
   { path: 'enterprise/dashboard', component: StudentProfileComponent, canActivate: [authGuard] }, // TODO: Create EnterpriseDashboardComponent
-  { path: 'companies/overview-pfe', component: OverviewComponent, canActivate: [authGuard] },
-  { path: 'companies/applicants', component: ApplicantsComponent, canActivate: [authGuard] }
+  { path: 'companies/overview-pfe', component: OverviewComponent, canActivate: [enterpriseGuard] },
+  { path: 'companies/applicants', component: ApplicantsComponent, canActivate: [enterpriseGuard] }
 ];
 

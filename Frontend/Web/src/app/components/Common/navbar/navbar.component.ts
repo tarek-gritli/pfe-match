@@ -124,11 +124,17 @@ export class NavbarComponent implements OnInit, OnDestroy {
     // Mark as read
     this.notificationService.markAsRead(notification.id).subscribe();
     
-    // Navigate based on notification type
+    // Navigate based on notification type and user type
     if (notification.pfe_listing_id) {
-      this.router.navigate(['/companies/applicants'], { 
-        queryParams: { pfeId: notification.pfe_listing_id } 
-      });
+      if (this.authState?.userType === 'enterprise') {
+        // Enterprise users go to applicants page
+        this.router.navigate(['/companies/applicants'], { 
+          queryParams: { pfeId: notification.pfe_listing_id } 
+        });
+      } else {
+        // Students go to their applications page
+        this.router.navigate(['/my-applications']);
+      }
     }
     this.closeNotificationDropdown();
   }

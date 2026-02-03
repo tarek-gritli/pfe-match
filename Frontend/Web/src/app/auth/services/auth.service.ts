@@ -97,6 +97,13 @@ export class AuthService {
     }
 
     /**
+     * Get current user type
+     */
+    getUserType(): UserType | null {
+        return this.authState.value.userType;
+    }
+
+    /**
      * Register a new student
      */
     registerStudent(data: StudentRegisterRequest): Observable<AuthResponse> {
