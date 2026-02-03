@@ -368,6 +368,11 @@ async def apply_to_pfe(
             detail="You have already applied to this PFE listing"
         )
 
+    # Check if this is the student's first application
+    is_first_application = db.query(Application).filter(
+        Application.student_id == student.id
+    ).count() == 0
+
     # Calculate match score using AI
     match_result = await calculate_match_score(
         student_skills=student.skills or [],
@@ -402,6 +407,18 @@ async def apply_to_pfe(
             title="New Application Received",
             message=f"{student_name} has applied to your PFE listing: {pfe.title}",
             notification_type=NotificationType.NEW_APPLICATION,
+            pfe_listing_id=pfe.id,
+            application_id=application.id
+        )
+
+    # Send first application congratulation notification to the student
+    if is_first_application:
+        create_notification(
+            db=db,
+            user_id=current_user.id,
+            title="First Application Submitted! 🚀",
+            message=f"Congratulations on your first PFE application! You applied to '{pfe.title}' with a {match_result['score']}% match score.",
+            notification_type=NotificationType.SYSTEM,
             pfe_listing_id=pfe.id,
             application_id=application.id
         )
