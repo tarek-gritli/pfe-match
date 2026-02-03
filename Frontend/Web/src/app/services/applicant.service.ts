@@ -20,6 +20,15 @@ export interface ApplicantWithStatus {
   resumeUrl?: string;
 }
 
+export interface ApplicantDetails extends ApplicantWithStatus {
+  bio?: string;
+  linkedinUrl?: string;
+  githubUrl?: string;
+  portfolioUrl?: string;
+  technologies?: string[];
+  profilePicture?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -75,10 +84,10 @@ export class ApplicantService {
   }
 
   /**
-   * Récupérer un applicant par ID
+   * Récupérer un applicant par ID avec détails complets
    */
-  getApplicantById(id: string): Observable<ApplicantWithStatus> {
-    return this.http.get<ApplicantWithStatus>(`${this.API_URL}/applicants/${id}`, { headers: this.getAuthHeaders() }).pipe(
+  getApplicantById(id: string): Observable<ApplicantDetails> {
+    return this.http.get<ApplicantDetails>(`${this.API_URL}/applicants/${id}`, { headers: this.getAuthHeaders() }).pipe(
       catchError(error => {
         console.error('Error fetching applicant:', error);
         return throwError(() => error);

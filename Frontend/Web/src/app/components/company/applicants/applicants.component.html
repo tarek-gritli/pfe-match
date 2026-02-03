@@ -134,3 +134,152 @@
     </div>
   </section>
 </div>
+
+<!-- Applicant Details Modal -->
+<div class="modal-overlay" *ngIf="showModal()" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h2 class="modal-title">Applicant Details</h2>
+      <button class="modal-close" (click)="closeModal()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div class="modal-loading" *ngIf="isLoadingDetails()">
+      <div class="spinner"></div>
+      <p>Loading details...</p>
+    </div>
+
+    <!-- Applicant Details -->
+    <div class="modal-body" *ngIf="!isLoadingDetails() && selectedApplicant()">
+      <!-- Profile Header -->
+      <div class="applicant-profile-header">
+        <div class="profile-avatar-large" *ngIf="!selectedApplicant()?.profilePicture" [style.background-color]="selectedApplicant()?.avatarColor">
+          {{ selectedApplicant()?.initials }}
+        </div>
+        <img *ngIf="selectedApplicant()?.profilePicture" 
+             [src]="selectedApplicant()?.profilePicture" 
+             alt="Profile" 
+             class="profile-image-large">
+        <div class="profile-info">
+          <h3 class="profile-name">{{ selectedApplicant()?.name }}</h3>
+          <p class="profile-email">{{ selectedApplicant()?.email }}</p>
+          <div class="profile-match">
+            <span class="match-badge-large">
+              <svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14.6666 7.38668V8.00001C14.6658 9.43763 14.2003 10.8365 13.3395 11.988C12.4787 13.1394 11.2688 13.9817 9.89016 14.3893C8.51154 14.7969 7.03809 14.748 5.68957 14.2498C4.34104 13.7516 3.18969 12.8308 2.40723 11.6247C1.62476 10.4186 1.25311 8.99235 1.34771 7.55762C1.44231 6.12289 1.99806 4.75762 2.93211 3.66479C3.86615 2.57195 5.1285 1.81033 6.53077 1.4935C7.93304 1.17668 9.40016 1.32163 10.7133 1.90668M14.6666 2.66668L7.99998 9.34001L5.99998 7.34001" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              {{ selectedApplicant()?.matchRate }}% Match
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Details Grid -->
+      <div class="details-grid">
+        <!-- Basic Info -->
+        <div class="detail-section">
+          <h4 class="detail-section-title">Basic Information</h4>
+          <div class="detail-item">
+            <span class="detail-label">University</span>
+            <span class="detail-value">{{ selectedApplicant()?.university || 'Not specified' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Field of Study</span>
+            <span class="detail-value">{{ selectedApplicant()?.fieldOfStudy || 'Not specified' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Applied To</span>
+            <span class="detail-value">{{ selectedApplicant()?.appliedTo }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Application Date</span>
+            <span class="detail-value">{{ formatDate(selectedApplicant()?.applicationDate!) }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Status</span>
+            <span class="status-badge" [ngClass]="getStatusClass(selectedApplicant()?.status || 'pending')">
+              {{ getStatusLabel(selectedApplicant()?.status || 'pending') }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Bio -->
+        <div class="detail-section" *ngIf="selectedApplicant()?.bio">
+          <h4 class="detail-section-title">About</h4>
+          <p class="bio-text">{{ selectedApplicant()?.bio }}</p>
+        </div>
+
+        <!-- Skills -->
+        <div class="detail-section" *ngIf="selectedApplicant()?.skills && selectedApplicant()!.skills.length > 0">
+          <h4 class="detail-section-title">Skills</h4>
+          <div class="skills-list">
+            <span *ngFor="let skill of selectedApplicant()?.skills" class="skill-tag-modal">{{ skill }}</span>
+          </div>
+        </div>
+
+        <!-- Technologies -->
+        <div class="detail-section" *ngIf="selectedApplicant()?.technologies && selectedApplicant()!.technologies!.length > 0">
+          <h4 class="detail-section-title">Technologies</h4>
+          <div class="skills-list">
+            <span *ngFor="let tech of selectedApplicant()?.technologies" class="tech-tag">{{ tech }}</span>
+          </div>
+        </div>
+
+        <!-- Links -->
+        <div class="detail-section links-section">
+          <h4 class="detail-section-title">Links</h4>
+          <div class="links-grid">
+            <button class="link-btn" *ngIf="selectedApplicant()?.resumeUrl" (click)="downloadResume(selectedApplicant()!.resumeUrl!)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="12" y1="18" x2="12" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <polyline points="9,15 12,18 15,15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Download Resume
+            </button>
+            <button class="link-btn link-btn--linkedin" *ngIf="selectedApplicant()?.linkedinUrl" (click)="openLink(selectedApplicant()!.linkedinUrl!)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+              </svg>
+              LinkedIn
+            </button>
+            <button class="link-btn link-btn--github" *ngIf="selectedApplicant()?.githubUrl" (click)="openLink(selectedApplicant()!.githubUrl!)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+              </svg>
+              GitHub
+            </button>
+            <button class="link-btn link-btn--portfolio" *ngIf="selectedApplicant()?.portfolioUrl" (click)="openLink(selectedApplicant()!.portfolioUrl!)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              Portfolio
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="modal-actions">
+        <select class="status-select" 
+                [ngModel]="selectedApplicant()?.status" 
+                (ngModelChange)="updateApplicantStatus(selectedApplicant()!.id, $event)">
+          <option value="pending">Pending Review</option>
+          <option value="reviewed">Reviewed</option>
+          <option value="shortlisted">Shortlisted</option>
+          <option value="interview">Interview</option>
+          <option value="accepted">Accepted</option>
+          <option value="rejected">Rejected</option>
+        </select>
+        <button class="btn-close-modal" (click)="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

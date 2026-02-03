@@ -8,7 +8,7 @@ from app.core.dependencies import get_current_user
 router = APIRouter(prefix="/api/applicants", tags=["Applicants"])
 
 
-def _format_application(a: Application, db: Session):
+def _format_application(a: Application, db: Session, include_details: bool = False):
     # Get student info
     student = a.student
     if not student:
@@ -27,22 +27,50 @@ def _format_application(a: Application, db: Session):
         pfe_title = a.pfe_listing.title
         pfe_id = a.pfe_listing.id
 
-    return {
+    # Get skills from student
+    skills = student.skills if student.skills else []
+    
+    # Build resume URL with full path
+    resume_url = None
+    if student.resume_url:
+        resume_url = f"http://localhost:8000{student.resume_url}" if student.resume_url.startswith('/') else student.resume_url
+
+    result = {
         "id": a.id,
         "name": f"{student.first_name} {student.last_name}",
         "initials": initials_from(student.first_name, student.last_name),
         "email": student.user.email if student.user else "",
         "university": student.university or "",
-        "fieldOfStudy": "",  # Can add to Student model if needed
+        "fieldOfStudy": student.desired_job_role or "",
         "matchRate": a.match_rate,
         "avatarColor": "#6366F1",
         "appliedTo": pfe_title,
         "pfeId": pfe_id,
         "applicationDate": a.created_at,
         "status": a.status.value if hasattr(a.status, "value") else a.status,
-        "skills": [],
-        "resumeUrl": None,  # Can add if needed
+        "skills": skills,
+        "resumeUrl": resume_url,
     }
+    
+    # Add extra details if requested
+    if include_details:
+        result["bio"] = student.short_bio or ""
+        result["linkedinUrl"] = student.linkedin_url or ""
+        result["githubUrl"] = student.github_url or ""
+        result["portfolioUrl"] = student.portfolio_url or ""
+        result["technologies"] = student.technologies if student.technologies else []
+        # Build profile picture URL - handle both forward and backslashes
+        profile_pic = student.profile_picture
+        if profile_pic:
+            # Normalize path separators
+            profile_pic = profile_pic.replace('\\', '/')
+            if not profile_pic.startswith('/'):
+                profile_pic = '/' + profile_pic
+            result["profilePicture"] = f"http://localhost:8000{profile_pic}"
+        else:
+            result["profilePicture"] = None
+    
+    return result
 
 
 @router.get("")
@@ -81,7 +109,7 @@ def get_applicants(
 @router.get("/{id}")
 def get_applicant_by_id(id: int, db: Session = Depends(get_db)):
     """
-    Get an application by its ID
+    Get an application by its ID with full details
     """
     app_obj = db.query(Application).filter(Application.id == id).first()
     if not app_obj:
@@ -89,7 +117,7 @@ def get_applicant_by_id(id: int, db: Session = Depends(get_db)):
             status_code=status.HTTP_404_NOT_FOUND, detail="Application not found"
         )
 
-    result = _format_application(app_obj, db)
+    result = _format_application(app_obj, db, include_details=True)
     if not result:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

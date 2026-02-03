@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ApplicantService, ApplicantWithStatus } from '../../../services/applicant.service';
+import { ApplicantService, ApplicantWithStatus, ApplicantDetails } from '../../../services/applicant.service';
 import { PFEService } from '../../../services/pfe.service';
 import { CompanyService } from '../../../services/company.service';
 
@@ -35,6 +35,11 @@ export class ApplicantsComponent implements OnInit {
 
   // Filtre sélectionné
   selectedPfeId = signal<string>('all');
+
+  // Modal state
+  showModal = signal(false);
+  selectedApplicant = signal<ApplicantDetails | null>(null);
+  isLoadingDetails = signal(false);
 
   // ============================================
   // Convertir Observables en Signals
@@ -194,8 +199,44 @@ export class ApplicantsComponent implements OnInit {
    * Voir les détails d'un applicant
    */
   viewApplicantDetails(applicantId: string): void {
-    console.log('View applicant details:', applicantId);
-    // this.router.navigate(['/applicants', applicantId]);
+    this.isLoadingDetails.set(true);
+    this.showModal.set(true);
+    
+    this.applicantService.getApplicantById(applicantId).subscribe({
+      next: (applicant) => {
+        this.selectedApplicant.set(applicant);
+        this.isLoadingDetails.set(false);
+      },
+      error: (err) => {
+        console.error('Error loading applicant details:', err);
+        this.isLoadingDetails.set(false);
+        this.error.set('Failed to load applicant details');
+      }
+    });
+  }
+
+  /**
+   * Fermer le modal
+   */
+  closeModal(): void {
+    this.showModal.set(false);
+    this.selectedApplicant.set(null);
+  }
+
+  /**
+   * Télécharger le CV
+   */
+  downloadResume(url: string): void {
+    window.open(url, '_blank');
+  }
+
+  /**
+   * Ouvrir un lien externe
+   */
+  openLink(url: string): void {
+    if (url) {
+      window.open(url, '_blank');
+    }
   }
 
   /**
