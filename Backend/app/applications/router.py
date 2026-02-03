@@ -30,10 +30,13 @@ def _format_application(a: Application, db: Session, include_details: bool = Fal
     # Get skills from student
     skills = student.skills if student.skills else []
     
-    # Build resume URL with full path
+    # Build resume URL with full path - handle both forward and backslashes
     resume_url = None
     if student.resume_url:
-        resume_url = f"http://localhost:8000{student.resume_url}" if student.resume_url.startswith('/') else student.resume_url
+        resume_path = student.resume_url.replace('\\', '/')
+        if not resume_path.startswith('/'):
+            resume_path = '/' + resume_path
+        resume_url = f"http://localhost:8000{resume_path}"
 
     result = {
         "id": a.id,
