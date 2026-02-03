@@ -1,9 +1,8 @@
 from sqlalchemy import Column, String, Float, DateTime, Enum, ForeignKey, Table, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from app.db.database import Base
+from app.database import Base
 import enum
-from .skill import applicant_skills
 
 class ApplicationStatus(str, enum.Enum):
     PENDING = "pending"
@@ -12,6 +11,13 @@ class ApplicationStatus(str, enum.Enum):
     INTERVIEW = "interview"
     ACCEPTED = "accepted"
     REJECTED = "rejected"
+
+applicant_skills = Table(
+    'applicant_skills',
+    Base.metadata,
+    Column('applicant_id', String, ForeignKey('applicants.id', ondelete='CASCADE')),
+    Column('skill_name', String)
+)
 
 class Applicant(Base):
     """Modèle pour les candidats"""
@@ -24,7 +30,7 @@ class Applicant(Base):
     field_of_study = Column(String)
     match_rate = Column(Float, default=0.0)
     avatar_color = Column(String, default="#6366F1")
-    pfe_id = Column(String, ForeignKey("pfe_listings.id", ondelete="CASCADE"))
+    pfe_id = Column(String, ForeignKey("pfe_listings.id"))
     application_date = Column(DateTime(timezone=True), server_default=func.now())
     status = Column(Enum(ApplicationStatus), default=ApplicationStatus.PENDING, nullable=False)
     resume_url = Column(String)
@@ -34,11 +40,3 @@ class Applicant(Base):
 
     # Relations
     pfe_listing = relationship("PFEListing", back_populates="applicants")
-
-    # many-to-many: applicants <-> skills
-    skills = relationship(
-        "Skill",
-        secondary=applicant_skills,
-        back_populates="applicants",
-        passive_deletes=True
-    )

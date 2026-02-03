@@ -12,6 +12,8 @@ import { ProgressComponent } from '../../Common/progress/progress.component';
 import { Company, CompanyProfileUpdate } from '../../../models/company-profile.model';
 import { CompanyService} from '../../../services/company.service';
 import { inject } from '@angular/core';
+import { AuthService } from '../../../auth/services/auth.service';
+
 
 interface CompanyCreateFormData {
   logo: string;
@@ -54,6 +56,7 @@ interface Step {
 })
 export class CreateCompanyProfileComponent {
   private companyService = inject(CompanyService);
+  private authService = inject(AuthService);
   currentStep: number = 1;
   errors: Record<string, string> = {};
 
@@ -68,6 +71,13 @@ export class CreateCompanyProfileComponent {
     contactEmail: '',
     technologies: []
   };
+
+  isUploadingLogo: any;
+  profileImageFile: any;
+
+  imagePreview: string | null = null;
+  logoPreview: string | null = null;
+
 
   newTech: string = '';
 
@@ -144,17 +154,43 @@ export class CreateCompanyProfileComponent {
   }
 
   handleLogoUpload(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        this.formData.logo = reader.result as string;
-      };
-      reader.readAsDataURL(file);
-      // TODO: Upload to server via service
-    }
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+
+  if (file && file.type.startsWith('image/')) {
+    delete this.errors['logo'];
+
+    // Show preview immediately via FileReader
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      this.logoPreview = reader.result as string;
+    };
+    reader.onerror = () => {
+      this.errors['logo'] = 'Failed to read image file';
+    };
+    reader.readAsDataURL(file);
+
+    // Upload to server
+    this.isUploadingLogo = true;
+    this.authService.uploadCompanyLogo(file).subscribe({  // adjust method name as needed
+      next: (response) => {
+        this.isUploadingLogo = false;
+        this.formData.logo = response.profile_picture_url;
+        // Notify navbar to refresh profile picture
+        this.authService.notifyProfileUpdated();
+        //this.logoPreview = null; // server URL is now set, preview no longer needed
+      },
+      error: (error) => {
+        this.isUploadingLogo = false;
+        this.errors['logo'] = error.message || 'Failed to upload logo';
+        this.logoPreview = null;
+        input.value = '';
+      }
+    });
+  } else if (file) {
+    this.errors['logo'] = 'Please select a valid image file';
   }
+}
 
   removeLogo(): void {
     this.formData.logo = '';

@@ -21,10 +21,10 @@
             <app-card-content>
               <div class="profile-overview">
                 <app-avatar 
-                  [src]="currentStudent.profileImage || ''" 
-                  [fallback]="getInitials(currentStudent.firstName)"
-                  size="xl">
-                </app-avatar>
+  [src]="getProfileImageUrl(currentStudent.profileImage)" 
+  [fallback]="getInitials(currentStudent.firstName)"
+  size="xl">
+</app-avatar>
                 
                 <div class="profile-info">
                   <h2 class="profile-name">{{ currentStudent.firstName}} {{ currentStudent.lastName}}</h2>
@@ -229,7 +229,7 @@
                       </svg>
                     </div>
                     <div class="resume-details">
-                      <p class="resume-name">{{ currentStudent.resumeName }}</p>
+                      <p class="resume-name">{{ getResumeDisplayName() }}</p>
                       @if (currentStudent.resumeUploadDate) {
                         <p class="resume-date">
                           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

@@ -170,6 +170,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           );
                         }
                         if (auth.error != null) {
+                          print('Auth Error: ${auth.error}');
                           return _buildMessage(auth.error!, AppColors.error);
                         }
                         return const SizedBox.shrink();

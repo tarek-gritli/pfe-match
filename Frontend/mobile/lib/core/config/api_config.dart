@@ -11,7 +11,6 @@ class ApiConfig {
   static const String forgotPassword = '$baseUrl/auth/forgot-password';
   static const String resetPassword = '$baseUrl/auth/reset-password';
   static const String verifyEmail = '$baseUrl/auth/verify-email';
-
   // Student endpoints
   static const String studentProfile = '$baseUrl/students/me';
   static const String updateProfile = '$baseUrl/students/me/profile';

@@ -1,0 +1,204 @@
+@if (isOpen() && offer()) {
+  <div class="modal-backdrop" (click)="onBackdropClick($event)">
+    <div class="modal-container">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <div class="header-content">
+          <img [src]="companyLogo()" [alt]="offer()!.company.name" class="company-logo" />
+          <div class="header-text">
+            <h2 class="modal-title">{{ offer()!.title }}</h2>
+            <p class="company-name">{{ offer()!.company.name }}</p>
+          </div>
+        </div>
+        <button class="close-btn" (click)="onClose()" aria-label="Close modal">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body">
+        <!-- Success Message -->
+        @if (applySuccess()) {
+          <div class="success-banner">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="success-icon">
+              <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
+            </svg>
+            <div>
+              <p class="success-title">Application Submitted!</p>
+              <p class="success-text">You can view your application details in "My Applications"</p>
+            </div>
+          </div>
+        }
+
+        <!-- Error Message -->
+        @if (applyError()) {
+          <div class="error-banner">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="error-icon">
+              <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-1.72 6.97a.75.75 0 10-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 101.06 1.06L12 13.06l1.72 1.72a.75.75 0 101.06-1.06L13.06 12l1.72-1.72a.75.75 0 10-1.06-1.06L12 10.94l-1.72-1.72z" clip-rule="evenodd" />
+            </svg>
+            <p>{{ applyError() }}</p>
+          </div>
+        }
+
+        <!-- Match Score Section -->
+        <div class="match-section">
+          <h3 class="section-title">Your Match Score</h3>
+          @if (matchLoading()) {
+            <div class="match-loading">
+              <div class="spinner"></div>
+              <p>Analyzing your profile...</p>
+            </div>
+          } @else if (matchPreview()) {
+            @if (matchPreview()!.already_applied) {
+              <div class="already-applied-banner">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="info-icon">
+                  <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.041-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd" />
+                </svg>
+                <p>You have already applied to this position</p>
+              </div>
+            }
+            <div class="match-score-display">
+              <div class="score-circle" [style.border-color]="matchScoreColor()">
+                <span class="score-value" [style.color]="matchScoreColor()">{{ matchPreview()!.match_score }}%</span>
+                <span class="score-label">{{ matchScoreLabel() }}</span>
+              </div>
+              <div class="match-details">
+                <p class="match-explanation">{{ matchPreview()!.match_details.explanation }}</p>
+                
+                @if (matchPreview()!.match_details.matched_skills.length > 0) {
+                  <div class="skills-section">
+                    <h4>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="check-icon">
+                        <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
+                      </svg>
+                      Matching Skills
+                    </h4>
+                    <div class="skills-tags matched">
+                      @for (skill of matchPreview()!.match_details.matched_skills; track skill) {
+                        <span class="skill-tag matched">{{ skill }}</span>
+                      }
+                    </div>
+                  </div>
+                }
+
+                @if (matchPreview()!.match_details.missing_skills.length > 0) {
+                  <div class="skills-section">
+                    <h4>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="missing-icon">
+                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm3 10.5a.75.75 0 000-1.5H9a.75.75 0 000 1.5h6z" clip-rule="evenodd" />
+                      </svg>
+                      Skills to Develop
+                    </h4>
+                    <div class="skills-tags missing">
+                      @for (skill of matchPreview()!.match_details.missing_skills; track skill) {
+                        <span class="skill-tag missing">{{ skill }}</span>
+                      }
+                    </div>
+                  </div>
+                }
+
+                @if (matchPreview()!.match_details.recommendations) {
+                  <div class="recommendations-section">
+                    <h4>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="tip-icon">
+                        <path fill-rule="evenodd" d="M9 4.5a.75.75 0 01.721.544l.813 2.846a3.75 3.75 0 002.576 2.576l2.846.813a.75.75 0 010 1.442l-2.846.813a3.75 3.75 0 00-2.576 2.576l-.813 2.846a.75.75 0 01-1.442 0l-.813-2.846a3.75 3.75 0 00-2.576-2.576l-2.846-.813a.75.75 0 010-1.442l2.846-.813A3.75 3.75 0 007.466 7.89l.813-2.846A.75.75 0 019 4.5zM18 1.5a.75.75 0 01.728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 010 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 01-1.456 0l-.258-1.036a2.625 2.625 0 00-1.91-1.91l-1.036-.258a.75.75 0 010-1.456l1.036-.258a2.625 2.625 0 001.91-1.91l.258-1.036A.75.75 0 0118 1.5z" clip-rule="evenodd" />
+                      </svg>
+                      Recommendations
+                    </h4>
+                    <p class="recommendations-text">{{ matchPreview()!.match_details.recommendations }}</p>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Offer Details -->
+        <div class="offer-details">
+          <h3 class="section-title">Offer Details</h3>
+          
+          <div class="details-grid">
+            <div class="detail-item">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+              </svg>
+              <div>
+                <span class="detail-label">Location</span>
+                <span class="detail-value">{{ offer()!.location || 'Not specified' }}</span>
+              </div>
+            </div>
+
+            <div class="detail-item">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div>
+                <span class="detail-label">Duration</span>
+                <span class="detail-value">{{ offer()!.duration }}</span>
+              </div>
+            </div>
+
+            <div class="detail-item">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z" />
+              </svg>
+              <div>
+                <span class="detail-label">Category</span>
+                <span class="detail-value">{{ offer()!.category }}</span>
+              </div>
+            </div>
+
+            <div class="detail-item">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+              </svg>
+              <div>
+                <span class="detail-label">Applicants</span>
+                <span class="detail-value">{{ offer()!.applicantCount || 0 }} applied</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="description-section">
+            <h4>Description</h4>
+            <p>{{ offer()!.description || 'No description provided.' }}</p>
+          </div>
+
+          <div class="skills-section">
+            <h4>Required Skills</h4>
+            <div class="skills-tags">
+              @for (skill of offer()!.skills; track skill) {
+                <span class="skill-tag">{{ skill }}</span>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="onClose()">Close</button>
+        @if (applySuccess() || matchPreview()?.already_applied) {
+          <a routerLink="/my-applications" class="btn btn-primary" (click)="onClose()">View My Applications</a>
+        } @else {
+          <button 
+            class="btn btn-primary" 
+            (click)="applyToOffer()" 
+            [disabled]="loading() || matchLoading()"
+          >
+            @if (loading()) {
+              <span class="spinner-small"></span>
+              Applying...
+            } @else {
+              Apply Now
+            }
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+}

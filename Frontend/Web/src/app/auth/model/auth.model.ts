@@ -69,21 +69,18 @@ export interface EnterpriseProfileUpdate {
 }
 
 export interface StudentProfile {
-    id: number;
-    user_id: number;
-    first_name: string;
-    last_name: string;
-    university?: string;
-    short_bio?: string;
-    profile_picture?: string;
-    desired_job_role?: string;
-    linkedin_url?: string;
-    github_url?: string;
-    portfolio_url?: string;
-    skills?: string[];
-    technologies?: string[];
-    resume_url?: string;
-    resume_parsed: boolean;
+  firstName: string;
+  lastName: string;
+  profileImage: string | null;
+  title: string | null;
+  university: string | null;
+  bio: string | null;
+  skills: string[];
+  technologies: string[];
+  linkedinUrl: string | null;
+  githubUrl: string | null;
+  customLinkUrl: string | null;
+  resumeName?: string;
 }
 
 export interface EnterpriseProfile {

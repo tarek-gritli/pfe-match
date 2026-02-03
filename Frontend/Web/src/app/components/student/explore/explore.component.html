@@ -190,3 +190,11 @@
     }
   </section>
 </div>
+
+<!-- PFE Detail Modal -->
+<app-pfe-detail-modal
+  [offer]="selectedOffer()"
+  [isOpen]="isModalOpen()"
+  (close)="closeModal()"
+  (applied)="onApplied()"
+/>

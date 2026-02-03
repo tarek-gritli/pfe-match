@@ -59,22 +59,9 @@ export class CompanyProfileComponent implements OnInit {
     })
   }
 
-  loadEnterpriseData(): void {
-    // TODO: Replace with actual service call
-    this.currentEnterprise = {
-      name: 'TechCorp Solutions',
-      logo: 'https://github.com/shadcn.png',
-      industry: 'Software Development',
-      location: 'Tunis, Tunisia',
-      size: '50-200 employees',
-      description: 'We build cutting-edge software solutions tailored to the needs of modern businesses. Passionate about innovation and technology-driven growth.',
-      foundedYear: 2018,
-      technologies: ['Angular', 'React', 'Node.js', 'PostgreSQL', 'AWS', 'Docker'],
-      website: 'https://techcorp.com',
-      linkedinUrl: 'https://linkedin.com/company/techcorp',
-      contactEmail: 'contact@techcorp.com'
-    };
-  }
+    getProfileImageUrl(path: string | undefined): string {
+      return this.companyService.getProfileImageUrl(path);
+    }
 
   loadPfes(): void {
     // TODO: Replace with actual service call
@@ -99,11 +86,11 @@ export class CompanyProfileComponent implements OnInit {
   }
 
   navigateToEdit(): void {
-    this.router.navigate(['/profile/edit']);
+    this.router.navigate(['/edit-profile']);
   }
 
   navigateToManagePfes(): void {
-    this.router.navigate(['/']);
+    this.router.navigate(['/companies/overview-pfe']);
   }
 
   getMailtoLink(): string {

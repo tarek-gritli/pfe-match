@@ -229,7 +229,7 @@
   </app-card-header>
   <app-card-content>
     <div class="resume-content">
-      @if (currentStudent.resumeName) {
+      @if (resumeName) {
         <div class="resume-existing">
           <div class="resume-info">
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="resume-icon">
@@ -237,16 +237,16 @@
               <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
             </svg>
             <div class="resume-details">
-              <p class="resume-name">{{ currentStudent.resumeName }}</p>
-              <p class="resume-date">Uploaded {{ currentStudent.resumeUploadDate }}</p>
+              <p class="resume-name">{{ getResumeDisplayName() }}</p>
+              <p class="resume-status">Uploaded</p>
             </div>
           </div>
-          <app-button variant="outline" (buttonClick)="handleResumeUpload()">
+          <app-button variant="outline" (buttonClick)="triggerFileInput()">
             Replace
           </app-button>
         </div>
       } @else {
-        <app-button variant="outline" class="upload-resume-btn" (buttonClick)="handleResumeUpload()">
+        <app-button variant="outline" class="upload-resume-btn" (buttonClick)="triggerFileInput()">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
             <polyline points="17 8 12 3 7 8"/>
@@ -255,6 +255,14 @@
           Upload Resume
         </app-button>
       }
+
+            <input
+        #resumeFileInput
+        type="file"
+        accept=".pdf"
+        style="display: none;"
+        (change)="handleResumeUpload($event)"
+      />
     </div>
   </app-card-content>
 </app-card>

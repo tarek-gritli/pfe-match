@@ -230,7 +230,7 @@ export class RegisterComponent {
         this.isLoading = false;
         this.successMessage = 'Company account created successfully! Redirecting...';
         setTimeout(() => {
-          this.router.navigate(['/enterprise/create-profile']);
+          this.router.navigate(['/create-profile']);
         }, 1500);
       },
       error: (error) => {

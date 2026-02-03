@@ -23,4 +23,33 @@ export class StudentService {
       payload
     );
   }
+
+  getProfileImageUrl(path: string | undefined): string {
+    return this.api.getAssetUrl(path);
+}
+
+/**
+ * Download resume from path
+ */
+downloadResume(resumePath: string): Observable<Blob> {
+  // Convert backslashes to forward slashes for URL
+  const normalizedPath = resumePath.replace(/\\/g, '/');
+  
+  // Build the full URL using apiService
+  const fullUrl = this.api.getAssetUrl(normalizedPath);
+  
+  return this.api.getBlobFromUrl(fullUrl);
+}
+
+/**
+ * Get resume URL
+ */
+getResumeUrl(resumePath: string | undefined): string {
+  if (!resumePath) return '';
+  
+  // Convert backslashes to forward slashes
+  const normalizedPath = resumePath.replace(/\\/g, '/');
+  
+  return this.api.getAssetUrl(normalizedPath);
+}
 }

@@ -57,12 +57,17 @@ export class StudentProfileComponent implements OnInit {
     this.studentService.getProfile().subscribe({
       next: (student) => {
         this.currentStudent = student;
+        console.log(this.currentStudent.profileImage);
         this.profileCompleteness = this.calculateProfileCompleteness(this.currentStudent);
       },
       error: () => {
         this.isLoading = false;
       }
     })
+  }
+
+  getProfileImageUrl(path: string | undefined): string {
+    return this.studentService.getProfileImageUrl(path);
   }
 
   calculateProfileCompleteness(student: Student): ProfileCompleteness {
@@ -124,14 +129,57 @@ export class StudentProfileComponent implements OnInit {
       .toUpperCase();
   }
 
-  navigateToEdit(): void {
-    this.router.navigate(['/profile/edit']);
+  /**
+   * Extract just the filename from a full path for display
+   */
+  getResumeDisplayName(): string {
+    if (!this.currentStudent.resumeName) return '';
+    const pathParts = this.currentStudent.resumeName.replace(/\\/g, '/').split('/');
+    return pathParts[pathParts.length - 1];
   }
 
-  downloadResume(): void {
-    // TODO: Implement resume download
-    console.log('Download resume');
+  navigateToEdit(): void {
+    this.router.navigate(['/edit-profile']);
   }
+
+downloadResume(): void {
+  if (!this.currentStudent.resumeName) {
+    alert('No resume available to download');
+    return;
+  }
+
+  console.log('Original path:', this.currentStudent.resumeName);
+  
+  this.studentService.downloadResume(this.currentStudent.resumeName).subscribe({
+    next: (blob) => {
+      // Extract filename from path (handle both forward and backslashes)
+      const pathParts = this.currentStudent.resumeName!.replace(/\\/g, '/').split('/');
+      const filename = pathParts[pathParts.length - 1];
+      
+      console.log('Downloading file:', filename);
+      
+      // Create a blob URL
+      const url = window.URL.createObjectURL(blob);
+      
+      // Create a temporary anchor element to trigger download
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename || 'resume.pdf';
+      
+      // Trigger the download
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    },
+    error: (error) => {
+      console.error('Error downloading resume:', error);
+      alert('Failed to download resume. Please try again.');
+    }
+  });
+}
 
   openLink(url: string): void {
     window.open(url, '_blank', 'noopener,noreferrer');

@@ -8,6 +8,7 @@ from typing import Optional, List, Dict, Any
 from app.pfe.router import router as pfe_router
 from app.applications.router import router as applicant_router
 from app.dashboard.router import router as dashboard_router
+from app.notifications.router import router as notifications_router
 
 from app.api.routes.auth import router as auth_router
 from app.api.routes.student import router as student_router
@@ -43,6 +44,7 @@ app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 app.include_router(pfe_router)
 app.include_router(applicant_router)
 app.include_router(dashboard_router)
+app.include_router(notifications_router)
 
 # Include routers
 app.include_router(auth_router)

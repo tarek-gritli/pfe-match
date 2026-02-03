@@ -146,4 +146,55 @@ export class ApiService {
             headers: new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' })
         }).pipe(catchError(this.handleError));
     }
+
+    /**
+ * Convert relative path to full URL for assets/uploads
+ */
+getAssetUrl(path: string | undefined | null): string {
+    if (!path) return '';
+    
+    // If it's already a full URL, return as-is
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+        return path;
+    }
+    
+    // Remove leading slash if present to avoid double slashes
+    const cleanPath = path.startsWith('/') ? path.substring(1) : path;
+    
+    return `${this.baseUrl}/${cleanPath}`;
+}
+
+/**
+ * GET request for blob data (files/images)
+ */
+getBlob(endpoint: string): Observable<Blob> {
+    const token = localStorage.getItem('pfe_match_token');
+    let headers = new HttpHeaders();
+
+    if (token) {
+        headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    return this.http.get(this.buildUrl(endpoint), {
+        headers: headers,
+        responseType: 'blob'
+    }).pipe(catchError(this.handleError));
+}
+/**
+ * GET blob from absolute URL (for direct file downloads)
+ */
+getBlobFromUrl(url: string): Observable<Blob> {
+    const token = localStorage.getItem('pfe_match_token');
+    let headers = new HttpHeaders();
+
+    if (token) {
+        headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    return this.http.get(url, {
+        headers: headers,
+        responseType: 'blob'
+    }).pipe(catchError(this.handleError));
+}
+
 }

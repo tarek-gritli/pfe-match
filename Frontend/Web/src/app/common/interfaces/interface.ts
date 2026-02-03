@@ -81,3 +81,56 @@ export interface ApplicantWithStatus extends Applicant {
   reviewerNotes?: string;
   lastUpdated?: Date;
 }
+
+// Match Score Interfaces
+export interface MatchDetails {
+  explanation: string;
+  matched_skills: string[];
+  missing_skills: string[];
+  recommendations: string;
+}
+
+export interface MatchResult {
+  pfe_listing_id: number;
+  pfe_title: string;
+  match_score: number;
+  already_applied: boolean;
+  match_details: MatchDetails;
+  student_profile: {
+    skills: string[];
+    technologies: string[];
+    desired_role: string;
+  };
+  pfe_requirements: {
+    skills: string[];
+    title: string;
+  };
+}
+
+export interface ApplicationResponse {
+  id: number;
+  pfe_listing_id: number;
+  student_id: number;
+  status: string;
+  match_score: number;
+  match_explanation: string;
+  matched_skills: string[];
+  missing_skills: string[];
+  recommendations: string;
+  applied_at: string;
+  pfe_listing?: PFEListing;
+}
+
+export interface StudentApplication {
+  id: number;
+  pfe_listing_id: number;
+  student_id: number;
+  status: string;
+  match_score: number;
+  match_explanation: string;
+  matched_skills: string[];
+  missing_skills: string[];
+  recommendations: string;
+  applied_at: string;
+  pfe_listing: PFEListing;
+}

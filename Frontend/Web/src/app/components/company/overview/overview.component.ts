@@ -5,6 +5,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PfeFormDialogComponent } from '../pfe-form-dialog/pfe-form-dialog.component';
 import { PFEService } from '../../../services/pfe.service';
 import { ApplicantService } from '../../../services/applicant.service';
+import { CompanyService } from '../../../services/company.service';
 
 interface PFEListing {
   id: string;
@@ -33,9 +34,9 @@ interface Applicant {
   styleUrls: ['./overview.component.css']
 })
 export class OverviewComponent implements OnInit {
-  companyName = 'TechVision AI';
-  companyDescription = 'Artificial Intelligence';
-  companyLogo = 'assets/company-logo.png';
+  companyName = '';
+  companyDescription = '';
+  companyLogo = '';
 
   // Statistics (initialized to defaults, populated from backend)
   activePFEs = 0;
@@ -53,10 +54,26 @@ export class OverviewComponent implements OnInit {
     private dialog: MatDialog,
     private router: Router,
     private pfeService: PFEService,
-    private applicantService: ApplicantService
+    private applicantService: ApplicantService,
+    private companyService: CompanyService
   ) {}
 
   ngOnInit(): void {
+    // Load company profile
+    this.companyService.getProfile().subscribe({
+      next: (profile: any) => {
+        this.companyName = profile.name || profile.company_name || '';
+        this.companyDescription = profile.industry || '';
+        if (profile.logo || profile.company_logo) {
+          const logoPath = (profile.logo || profile.company_logo).replace(/\\/g, '/');
+          this.companyLogo = this.companyService.getProfileImageUrl(logoPath);
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load company profile:', err);
+      }
+    });
+
     // Load listings and statistics from backend
     this.pfeService.getPFEListings().subscribe({
       next: (listings) => {
