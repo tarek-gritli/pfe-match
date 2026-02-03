@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../Services/pfe_service.dart';
+import '../../Services/notification_service.dart';
 import '../../models/pfe_listing.dart';
 import '../../providers/auth_provider.dart';
 import '../../core/config/routes.dart';
 import '../../widgets/common/app_navbar.dart';
 import '../../widgets/student/student_drawer.dart';
+import 'notifications_screen.dart';
 
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
@@ -16,17 +18,20 @@ class ExploreScreen extends StatefulWidget {
 
 class _ExploreScreenState extends State<ExploreScreen> {
   final PFEService _pfeService = PFEService();
+  final NotificationService _notificationService = NotificationService();
   List<PFEListing> _allOffers = [];
   List<PFEListing> _filteredOffers = [];
   bool _isLoading = true;
   bool _isApplying = false;
   String? _error;
+  int _unreadCount = 0;
   final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _loadOffers();
+    _loadUnreadCount();
   }
 
   @override
@@ -77,8 +82,24 @@ class _ExploreScreenState extends State<ExploreScreen> {
     });
   }
 
+  Future<void> _loadUnreadCount() async {
+    try {
+      final count = await _notificationService.getUnreadCount();
+      if (mounted) {
+        setState(() {
+          _unreadCount = count;
+        });
+      }
+    } catch (e) {
+      // Silently fail
+    }
+  }
+
   void _onNotificationTap() {
-    // TODO: Navigate to notifications
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const NotificationsScreen()),
+    ).then((_) => _loadUnreadCount());
   }
 
   void _onProfileTap() {
@@ -197,11 +218,44 @@ class _ExploreScreenState extends State<ExploreScreen> {
           ),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined, color: Color(0xFF6B7280)),
-            onPressed: _onNotificationTap,
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.notifications_outlined, color: Color(0xFF6B7280)),
+                  onPressed: _onNotificationTap,
+                ),
+                if (_unreadCount > 0)
+                  Positioned(
+                    right: 6,
+                    top: 6,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFEF4444),
+                        shape: BoxShape.circle,
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 16,
+                        minHeight: 16,
+                      ),
+                      child: Center(
+                        child: Text(
+                          _unreadCount > 9 ? '9+' : '$_unreadCount',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
-          const SizedBox(width: 8),
         ],
       ),
       body: SafeArea(
