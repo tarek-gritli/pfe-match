@@ -479,7 +479,31 @@ async def preview_match_score(
         Application.pfe_listing_id == id
     ).first()
 
-    # Always calculate fresh match score using AI
+    # If already applied, return the stored match data (already recalculated on CV upload)
+    if existing_application:
+        return {
+            "pfe_listing_id": id,
+            "pfe_title": pfe.title,
+            "match_score": existing_application.match_rate or 0,
+            "already_applied": True,
+            "match_details": {
+                "explanation": existing_application.match_explanation or "",
+                "matched_skills": existing_application.matched_skills or [],
+                "missing_skills": existing_application.missing_skills or [],
+                "recommendations": existing_application.recommendations or ""
+            },
+            "student_profile": {
+                "skills": student.skills or [],
+                "technologies": student.technologies or [],
+                "desired_role": student.desired_job_role
+            },
+            "pfe_requirements": {
+                "skills": pfe.skills or [],
+                "title": pfe.title
+            }
+        }
+
+    # Only calculate fresh match score if not yet applied
     match_result = await calculate_match_score(
         student_skills=student.skills or [],
         student_technologies=student.technologies or [],
@@ -493,7 +517,7 @@ async def preview_match_score(
         "pfe_listing_id": id,
         "pfe_title": pfe.title,
         "match_score": match_result["score"],
-        "already_applied": existing_application is not None,
+        "already_applied": False,
         "match_details": {
             "explanation": match_result.get("explanation", ""),
             "matched_skills": match_result.get("matched_skills", []),

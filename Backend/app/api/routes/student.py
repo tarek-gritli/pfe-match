@@ -1,10 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status, BackgroundTasks
 from sqlalchemy.orm import Session
 import os
 import uuid
 from app.db.database import get_db
 from app.core.dependencies import get_current_user
 from app.models import Student, User, UserRole
+from app.models.application import Application
+from app.models.pfe_listing import PFEListing
 from app.schemas import (
     StudentProfileUpdate,
     StudentProfileResponse,
@@ -14,6 +16,7 @@ from app.schemas import (
     ResumeExtractedData
 )
 from app.services.cv_parser import parse_resume, parse_resume_async
+from app.services.matching_service import calculate_match_score
 
 router = APIRouter(prefix="/students", tags=["Students"])
 
@@ -25,6 +28,45 @@ PROFILE_PIC_DIR = os.path.join(UPLOAD_DIR, "profile_pictures")
 # Ensure directories exist
 os.makedirs(RESUME_DIR, exist_ok=True)
 os.makedirs(PROFILE_PIC_DIR, exist_ok=True)
+
+
+async def recalculate_application_matches(db: Session, student: Student):
+    """
+    Recalculate match scores for all applications of a student
+    after their CV/profile has been updated.
+    """
+    # Get all applications for this student
+    applications = db.query(Application).filter(Application.student_id == student.id).all()
+    
+    for application in applications:
+        try:
+            # Get the PFE listing
+            pfe = db.query(PFEListing).filter(PFEListing.id == application.pfe_listing_id).first()
+            if not pfe:
+                continue
+            
+            # Recalculate match score with updated student skills
+            match_result = await calculate_match_score(
+                student_skills=student.skills or [],
+                student_technologies=student.technologies or [],
+                pfe_required_skills=pfe.skills or [],
+                pfe_title=pfe.title,
+                pfe_description=pfe.description,
+                student_desired_role=student.desired_job_role
+            )
+            
+            # Update application with new match data
+            application.match_rate = match_result.get("score", 0)
+            application.match_explanation = match_result.get("explanation", "")
+            application.matched_skills = match_result.get("matched_skills", [])
+            application.missing_skills = match_result.get("missing_skills", [])
+            application.recommendations = match_result.get("recommendations", "")
+            
+        except Exception as e:
+            print(f"Error recalculating match for application {application.id}: {e}")
+            continue
+    
+    db.commit()
 
 
 @router.get("/", response_model=list[StudentProfileResponse])
@@ -280,6 +322,10 @@ async def upload_resume(
                 student.technologies = extracted_data.technologies
             
             db.commit()
+            
+            # Recalculate match scores for all existing applications
+            await recalculate_application_matches(db, student)
+            
     except Exception as e:
         parsing_status = f"failed: {str(e)}"
         # Still save the resume even if parsing fails
