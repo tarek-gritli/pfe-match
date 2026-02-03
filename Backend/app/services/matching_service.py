@@ -29,7 +29,7 @@ async def calculate_match_score(
     # Combine student skills and technologies
     student_all_skills = list(set(student_skills + student_technologies))
     
-    prompt = f"""You are an expert recruiter AI that calculates match scores between candidates and job/internship positions.
+    prompt = f"""You are an expert technical recruiter AI with comprehensive knowledge of ALL technologies, frameworks, libraries, and their relationships.
 
 STUDENT PROFILE:
 - Skills & Technologies: {', '.join(student_all_skills) if student_all_skills else 'None specified'}
@@ -40,41 +40,54 @@ PFE (INTERNSHIP) LISTING:
 - Required Skills: {', '.join(pfe_required_skills) if pfe_required_skills else 'None specified'}
 - Description: {pfe_description[:500] if pfe_description else 'Not provided'}
 
-IMPORTANT MATCHING RULES:
-1. Consider semantic relationships between technologies:
-   - Next.js relates to React, JavaScript, Node.js
-   - Angular relates to TypeScript, JavaScript
-   - Django relates to Python
-   - Spring Boot relates to Java
-   - React Native relates to React, JavaScript, Mobile Development
-   - Docker relates to DevOps, containerization
-   - AWS/Azure/GCP relate to Cloud Computing
+YOUR TASK: Use your deep knowledge of technology to INTELLIGENTLY match skills.
+
+CRITICAL INSTRUCTIONS:
+1. USE YOUR KNOWLEDGE - You know that:
+   - Specific tools/frameworks IMPLY broader skill categories (PyTorch → Machine Learning, React → Frontend/Web Dev)
+   - Technologies belong to ecosystems (Django implies Python proficiency)
+   - Skills are transferable within domains (knowing React makes learning Vue easier)
+   - YOU know ALL technology relationships - use that knowledge, don't just match strings!
+
+2. SEMANTIC MATCHING EXAMPLES (apply this logic to ALL skills, not just these examples):
+   - "Machine Learning" is satisfied by: PyTorch, TensorFlow, scikit-learn, Keras, XGBoost, Deep Learning, Neural Networks, etc.
+   - "Data Science" is satisfied by: Pandas, NumPy, Matplotlib, Jupyter, R, Statistics, Data Analysis, etc.
+   - "Web Development/Frontend" is satisfied by: React, Angular, Vue, Next.js, HTML, CSS, JavaScript, TypeScript, etc.
+   - "Backend Development" is satisfied by: Django, Flask, FastAPI, Spring Boot, Express.js, Node.js, Laravel, etc.
+   - "Mobile Development" is satisfied by: React Native, Flutter, Swift, Kotlin, iOS, Android, Xamarin, etc.
+   - "Cloud Computing/DevOps" is satisfied by: AWS, Azure, GCP, Docker, Kubernetes, CI/CD, Terraform, etc.
+   - "Databases" is satisfied by: PostgreSQL, MySQL, MongoDB, Redis, SQL, NoSQL, SQLite, etc.
+   - "AI/Artificial Intelligence" is satisfied by: Machine Learning, Deep Learning, NLP, Computer Vision, LLMs, GPT, etc.
+   - Technology ecosystems: Next.js→React→JavaScript, Angular→TypeScript, Django/Flask→Python, Spring Boot→Java
    
-2. Consider skill levels and transferability:
-   - Strong JavaScript skills are valuable for TypeScript positions
-   - Python developers can often adapt to Django/Flask
-   - Frontend developers with React can learn Vue.js quickly
+   IMPORTANT: These are just EXAMPLES. Apply the same semantic matching logic to ANY skill not listed here!
 
-3. Weight the scoring:
-   - Direct match (exact skill): High weight
-   - Related technology (same ecosystem): Medium weight
-   - Transferable skill (can learn quickly): Low weight
-   - Soft skills matching: Consider for overall fit
+3. MATCHED_SKILLS rules:
+   - List student skills that satisfy PFE requirements (directly or semantically)
+   - Format: "StudentSkill (satisfies: PFE Requirement)"
+   - Example: "TensorFlow (satisfies: Machine Learning)", "React (satisfies: Frontend Development)"
 
-Calculate a match score from 0 to 100:
-- 90-100: Excellent match, student has most required skills
-- 70-89: Good match, student has many relevant skills
-- 50-69: Moderate match, some skill overlap
-- 30-49: Weak match, few matching skills
-- 0-29: Poor match, minimal skill alignment
+4. MISSING_SKILLS rules - THIS IS CRITICAL:
+   - ONLY list PFE requirements the student GENUINELY cannot fulfill with their existing skills
+   - If student has ANY skill that covers a requirement → that requirement is NOT missing
+   - Example: Student has PyTorch → "Machine Learning" is NOT missing
+   - Example: Student has React → "Frontend" or "Web Development" is NOT missing
+   - Be intelligent - don't list something as missing if they clearly have it covered!
 
-Return ONLY valid JSON with this structure:
+5. Scoring:
+   - 85-100: Most requirements covered (directly or semantically)
+   - 70-84: Good coverage with minor gaps
+   - 50-69: Partial coverage, some learning needed
+   - 30-49: Significant gaps
+   - 0-29: Minimal alignment
+
+Return ONLY valid JSON:
 {{
-    "score": <number 0-100>,
-    "explanation": "<brief explanation of the match>",
-    "matched_skills": ["<list of matched or related skills>"],
-    "missing_skills": ["<list of important missing skills>"],
-    "recommendations": "<brief recommendation for the student>"
+    "score": <0-100>,
+    "explanation": "<explain the skill matches you identified using your tech knowledge>",
+    "matched_skills": ["<format: StudentSkill (satisfies: Requirement)>"],
+    "missing_skills": ["<ONLY truly missing PFE requirements that student cannot cover>"],
+    "recommendations": "<actionable advice>"
 }}
 """
 
@@ -91,14 +104,14 @@ Return ONLY valid JSON with this structure:
                     "messages": [
                         {
                             "role": "system",
-                            "content": "You are an expert recruiter AI. Calculate accurate match scores based on skill alignment and technology relationships. Return only valid JSON."
+                            "content": "You are an expert technical recruiter with encyclopedic knowledge of ALL technologies and their relationships. Use your intelligence to match skills semantically - NEVER do simple string matching. You understand that PyTorch/TensorFlow users know Machine Learning, React/Vue developers know Frontend, Django developers know Python, etc. Apply this reasoning to ALL technologies. Missing skills must ONLY be requirements the student genuinely cannot fulfill with their existing knowledge. Return only valid JSON."
                         },
                         {
                             "role": "user",
                             "content": prompt
                         }
                     ],
-                    "temperature": 0.2,
+                    "temperature": 0.1,
                     "max_tokens": 800
                 }
             )
