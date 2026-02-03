@@ -174,4 +174,29 @@ class PFEService {
       throw Exception('Error fetching PFE listings: $e');
     }
   }
+
+  /// Create a new PFE listing (for enterprise)
+  Future<PFEListing> createPFEListing(Map<String, dynamic> data) async {
+    try {
+      final headers = await _getHeaders();
+      final response = await http.post(
+        Uri.parse('${ApiConfig.baseUrl}/api/pfe/listings'),
+        headers: headers,
+        body: json.encode(data),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return PFEListing.fromJson(json.decode(response.body));
+      } else if (response.statusCode == 400) {
+        final error = json.decode(response.body);
+        throw Exception(error['message'] ?? 'Failed to create PFE');
+      } else if (response.statusCode == 401) {
+        throw Exception('Unauthorized. Please login again.');
+      } else {
+        throw Exception('Failed to create PFE: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error creating PFE: $e');
+    }
+  }
 }

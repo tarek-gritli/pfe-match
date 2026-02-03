@@ -10,6 +10,7 @@ import 'Screens/auth/register_screen.dart';
 import 'Screens/home/home_screen.dart';
 import 'Screens/Student/create_profile_screen.dart';
 import 'Screens/Main_screen.dart';
+import 'Screens/Enterprise_main_screen.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 
 void main() {
@@ -48,12 +49,8 @@ class MyApp extends StatelessWidget {
           if (!authProvider.isAuthenticated) {
             homeScreen = const LoginScreen();
           } else if (authProvider.userType == 'enterprise') {
-            // TODO: Create EnterpriseMainScreen for enterprise users
-            homeScreen = const Scaffold(
-              body: Center(
-                child: Text('Enterprise Dashboard - Coming Soon'),
-              ),
-            );
+            // Enterprise users
+            homeScreen = const EnterpriseMainScreen();
           } else {
             // Student users
             homeScreen = const MainScreen();

@@ -1,10 +1,6 @@
-// filepath: /Users/fedynouri/Desktop/pfe-match/Frontend/mobile/lib/Screens/Company/overview_screen.dart
-
 import 'package:flutter/material.dart';
-import 'package:mobile/Services/pfe_service.dart';
-import 'package:mobile/Services/applicant_service.dart';
-import 'package:mobile/models/pfe_listing.dart';
-import 'package:mobile/models/applicant.dart';
+import '../../Services/pfe_service.dart';
+import '../../models/pfe_listing.dart';
 import 'pfe_form_dialog.dart';
 
 class CompanyOverviewScreen extends StatefulWidget {
@@ -16,15 +12,11 @@ class CompanyOverviewScreen extends StatefulWidget {
 
 class _CompanyOverviewScreenState extends State<CompanyOverviewScreen> {
   final PFEService _pfeService = PFEService();
-  final ApplicantService _applicantService = ApplicantService();
 
   bool _loading = true;
   List<PFEListing> _pfes = [];
-  List<Applicant> _recentApplicants = [];
   int activePFEs = 0;
   int totalApplicants = 0;
-  int topApplicants = 0;
-  int avgMatchRate = 0;
 
   @override
   void initState() {
@@ -35,24 +27,12 @@ class _CompanyOverviewScreenState extends State<CompanyOverviewScreen> {
   Future<void> _loadData() async {
     setState(() => _loading = true);
     try {
-      final pfes = await _pfeService.getPFEListings();
-      final stats = await _pfeService.getStatistics();
-      final applicants = await _applicantService.getAllApplicants();
-
-      // sort recent applicants by date
-      applicants.sort((a, b) {
-        final da = a.applicationDate ?? DateTime.fromMillisecondsSinceEpoch(0);
-        final db = b.applicationDate ?? DateTime.fromMillisecondsSinceEpoch(0);
-        return db.compareTo(da);
-      });
+      final pfes = await _pfeService.getAllPFEListings();
 
       setState(() {
         _pfes = pfes;
-        _recentApplicants = applicants.take(5).toList();
-        activePFEs = (stats['activePFEs'] as int?) ?? 0;
-        totalApplicants = (stats['totalApplicants'] as int?) ?? 0;
-        topApplicants = (stats['topApplicants'] as int?) ?? 0;
-        avgMatchRate = (stats['avgMatchRate'] as int?) ?? 0;
+        activePFEs = pfes.where((p) => p.status == 'open').length;
+        totalApplicants = pfes.fold(0, (sum, p) => sum + (p.applicantCount ?? 0));
       });
     } catch (e) {
       // ignore errors for now
@@ -67,12 +47,33 @@ class _CompanyOverviewScreenState extends State<CompanyOverviewScreen> {
       builder: (ctx) => const PFEFormDialog(),
     );
 
-    if (result != null) {
-      final created = await _pfeService.createPFE(result);
-      setState(() {
-        _pfes.insert(0, created);
-        activePFEs++;
-      });
+    if (result != null && mounted) {
+      try {
+        final created = await _pfeService.createPFEListing(result);
+        if (mounted) {
+          setState(() {
+            _pfes.insert(0, created);
+            activePFEs = _pfes.where((p) => p.status == 'open').length;
+            totalApplicants = _pfes.fold(0, (sum, p) => sum + (p.applicantCount ?? 0));
+          });
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('PFE created successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error: ${e.toString().replaceFirst('Exception: ', '')}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
     }
   }
 
@@ -104,11 +105,13 @@ class _CompanyOverviewScreenState extends State<CompanyOverviewScreen> {
                       const SizedBox(height: 16),
                       const Text('PFE Listings', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
-                      ..._pfes.map((p) => _buildPFEItem(p)).toList(),
-                      const SizedBox(height: 16),
-                      const Text('Recent Applicants', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8),
-                      _buildRecentApplicants(),
+                      if (_pfes.isEmpty)
+                        const Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Text('No PFE listings yet. Create one to get started!'),
+                        )
+                      else
+                        ..._pfes.map((p) => _buildPFEItem(p)).toList(),
                     ],
                   ),
                 ),
@@ -160,7 +163,7 @@ class _CompanyOverviewScreenState extends State<CompanyOverviewScreen> {
           children: [
             Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             const SizedBox(height: 4),
-            Text(label, style: const TextStyle(color: Colors.black54)),
+            Text(label, style: const TextStyle(color: Colors.black54, fontSize: 12)),
           ],
         ),
       );
@@ -170,8 +173,7 @@ class _CompanyOverviewScreenState extends State<CompanyOverviewScreen> {
       children: [
         statTile('Active PFEs', activePFEs.toString()),
         statTile('Total Applicants', totalApplicants.toString()),
-        statTile('Top Applicants', topApplicants.toString()),
-        statTile('Avg Match', '$avgMatchRate%'),
+        statTile('Total PFEs', _pfes.length.toString()),
       ],
     );
   }
@@ -198,34 +200,5 @@ class _CompanyOverviewScreenState extends State<CompanyOverviewScreen> {
     );
   }
 
-  Widget _buildRecentApplicants() {
-    if (_recentApplicants.isEmpty) {
-      return const Text('No recent applicants');
-    }
-
-    return Column(
-      children: _recentApplicants.map((a) {
-        return ListTile(
-          leading: CircleAvatar(
-            backgroundColor: _hexToColor(a.avatarColor),
-            child: Text(a.initials),
-          ),
-          title: Text(a.name),
-          subtitle: Text(a.appliedTo),
-          onTap: () {},
-        );
-      }).toList(),
-    );
-  }
-
-  Color _hexToColor(String hex) {
-    try {
-      var cleaned = hex.replaceAll('#', '');
-      if (cleaned.length == 6) cleaned = 'FF$cleaned';
-      return Color(int.parse(cleaned, radix: 16));
-    } catch (e) {
-      return Colors.blueGrey;
-    }
-  }
 }
 
