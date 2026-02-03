@@ -19,6 +19,7 @@ export const ENDPOINTS = {
         PROFILE: '/students/me',
         UPDATE_PROFILE: '/students/me/profile',
         UPLOAD_RESUME: '/students/me/resume',
+        DELETE_RESUME: '/students/me/resume',
         UPLOAD_PROFILE_PICTURE: '/students/me/profile-picture',
     },
 

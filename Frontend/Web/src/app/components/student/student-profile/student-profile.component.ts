@@ -50,6 +50,8 @@ export class StudentProfileComponent implements OnInit {
 
   private studentService = inject(StudentService);
   isLoading = true;
+  isDeleting = false;
+  isUploading = false;
 
   constructor(private router: Router) {}
 
@@ -183,5 +185,65 @@ downloadResume(): void {
 
   openLink(url: string): void {
     window.open(url, '_blank', 'noopener,noreferrer');
+  }
+
+  deleteResume(): void {
+    if (!confirm('Are you sure you want to delete your resume?')) {
+      return;
+    }
+
+    this.isDeleting = true;
+    this.studentService.deleteResume().subscribe({
+      next: () => {
+        this.currentStudent.resumeName = undefined;
+        this.profileCompleteness = this.calculateProfileCompleteness(this.currentStudent);
+        this.isDeleting = false;
+      },
+      error: (error) => {
+        console.error('Error deleting resume:', error);
+        alert('Failed to delete resume. Please try again.');
+        this.isDeleting = false;
+      }
+    });
+  }
+
+  onResumeSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) {
+      return;
+    }
+
+    const file = input.files[0];
+    
+    // Validate file type
+    const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Please upload a PDF or Word document.');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      alert('File size must be less than 5MB.');
+      return;
+    }
+
+    this.isUploading = true;
+    this.studentService.uploadResume(file).subscribe({
+      next: (response) => {
+        this.currentStudent.resumeName = response.resume_url;
+        this.profileCompleteness = this.calculateProfileCompleteness(this.currentStudent);
+        this.isUploading = false;
+        // Reset the input
+        input.value = '';
+      },
+      error: (error) => {
+        console.error('Error uploading resume:', error);
+        alert('Failed to upload resume. Please try again.');
+        this.isUploading = false;
+        input.value = '';
+      }
+    });
   }
 }

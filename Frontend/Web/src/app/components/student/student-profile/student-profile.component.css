@@ -280,6 +280,16 @@
   margin: 0;
 }
 
+.resume-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.resume-actions .download-button,
+.resume-actions .delete-button {
+  flex: 1;
+}
+
 .download-button {
   width: 100%;
 }

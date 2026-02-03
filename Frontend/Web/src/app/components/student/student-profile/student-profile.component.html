@@ -243,14 +243,24 @@
                       }
                     </div>
                   </div>
-                  <app-button variant="outline" class="download-button" (buttonClick)="downloadResume()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                      <polyline points="7 10 12 15 17 10"/>
-                      <line x1="12" x2="12" y1="15" y2="3"/>
-                    </svg>
-                    Download Resume
-                  </app-button>
+                  <div class="resume-actions">
+                    <app-button variant="outline" class="download-button" (buttonClick)="downloadResume()">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" x2="12" y1="15" y2="3"/>
+                      </svg>
+                      Download
+                    </app-button>
+                    <app-button variant="destructive" class="delete-button" (buttonClick)="deleteResume()" [disabled]="isDeleting">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 6h18"/>
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                      </svg>
+                      {{ isDeleting ? 'Deleting...' : 'Delete' }}
+                    </app-button>
+                  </div>
                 </div>
               } @else {
                 <div class="no-resume">
@@ -259,12 +269,24 @@
                     <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
                   </svg>
                   <p class="no-resume-text">No resume uploaded</p>
+                  <input 
+                    type="file" 
+                    #resumeInput 
+                    accept=".pdf,.doc,.docx" 
+                    style="display: none;" 
+                    (change)="onResumeSelected($event)">
                   <app-button 
                     variant="outline" 
                     size="sm" 
                     class="upload-button"
-                    (buttonClick)="navigateToEdit()">
-                    Upload Resume
+                    [disabled]="isUploading"
+                    (buttonClick)="resumeInput.click()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="17 8 12 3 7 8"/>
+                      <line x1="12" x2="12" y1="3" y2="15"/>
+                    </svg>
+                    {{ isUploading ? 'Uploading...' : 'Upload Resume' }}
                   </app-button>
                 </div>
               }

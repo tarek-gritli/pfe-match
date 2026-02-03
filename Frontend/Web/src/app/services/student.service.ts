@@ -7,6 +7,11 @@ interface MessageResponse {
     message: string;
 }
 
+interface ResumeUploadResponse {
+    message: string;
+    resume_url: string;
+}
+
 @Injectable({
     providedIn: 'root'
 })
@@ -26,6 +31,22 @@ export class StudentService {
 
   getProfileImageUrl(path: string | undefined): string {
     return this.api.getAssetUrl(path);
+}
+
+/**
+ * Delete current resume
+ */
+deleteResume(): Observable<MessageResponse> {
+  return this.api.delete<MessageResponse>(ENDPOINTS.STUDENTS.DELETE_RESUME);
+}
+
+/**
+ * Upload a new resume
+ */
+uploadResume(file: File): Observable<ResumeUploadResponse> {
+  const formData = new FormData();
+  formData.append('file', file);
+  return this.api.postFormData<ResumeUploadResponse>(ENDPOINTS.STUDENTS.UPLOAD_RESUME, formData);
 }
 
 /**

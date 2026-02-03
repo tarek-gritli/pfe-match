@@ -296,6 +296,47 @@ async def upload_resume(
     )
 
 
+@router.delete("/me/resume", response_model=MessageResponse)
+async def delete_resume(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Delete the current user's resume"""
+    if current_user.role != UserRole.STUDENT:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only students can access this endpoint"
+        )
+    
+    student = db.query(Student).filter(Student.user_id == current_user.id).first()
+    if not student:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Student profile not found"
+        )
+    
+    if not student.resume_url:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No resume to delete"
+        )
+    
+    # Delete the file from disk
+    try:
+        if os.path.exists(student.resume_url):
+            os.remove(student.resume_url)
+    except Exception as e:
+        # Log but don't fail if file doesn't exist
+        print(f"Error deleting resume file: {e}")
+    
+    # Clear the resume from the database
+    student.resume_url = None
+    student.resume_parsed = False
+    db.commit()
+    
+    return MessageResponse(message="Resume deleted successfully")
+
+
 @router.post("/me/profile-picture", response_model=ProfilePictureUploadResponse)
 async def upload_profile_picture(
     file: UploadFile = File(...),
