@@ -39,13 +39,13 @@
     </div>
 
     <div class="stat-card">
-      <p class="stat-label">Avg. Match Rate</p>
-      <p class="stat-value stat-value--warning">{{ averageMatchRate() }}%</p>
+      <p class="stat-label">Pending Review</p>
+      <p class="stat-value stat-value--warning">{{ pendingReviews() }}</p>
     </div>
 
     <div class="stat-card">
-      <p class="stat-label">Pending Reviews</p>
-      <p class="stat-value stat-value--info">{{ pendingReviews() }}</p>
+      <p class="stat-label">Reviewed</p>
+      <p class="stat-value stat-value--info">{{ reviewedCount() }}</p>
     </div>
 
     <div class="stat-card">
@@ -274,9 +274,6 @@
           <option value="pending">Pending Review</option>
           <option value="reviewed">Reviewed</option>
           <option value="shortlisted">Shortlisted</option>
-          <option value="interview">Interview</option>
-          <option value="accepted">Accepted</option>
-          <option value="rejected">Rejected</option>
         </select>
         <button class="btn-close-modal" (click)="closeModal()">Close</button>
       </div>

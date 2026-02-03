@@ -103,11 +103,20 @@ export class ApplicantsComponent implements OnInit {
   });
 
   /**
+   * Nombre d'applicants reviewed
+   */
+  reviewedCount = computed(() => {
+    return this.filteredApplicants().filter(
+      app => app.status === 'reviewed'
+    ).length;
+  });
+
+  /**
    * Nombre d'applicants shortlisted
    */
   shortlisted = computed(() => {
     return this.filteredApplicants().filter(
-      app => app.status === 'shortlisted' || app.status === 'interview'
+      app => app.status === 'shortlisted'
     ).length;
   });
 
@@ -265,10 +274,7 @@ export class ApplicantsComponent implements OnInit {
     const statusClasses: { [key: string]: string } = {
       'pending': 'status-pending',
       'reviewed': 'status-reviewed',
-      'shortlisted': 'status-shortlisted',
-      'interview': 'status-interview',
-      'accepted': 'status-accepted',
-      'rejected': 'status-rejected'
+      'shortlisted': 'status-shortlisted'
     };
     return statusClasses[status] || 'status-pending';
   }
@@ -280,10 +286,7 @@ export class ApplicantsComponent implements OnInit {
     const statusLabels: { [key: string]: string } = {
       'pending': 'Pending Review',
       'reviewed': 'Reviewed',
-      'shortlisted': 'Shortlisted',
-      'interview': 'Interview',
-      'accepted': 'Accepted',
-      'rejected': 'Rejected'
+      'shortlisted': 'Shortlisted'
     };
     return statusLabels[status] || status;
   }
