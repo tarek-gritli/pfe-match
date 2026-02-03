@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/Screens/Enterprise/edit_profile_screen.dart';
+import 'package:mobile/Screens/Profile/edit_profile_screen.dart';
+import 'package:mobile/Screens/Profile/profile_screen.dart';
 import 'Screens/Enterprise/profile_screen.dart';
 import 'Screens/Student/edit_profile_screen.dart';
 import 'package:provider/provider.dart';
@@ -49,7 +51,10 @@ class MyApp extends StatelessWidget {
         AppRoutes.editStudentProfile: (context) => const EditStudentProfileScreen(),
         AppRoutes.createEnterpriseProfile: (context) => const CreateEnterpriseProfileScreen(),
         AppRoutes.enterpriseProfile: (context) => const EnterpriseProfileScreen(),
-        AppRoutes.editEnterpriseProfile: (context) => const EditEnterpriseProfileScreen()
+        AppRoutes.editEnterpriseProfile: (context) => const EditEnterpriseProfileScreen(),
+        AppRoutes.profile : (context) => const ProfileScreen(),
+        AppRoutes.createProfile : (context) => const CreateProfileScreen(),
+        AppRoutes.editProfile : (context) => const EditProfileScreen(),
       },
     );
   }

@@ -1,27 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../Student/edit_profile_screen.dart';
-import '../Enterprise/edit_profile_screen.dart';
+import 'package:mobile/providers/auth_provider.dart';
+import 'package:provider/provider.dart';
 
-Future<bool> checkType() async {
-  final prefs = await SharedPreferences.getInstance();
-  return prefs.getBool('isStudent') ?? false;
+class EditProfileScreen extends StatefulWidget {
+  const EditProfileScreen({super.key});
+
+  @override
+  State<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
-@override
-Widget build(BuildContext context) {
-  return FutureBuilder<bool>(
-    future: checkType(),
-    builder: (context, snapshot) {
-      if (!snapshot.hasData) {
-        return const Scaffold(
-          body: Center(child: CircularProgressIndicator()),
-        );
-      }
+class _EditProfileScreenState extends State<EditProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
 
-      return snapshot.data!
-          ? const EditStudentProfileScreen()
-          : const CompanyEditProfileScreen();
-    },
-  );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final auth = context.read<AuthProvider>();
+
+      if (auth.userType == 'enterprise') {
+        Navigator.pushReplacementNamed(context, '/edit-enterprise-profile');
+      } else if (auth.userType == 'student') {
+        Navigator.pushReplacementNamed(context, '/edit-student-profile');
+      } else {
+        // fallback
+        Navigator.pushReplacementNamed(context, '/login');
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
 }

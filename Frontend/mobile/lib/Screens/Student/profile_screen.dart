@@ -1,4 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:mobile/Screens/pdf_viewer_screen.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../models/student.dart';
@@ -59,7 +64,20 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
     }
   }
 
-  ProfileCompleteness _calculateProfileCompleteness(Student student) {
+void _openPdfViewer() {
+  if (_student!.resumeName == null || _student!.resumeName!.isEmpty) return;
+
+  final pdfUrl = StudentService().getPdfUrl(_student!.resumeName!);
+
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => PdfViewerScreen(url: pdfUrl),
+    ),
+  );
+}
+
+   ProfileCompleteness _calculateProfileCompleteness(Student student) {
     int completed = 0;
     int total = 0;
     List<String> tips = [];
@@ -704,7 +722,7 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
     }
   }
 
-  Widget _buildResumeCard() {
+Widget _buildResumeCard() {
     final hasResume =
         _student!.resumeName != null && _student!.resumeName!.isNotEmpty;
 
@@ -738,47 +756,52 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
           ),
           const SizedBox(height: 24),
           if (hasResume) ...[
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.grey[50],
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey[200]!),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.picture_as_pdf, color: Colors.red[400], size: 32),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _student!.resumeName!,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
+            InkWell(
+              onTap: () => _openPdfViewer(),
+              borderRadius: BorderRadius.circular(8),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey[200]!),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.picture_as_pdf, color: Colors.red[400], size: 32),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _student!.resumeName!,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(
-                          'Uploaded',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[500],
+                          Text(
+                            'Tap to view',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[500],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  if (_student!.resumeUrl != null &&
-                      _student!.resumeUrl!.isNotEmpty)
-                    IconButton(
-                      onPressed: _downloadResume,
-                      icon: Icon(Icons.download, color: Colors.grey[600]),
-                      tooltip: 'Download Resume',
-                    ),
-                ],
+                    Icon(Icons.chevron_right, color: Colors.grey[400]),
+                    if (_student!.resumeUrl != null &&
+                        _student!.resumeUrl!.isNotEmpty)
+                      IconButton(
+                        onPressed: _downloadResume,
+                        icon: Icon(Icons.download, color: Colors.grey[600]),
+                        tooltip: 'Download Resume',
+                      ),
+                  ],
+                ),
               ),
             ),
           ] else ...[

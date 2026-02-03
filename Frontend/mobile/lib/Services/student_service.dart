@@ -173,4 +173,10 @@ String getProfileImageUrl(String? path) {
     return '$baseUrl/$cleanPath';
   }
 
+  String getPdfUrl(String resumeName) {
+  final cleanPath = resumeName.replaceAll('\\', '/');
+  String BASE_URL = ApiConfig.baseUrl;
+  return '$BASE_URL/$cleanPath';
+}
+
 }

@@ -1,27 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../Student/profile_screen.dart';
-import '../Enterprise/profile_screen.dart';
+import 'package:mobile/providers/auth_provider.dart';
+import 'package:provider/provider.dart';
 
-Future<bool> checkType() async {
-  final prefs = await SharedPreferences.getInstance();
-  return prefs.getBool('isStudent') ?? false;
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-@override
-Widget build(BuildContext context) {
-  return FutureBuilder<bool>(
-    future: checkType(),
-    builder: (context, snapshot) {
-      if (!snapshot.hasData) {
-        return const Scaffold(
-          body: Center(child: CircularProgressIndicator()),
-        );
-      }
+class _ProfileScreenState extends State<ProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
 
-      return snapshot.data!
-          ? const StudentProfileScreen()
-          : const CompanyProfileScreen();
-    },
-  );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final auth = context.read<AuthProvider>();
+
+      if (auth.userType == 'enterprise') {
+        Navigator.pushReplacementNamed(context, '/enterprise-profile');
+      } else if (auth.userType == 'student') {
+        Navigator.pushReplacementNamed(context, '/student-profile');
+      } else {
+        // fallback
+        Navigator.pushReplacementNamed(context, '/login');
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
 }
