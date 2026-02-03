@@ -3,10 +3,11 @@ from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime
 from app.pfe.schemas import PFEListingResponse, PFECreate
-from app.models import PFEListing, Application, User, UserRole, Enterprise, Student, MatchPreview
+from app.models import PFEListing, Application, User, UserRole, Enterprise, Student, MatchPreview, NotificationType
 from app.core.dependencies import get_current_user
 from app.db.database import get_db
 from app.services.matching_service import calculate_match_score
+from app.notifications.router import create_notification
 
 router = APIRouter(prefix="/api/pfe", tags=["PFE Listings"])
 
@@ -271,10 +272,19 @@ def get_pfe_listings_for_students(
         # Prepare company info (from enterprise)
         company_info = None
         if listing.enterprise:
+            # Build full URL for company logo
+            logo_url = None
+            if listing.enterprise.company_logo:
+                # Normalize path separators and ensure it starts with /
+                logo_path = listing.enterprise.company_logo.replace("\\", "/")
+                if not logo_path.startswith("/"):
+                    logo_path = "/" + logo_path
+                logo_url = f"http://localhost:8000{logo_path}"
+            
             company_info = {
                 "id": str(listing.enterprise.id),
                 "name": listing.enterprise.company_name,
-                "logoUrl": listing.enterprise.company_logo,
+                "logoUrl": logo_url,
                 "industry": listing.enterprise.industry,
             }
         else:
@@ -382,6 +392,19 @@ async def apply_to_pfe(
     db.add(application)
     db.commit()
     db.refresh(application)
+
+    # Create notification for the enterprise owner
+    if pfe.enterprise and pfe.enterprise.user_id:
+        student_name = f"{student.first_name} {student.last_name}"
+        create_notification(
+            db=db,
+            user_id=pfe.enterprise.user_id,
+            title="New Application Received",
+            message=f"{student_name} has applied to your PFE listing: {pfe.title}",
+            notification_type=NotificationType.NEW_APPLICATION,
+            pfe_listing_id=pfe.id,
+            application_id=application.id
+        )
 
     return {
         "id": application.id,

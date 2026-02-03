@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { AuthService } from '../../../auth/services/auth.service';
 import { AuthState, StudentProfile, EnterpriseProfile } from '../../../auth/model/auth.model';
 import { API_CONFIG } from '../../../api/api.config';
+import { NotificationService, Notification } from '../../../services/notification.service';
 
 @Component({
   selector: 'app-navbar',
@@ -17,16 +18,18 @@ export class NavbarComponent implements OnInit, OnDestroy {
   authState: AuthState | null = null;
   profilePicture: string | null = null;
   userName: string = '';
-  notificationCount = signal(3); // Can be made dynamic later
   isDropdownOpen = signal(false);
+  isNotificationDropdownOpen = signal(false);
 
   private authSubscription?: Subscription;
   private profileSubscription?: Subscription;
   private profileUpdatedSubscription?: Subscription;
+  private pollingSubscription?: Subscription;
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    public notificationService: NotificationService
   ) { }
 
   ngOnInit(): void {
@@ -34,6 +37,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.authState = state;
       if (state.isAuthenticated) {
         this.loadProfile();
+        // Load notifications when user is authenticated
+        this.notificationService.getNotifications().subscribe();
+        this.notificationService.getUnreadCount().subscribe();
+        // Start polling for new notifications every 30 seconds
+        this.pollingSubscription = this.notificationService.startPolling(30000).subscribe();
       }
     });
 
@@ -47,6 +55,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.authSubscription?.unsubscribe();
     this.profileSubscription?.unsubscribe();
     this.profileUpdatedSubscription?.unsubscribe();
+    this.pollingSubscription?.unsubscribe();
   }
 
   private loadProfile(): void {
@@ -91,10 +100,41 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   toggleDropdown(): void {
     this.isDropdownOpen.update((value: boolean) => !value);
+    this.isNotificationDropdownOpen.set(false);
   }
 
   closeDropdown(): void {
     this.isDropdownOpen.set(false);
+  }
+
+  toggleNotificationDropdown(): void {
+    this.isNotificationDropdownOpen.update((value: boolean) => !value);
+    this.isDropdownOpen.set(false);
+    // Load fresh notifications when opening
+    if (this.isNotificationDropdownOpen()) {
+      this.notificationService.getNotifications().subscribe();
+    }
+  }
+
+  closeNotificationDropdown(): void {
+    this.isNotificationDropdownOpen.set(false);
+  }
+
+  onNotificationClick(notification: Notification): void {
+    // Mark as read
+    this.notificationService.markAsRead(notification.id).subscribe();
+    
+    // Navigate based on notification type
+    if (notification.pfe_listing_id) {
+      this.router.navigate(['/companies/applicants'], { 
+        queryParams: { pfeId: notification.pfe_listing_id } 
+      });
+    }
+    this.closeNotificationDropdown();
+  }
+
+  markAllNotificationsAsRead(): void {
+    this.notificationService.markAllAsRead().subscribe();
   }
 
   @HostListener('document:click', ['$event'])
@@ -102,6 +142,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
     const target = event.target as HTMLElement;
     if (!target.closest('.profile-dropdown-container')) {
       this.closeDropdown();
+    }
+    if (!target.closest('.notification-dropdown-container')) {
+      this.closeNotificationDropdown();
     }
   }
 

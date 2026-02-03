@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
@@ -26,16 +26,31 @@ export interface ApplicantWithStatus {
 export class ApplicantService {
   private http = inject(HttpClient);
   private readonly API_URL = 'http://localhost:8000/api';
+  private readonly TOKEN_KEY = 'pfe_match_token';
 
   // Cache pour les applicants
   private applicantsSubject = new BehaviorSubject<ApplicantWithStatus[]>([]);
   public applicants$ = this.applicantsSubject.asObservable();
 
   /**
+   * Get HTTP headers with Authorization token
+   */
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem(this.TOKEN_KEY);
+    let headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+    return headers;
+  }
+
+  /**
    * Récupérer tous les applicants
    */
   getAllApplicants(): Observable<ApplicantWithStatus[]> {
-    return this.http.get<ApplicantWithStatus[]>(`${this.API_URL}/applicants`).pipe(
+    return this.http.get<ApplicantWithStatus[]>(`${this.API_URL}/applicants`, { headers: this.getAuthHeaders() }).pipe(
       tap(applicants => this.applicantsSubject.next(applicants)),
       catchError(error => {
         console.error('Error fetching applicants:', error);
@@ -49,7 +64,8 @@ export class ApplicantService {
    */
   getApplicantsByPFE(pfeId: string): Observable<ApplicantWithStatus[]> {
     return this.http.get<ApplicantWithStatus[]>(
-      `${this.API_URL}/pfe/listings/${pfeId}/applicants`
+      `${this.API_URL}/pfe/listings/${pfeId}/applicants`,
+      { headers: this.getAuthHeaders() }
     ).pipe(
       catchError(error => {
         console.error('Error fetching applicants for PFE:', error);
@@ -62,7 +78,7 @@ export class ApplicantService {
    * Récupérer un applicant par ID
    */
   getApplicantById(id: string): Observable<ApplicantWithStatus> {
-    return this.http.get<ApplicantWithStatus>(`${this.API_URL}/applicants/${id}`).pipe(
+    return this.http.get<ApplicantWithStatus>(`${this.API_URL}/applicants/${id}`, { headers: this.getAuthHeaders() }).pipe(
       catchError(error => {
         console.error('Error fetching applicant:', error);
         return throwError(() => error);
@@ -79,7 +95,8 @@ export class ApplicantService {
   ): Observable<ApplicantWithStatus> {
     return this.http.patch<ApplicantWithStatus>(
       `${this.API_URL}/applicants/${id}/status`,
-      { status }
+      { status },
+      { headers: this.getAuthHeaders() }
     ).pipe(
       tap(updatedApplicant => {
         const current = this.applicantsSubject.value;

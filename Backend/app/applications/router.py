@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.db.database import SessionLocal
-from app.models import Application, Student, PFEListing
+from app.models import Application, Student, PFEListing, User, UserRole, Enterprise
 from app.db.database import get_db
+from app.core.dependencies import get_current_user
 
-router = APIRouter(prefix="/api/applicants")
+router = APIRouter(prefix="/api/applicants", tags=["Applicants"])
 
 
 def _format_application(a: Application, db: Session):
@@ -45,8 +46,34 @@ def _format_application(a: Application, db: Session):
 
 
 @router.get("")
-def get_applicants(db: Session = Depends(get_db)):
-    apps = db.query(Application).all()
+def get_applicants(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Get all applicants for the current enterprise's PFE listings.
+    Only enterprise users can access this endpoint.
+    """
+    # Check if user is an enterprise
+    if current_user.role != UserRole.ENTERPRISE:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only enterprise users can access this endpoint"
+        )
+    
+    # Get enterprise profile
+    enterprise = db.query(Enterprise).filter(Enterprise.user_id == current_user.id).first()
+    if not enterprise:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Enterprise profile not found"
+        )
+    
+    # Get all PFE listings for this enterprise
+    pfe_ids = [pfe.id for pfe in db.query(PFEListing).filter(PFEListing.enterprise_id == enterprise.id).all()]
+    
+    # Get applications only for this enterprise's PFE listings
+    apps = db.query(Application).filter(Application.pfe_listing_id.in_(pfe_ids)).all()
     formatted = [_format_application(a, db) for a in apps]
     return [f for f in formatted if f is not None]
 

@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ApplicantService, ApplicantWithStatus } from '../../../services/applicant.service';
 import { PFEService } from '../../../services/pfe.service';
+import { CompanyService } from '../../../services/company.service';
 
 @Component({
   selector: 'app-applicants',
@@ -19,13 +20,14 @@ export class ApplicantsComponent implements OnInit {
   private router = inject(Router);
   private applicantService = inject(ApplicantService);
   private pfeService = inject(PFEService);
+  private companyService = inject(CompanyService);
 
   // ============================================
   // Signals pour l'état
   // ============================================
 
-  companyName = signal('TechVision AI');
-  companyDescription = signal('Artificial Intelligence');
+  companyName = signal('');
+  companyDescription = signal('');
 
   // État de chargement
   isLoading = signal(false);
@@ -64,7 +66,8 @@ export class ApplicantsComponent implements OnInit {
       return applicants;
     }
 
-    return applicants.filter(app => app.pfeId === filter);
+    // Use loose equality to handle string/number type mismatch
+    return applicants.filter(app => String(app.pfeId) === String(filter));
   });
 
   /**
@@ -110,6 +113,15 @@ export class ApplicantsComponent implements OnInit {
   ngOnInit(): void {
     // Charger les données initiales
     this.loadData();
+
+    // Charger le profil de l'entreprise
+    this.companyService.getProfile().subscribe({
+      next: (profile: any) => {
+        this.companyName.set(profile.name || profile.company_name || '');
+        this.companyDescription.set(profile.industry || '');
+      },
+      error: (err) => console.error('Error loading company profile:', err)
+    });
 
     // Écouter les query params pour le filtre
     this.route.queryParams.subscribe(params => {
