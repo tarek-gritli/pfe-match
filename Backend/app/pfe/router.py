@@ -493,25 +493,6 @@ async def preview_match_score(
             "title": pfe.title
         }
     }
-        "pfe_title": pfe.title,
-        "match_score": match_result["score"],
-        "already_applied": False,
-        "match_details": {
-            "explanation": match_result.get("explanation", ""),
-            "matched_skills": match_result.get("matched_skills", []),
-            "missing_skills": match_result.get("missing_skills", []),
-            "recommendations": match_result.get("recommendations", "")
-        },
-        "student_profile": {
-            "skills": student.skills or [],
-            "technologies": student.technologies or [],
-            "desired_role": student.desired_job_role
-        },
-        "pfe_requirements": {
-            "skills": pfe.skills or [],
-            "title": pfe.title
-        }
-    }
 
 
 @router.get("/applications/me")
@@ -550,10 +531,18 @@ def get_my_applications(
         # Prepare company info
         company_info = None
         if pfe and pfe.enterprise:
+            # Build full URL for company logo
+            logo_url = None
+            if pfe.enterprise.company_logo:
+                logo_path = pfe.enterprise.company_logo.replace("\\", "/")
+                if not logo_path.startswith("/"):
+                    logo_path = "/" + logo_path
+                logo_url = f"http://localhost:8000{logo_path}"
+            
             company_info = {
                 "id": str(pfe.enterprise.id),
                 "name": pfe.enterprise.company_name,
-                "logoUrl": pfe.enterprise.company_logo,
+                "logoUrl": logo_url,
                 "industry": pfe.enterprise.industry,
             }
         else:

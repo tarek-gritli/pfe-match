@@ -42,6 +42,6 @@ def stats(
     return {
         "activePFEs": len([p for p in pfes if p.status == PFEStatus.OPEN]),
         "totalApplicants": len(apps),
-        "topApplicants": len([a for a in apps if a.match_rate > 80]),
-        "avgMatchRate": int(sum(a.match_rate for a in apps) / len(apps)) if apps else 0,
+        "topApplicants": len([a for a in apps if (a.match_rate or 0) >= 80]),
+        "avgMatchRate": int(sum((a.match_rate or 0) for a in apps) / len(apps)) if apps else 0,
     }
