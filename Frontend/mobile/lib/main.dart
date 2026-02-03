@@ -43,6 +43,22 @@ class MyApp extends StatelessWidget {
       builder: (context, appState, authProvider, child) {
         // On mobile (Android/iOS) check authentication and show appropriate screen
         if (!kIsWeb) {
+          Widget homeScreen;
+
+          if (!authProvider.isAuthenticated) {
+            homeScreen = const LoginScreen();
+          } else if (authProvider.userType == 'enterprise') {
+            // TODO: Create EnterpriseMainScreen for enterprise users
+            homeScreen = const Scaffold(
+              body: Center(
+                child: Text('Enterprise Dashboard - Coming Soon'),
+              ),
+            );
+          } else {
+            // Student users
+            homeScreen = const MainScreen();
+          }
+
           return MaterialApp(
             title: 'PFE Match',
             debugShowCheckedModeBanner: false,
@@ -52,9 +68,7 @@ class MyApp extends StatelessWidget {
               colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
               useMaterial3: true,
             ),
-            home: authProvider.isAuthenticated
-                ? const MainScreen()
-                : const LoginScreen(),
+            home: homeScreen,
             onGenerateRoute: _generateRoute,
           );
         }
