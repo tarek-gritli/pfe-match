@@ -35,7 +35,7 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
     percentage: 0,
     tip: '',
   );
-  
+
 
   @override
   void initState() {

@@ -1,29 +1,34 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import 'package:mobile/Screens/Enterprise/edit_profile_screen.dart';
-import 'package:mobile/Screens/Profile/edit_profile_screen.dart';
-import 'package:mobile/Screens/Profile/profile_screen.dart';
-import 'Screens/Enterprise/profile_screen.dart';
-import 'Screens/Student/edit_profile_screen.dart';
 import 'package:provider/provider.dart';
-import 'providers/auth_provider.dart';
+import 'core/constants/app_colors.dart';
 import 'core/config/routes.dart';
-import 'Screens/auth/login_screen.dart';
-import 'Screens/auth/register_screen.dart';
-import 'Screens/Student/create_profile_screen.dart';
-import 'Screens/Student/profile_screen.dart';
-// import 'Screens/Student/edit_profile_screen.dart';
-import 'Screens/Enterprise/create_profile_screen.dart';
-// import 'Screens/Enterprise/profile_screen.dart';
+import 'providers/auth_provider.dart';
+import 'app_state_provider.dart';
+import 'screens/auth/login_screen.dart';
+import 'screens/auth/register_screen.dart';
+import 'screens/home/home_screen.dart';
+import 'screens/student/create_profile_screen.dart';
+import 'screens/main_screen.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 
 void main() {
-  FlutterError.onError = (FlutterErrorDetails details) {
-    FlutterError.presentError(details);
-    debugPrint(details.exceptionAsString());
-    debugPrintStack(stackTrace: details.stack);
-  };
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Use path URL strategy for web (removes # from URLs)
+  if (kIsWeb) {
+    usePathUrlStrategy();
+  }
   runApp(
     MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => AuthProvider())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) {
+          final appState = AppStateProvider();
+          appState.initialize();
+          return appState;
+        }),
+      ],
       child: const MyApp(),
     ),
   );
@@ -34,28 +39,61 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'PFE Match',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF4F46E5)),
-        useMaterial3: true,
-      ),
-      initialRoute: AppRoutes.login,
-      routes: {
-        AppRoutes.login: (context) => const LoginScreen(),
-        AppRoutes.register: (context) => const RegisterScreen(),
-        AppRoutes.createStudentProfile: (context) =>
-            const CreateProfileScreen(),
-        AppRoutes.studentProfile: (context) => const StudentProfileScreen(),
-        AppRoutes.editStudentProfile: (context) => const EditStudentProfileScreen(),
-        AppRoutes.createEnterpriseProfile: (context) => const CreateEnterpriseProfileScreen(),
-        AppRoutes.enterpriseProfile: (context) => const EnterpriseProfileScreen(),
-        AppRoutes.editEnterpriseProfile: (context) => const EditEnterpriseProfileScreen(),
-        AppRoutes.profile : (context) => const ProfileScreen(),
-        AppRoutes.createProfile : (context) => const CreateProfileScreen(),
-        AppRoutes.editProfile : (context) => const EditProfileScreen(),
+    return Consumer<AppStateProvider>(
+      builder: (context, appState, child) {
+        // On mobile (Android/iOS) show the native mobile MainScreen directly.
+        if (!kIsWeb) {
+          return MaterialApp(
+            title: 'PFE Match',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              primaryColor: AppColors.primary,
+              scaffoldBackgroundColor: AppColors.background,
+              colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
+              useMaterial3: true,
+            ),
+            home: const MainScreen(),
+          );
+        }
+
+        // For web, keep the routed app (auth + web flows)
+        return MaterialApp(
+          title: 'PFE Match',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            primaryColor: AppColors.primary,
+            scaffoldBackgroundColor: AppColors.background,
+            colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
+            useMaterial3: true,
+          ),
+          initialRoute: AppRoutes.login,
+          onGenerateRoute: _generateRoute,
+        );
       },
     );
+  }
+
+  Route<dynamic>? _generateRoute(RouteSettings settings) {
+    Widget page;
+
+    switch (settings.name) {
+      case '/':
+      case '/login':
+        page = const LoginScreen();
+        break;
+      case '/register':
+        page = const RegisterScreen();
+        break;
+      case '/home':
+        page = const HomeScreen();
+        break;
+      case '/create-student-profile':
+        page = const CreateStudentProfileScreen();
+        break;
+      default:
+        page = const LoginScreen();
+    }
+
+    return MaterialPageRoute(builder: (_) => page, settings: settings);
   }
 }
