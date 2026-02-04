@@ -9,6 +9,7 @@ import 'Screens/auth/login_screen.dart';
 import 'Screens/auth/register_screen.dart';
 import 'Screens/home/home_screen.dart';
 import 'Screens/Student/create_profile_screen.dart';
+import 'Screens/Student/edit_profile_screen.dart';
 import 'Screens/Enterprise/create_profile_screen.dart';
 import 'Screens/Main_screen.dart';
 import 'Screens/Enterprise_main_screen.dart';
@@ -116,6 +117,9 @@ class MyApp extends StatelessWidget {
         break;
       case '/create-student-profile':
         page = const CreateProfileScreen();
+        break;
+      case '/edit-student-profile':
+        page = const EditStudentProfileScreen();
         break;
       case '/create-enterprise-profile':
         page = const CreateEnterpriseProfileScreen();

@@ -169,8 +169,7 @@ void _openPdfViewer() {
   Future<void> _navigateToEdit() async {
     if (_student == null) return;
 
-    final result = await Navigator.pushNamed(
-      context,
+    final result = await Navigator.of(context, rootNavigator: true).pushNamed(
       AppRoutes.editStudentProfile,
       arguments: _student,
     );
